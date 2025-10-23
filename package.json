@@ -1,0 +1,22 @@
+{
+    "private": true,
+    "scripts": {
+        "build": "vite build",
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "axios": "^1.6.4",
+        "laravel-mix": "^6.0.49"
+    },
+    "dependencies": {
+        "animejs": "^4.1.3",
+        "interactjs": "^1.10.27",
+        "scrollreveal": "^4.0.9"
+    }
+}

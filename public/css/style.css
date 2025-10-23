@@ -1,0 +1,40 @@
+h1{
+    text-align: center;
+    color: black;
+    padding-top: 2%;
+    
+}
+hr{
+    padding-bottom: 2%;
+}
+p{
+    color: white;
+}
+h5{
+    color: black;
+}
+.carousel-caption{
+    color: white !important;
+}
+header{
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+.btn-primary{
+    background-color: white !important;
+    color: black !important;
+    border-color: black !important;
+}
+footer{
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+h2{
+    padding: 2% !important;
+}
+.logoPng{
+    height: 10mm; 
+    width: auto;
+}
