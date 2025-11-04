@@ -21,11 +21,10 @@ class AsanaController extends Controller
     }
 
     /**
-     * Redirige al usuario al login de Asana (solo lectura)
+     * Redirige al usuario al login de Asana 
      */
     public function redirectToProvider()
     {
-        // ✅ Solo lectura para evitar "forbidden_scopes"
         $url = "https://app.asana.com/-/oauth_authorize?client_id=" . env('ASANA_CLIENT_ID') .
                "&redirect_uri=" . $this->redirectUri .
                "&response_type=code&scope=default";
@@ -43,7 +42,7 @@ class AsanaController extends Controller
             return redirect()->route('landing')->withErrors('Authorization failed or denied.');
         }
 
-        // 1️⃣ Solicitar token de acceso y refresh token
+        // solicitar token
         try {
             $response = $this->client->post('https://app.asana.com/-/oauth_token', [
                 'form_params' => [
@@ -68,7 +67,7 @@ class AsanaController extends Controller
         $refreshToken = $data['refresh_token'] ?? null;
         $expiresIn    = $data['expires_in'] ?? null;
 
-        // 2️⃣ Obtener detalles del usuario autenticado
+        // detalles 
         try {
             $userResponse = $this->client->get('https://app.asana.com/api/1.0/users/me', [
                 'headers' => [
@@ -82,7 +81,7 @@ class AsanaController extends Controller
         $userData = json_decode($userResponse->getBody()->getContents(), true);
         $user     = $userData['data'];
 
-        // 3️⃣ Buscar o crear el usuario en la base de datos
+        // crear user en bd
         $existingUser = AtUser::where('asana_id', $user['gid'])->first();
 
         $updateData = [

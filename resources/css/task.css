@@ -1,17 +1,17 @@
-/* === ESTILOS AÑADIDOS PARA ARREGLAR FILTROS === */
+
 .filters-container {
   display: flex;
-  flex-wrap: wrap; /* Para que se apilen en pantallas pequeñas si es necesario */
+  flex-wrap: wrap; 
   align-items: center;
-  gap: 1.5rem; /* Espacio entre el filtro de Workspace y el de Proyecto */
+  gap: 1.5rem; 
 }
 
 .filter-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Espacio entre la etiqueta (label) y el selector (select) */
+  gap: 0.5rem; 
 }
-/* === FIN DE ESTILOS AÑADIDOS === */
+
 
 
 .task-page-wrapper {

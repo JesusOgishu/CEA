@@ -15545,7 +15545,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 /**
- * Anima un elemento a su posición inicial (0,0) si el arrastre se cancela.
+ * Anima un elemento a su posición inicial 
  */
 function animateToStartPosition(target) {
   if (!target) return;
@@ -15568,11 +15568,6 @@ function animateToStartPosition(target) {
  * GIDs de secciones por cuadrante.
  */
 var QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
-console.log('📦 Secciones cargadas desde Blade:', QUADRANT_SECTION_GIDS);
-
-/**
- * Actualiza la sección de una tarea en Asana.
- */
 function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   var url = "/asana/tasks/".concat(taskId, "/move");
   var finalSectionGid = sectionGid || null;
@@ -15608,7 +15603,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
             return response.text();
           case 3:
             text = _context.v;
-            console.warn('⚠️ Respuesta no JSON del servidor:', text);
+            console.warn('Respuesta no JSON del servidor:', text);
             throw new Error("Respuesta no v\xE1lida del servidor (status ".concat(response.status, ")"));
           case 4:
             if (response.ok) {
@@ -15621,7 +15616,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
             }
             throw new Error(asanaError);
           case 5:
-            console.log("\u2705 Tarea ".concat(taskId, " movida con \xE9xito en Asana."), data);
+            console.log("Tarea ".concat(taskId, " movida con \xE9xito en Asana."), data);
           case 6:
             return _context.a(2);
         }
@@ -15631,7 +15626,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
       return _ref.apply(this, arguments);
     };
   }())["catch"](function (error) {
-    console.error('❌ Error al actualizar la tarea en Asana:', error.message);
+    console.error('Error al actualizar la tarea en Asana:', error.message);
     var message = document.createElement('div');
     message.className = 'fixed top-4 right-4 bg-red-600 text-white p-3 rounded shadow-lg transition-opacity duration-500 z-50';
     message.textContent = "Error al mover la tarea: ".concat(error.message.substring(0, 100), "... Revisa la consola.");
@@ -15700,7 +15695,7 @@ function initDragAndDrop() {
           if (taskId && projectGid) {
             updateAsanaTaskSection(taskId, projectGid, newSectionGid);
           } else {
-            console.warn('⚠️ Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.', {
+            console.warn('Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.', {
               listId: listId,
               newSectionGid: newSectionGid,
               taskId: taskId,
@@ -15713,10 +15708,6 @@ function initDragAndDrop() {
     }
   });
 }
-
-/**
- * ⭐️ CRÍTICO ⭐️: Inicializa el selector de workspace y elimina el filtro de proyecto.
- */
 function initWorkspaceSelector() {
   var select = document.getElementById('workspaceSelector');
   if (!select) return;
@@ -15724,14 +15715,11 @@ function initWorkspaceSelector() {
     var workspaceGid = e.target.value;
     var currentUrl = new URL(window.location.href);
     if (workspaceGid) {
-      // 1. Añadir el nuevo workspace GID a la URL
       currentUrl.searchParams.set('workspace', workspaceGid);
     } else {
       currentUrl.searchParams["delete"]('workspace');
     }
     currentUrl.searchParams["delete"]('project');
-
-    // 3. Forzar la recarga de la página
     window.location.href = currentUrl.toString();
   });
 }
@@ -15750,8 +15738,6 @@ function initProjectSelector() {
     } else {
       currentUrl.searchParams["delete"]('project');
     }
-
-    // Recargamos la página (mantiene el 'workspace' que ya debe estar en la URL)
     window.location.href = currentUrl.toString();
   });
 }
@@ -15916,14 +15902,14 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /**
  * users.js
- * Manejo del perfil Asana: carga usuario, workspaces, equipos, rol y proyectos.
+ * Manejo del perfil Asana: 
  */
 document.addEventListener('DOMContentLoaded', function () {
   loadUserInfo();
 });
 
 /**
- * Llamada AJAX a tu endpoint de Asana
+ * Llamada AJAX 
  */
 function loadUserInfo() {
   return _loadUserInfo.apply(this, arguments);
@@ -16005,40 +15991,30 @@ function renderUserInfo(data) {
   var photoElement = document.getElementById('profile-photo');
   var workspacesList = document.getElementById('workspaces-list');
   var teamList = document.getElementById('team-list');
-
-  // --- NUEVOS ELEMENTOS ---
   var userRoleElement = document.getElementById('user-role');
   var aboutMeElement = document.getElementById('user-about-me');
   var activeProjectsList = document.getElementById('active-projects-list');
 
-  // 1. Información Básica (Nombre, Correo, Foto)
+  // Información Básica 
   document.getElementById('user-name').textContent = data.name || 'Usuario desconocido';
   document.getElementById('user-email').textContent = data.email || '';
-
-  // CORRECCIÓN DE IMAGEN: Si no hay URL de foto o es inválida, usamos el placeholder
   var initials = data.name ? data.name.split(' ').map(function (n) {
     return n[0];
   }).join('') : 'U';
   if (data.photo_url) {
     photoElement.src = data.photo_url;
   } else {
-    // Establecer el placeholder inmediatamente si la URL es nula
     photoElement.src = "https://placehold.co/100x100/969696/FFFFFF?text=".concat(initials);
-
-    // Desactivar el onerror para evitar bucles si el placeholder falla (aunque es poco probable)
     photoElement.onerror = null;
   }
-
-  // 2. Puesto y Descripción (USANDO 'title' enviado como 'role')
   if (userRoleElement) {
-    // Mostramos el valor, o una cadena vacía si es 'Rol no especificado' o nulo
     userRoleElement.textContent = data.role && data.role !== 'Rol no especificado' ? data.role : '';
   }
   if (aboutMeElement) {
     aboutMeElement.innerHTML = data.about_me ? data.about_me.replace(/\n/g, '<br>') : 'Aún no hay una descripción personal.';
   }
 
-  // 3. Workspaces (EXISTENTE)
+  // Workspaces 
   workspacesList.innerHTML = '';
   if (data.workspaces && data.workspaces.length > 0) {
     data.workspaces.forEach(function (ws) {
@@ -16050,14 +16026,9 @@ function renderUserInfo(data) {
   } else {
     workspacesList.textContent = 'No asociado a ningún workspace.';
   }
-
-  // 4. Equipos a los que Pertenece el Usuario (data.user_teams)
-  // CAMBIO A LISTA VERTICAL (<ul> con <li>)
   teamList.innerHTML = '';
   if (data.user_teams && data.user_teams.length > 0) {
-    // Se asume que teamList en el HTML es un <div> o <ul>
     var ul = document.createElement('ul');
-    // Usamos la misma clase que para la lista de proyectos para mantener la coherencia
     ul.classList.add('user-projects-list');
     data.user_teams.forEach(function (team) {
       var li = document.createElement('li');
@@ -16065,12 +16036,12 @@ function renderUserInfo(data) {
       li.textContent = team.name;
       ul.appendChild(li);
     });
-    teamList.appendChild(ul); // Añadimos el <ul> al contenedor
+    teamList.appendChild(ul);
   } else {
     teamList.textContent = 'No forma parte de ningún equipo.';
   }
 
-  // 5. Proyectos Activos
+  // Proyectos Activos
   if (activeProjectsList) {
     activeProjectsList.innerHTML = '';
     if (data.active_projects && data.active_projects.length > 0) {

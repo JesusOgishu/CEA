@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-/* Set CSS Variables for easy theme customization */
 :root {
     --main-bg-color: #e6e8ed;
     --card-bg-color: #ffffff;
@@ -31,8 +30,6 @@ body {
 .text-green { color: #367952; }
 .text-orange { color: #f5b74f; }
 .font-weight-bold { font-weight: 600; }
-
-/* Default state is mobile-first (sidebar hidden) */
 .grid-container {
     display: grid;
     grid-template-columns: 0 1fr;
@@ -138,7 +135,7 @@ body {
     padding: 20px;
 }
 
-/* ---------- ESTILOS DEL DASHBOARD ---------- */
+/* ---------- DASHBOARD ---------- */
 
 .dashboard-grid {
   display: grid;
@@ -232,10 +229,10 @@ body {
 }
 
 /* --- Colores por cuadrante --- */
-.matrix-quadrant.do { border-top-color: #28a745; }      /* Verde */
-.matrix-quadrant.decide { border-top-color: #246dec; }  /* Azul */
-.matrix-quadrant.delegate { border-top-color: #f5b74f; }/* Amarillo */
-.matrix-quadrant.delete { border-top-color: #dc3545; }  /* Rojo */
+.matrix-quadrant.do { border-top-color: #28a745; } 
+.matrix-quadrant.decide { border-top-color: #246dec; } 
+.matrix-quadrant.delegate { border-top-color: #f5b74f; }
+.matrix-quadrant.delete { border-top-color: #dc3545; }  
 
 .task-list {
   list-style-type: none;
@@ -248,7 +245,7 @@ body {
   height: 100%;
 }
 
-/* Borde lateral de las tarjetas según el cuadrante */
+/* Borde lateral  */
 .matrix-quadrant.do .task-card { border-left-color: #28a745; }
 .matrix-quadrant.decide .task-card { border-left-color: #246dec; }
 .matrix-quadrant.delegate .task-card { border-left-color: #f5b74f; }
@@ -317,7 +314,7 @@ body {
     border-color: #246dec !important;
     border-style: dashed !important;
 }
-/* ---------- PROYECTOS COMO CARDS ---------- */
+
 .projects-container {
   display: flex;
   gap: 15px;
@@ -329,7 +326,7 @@ body {
 
 
 .project-card {
-  flex: 0 0 auto; /* evita que se estiren, siempre se ven como tarjeta */
+  flex: 0 0 auto; 
   background-color: var(--card-bg-color);
   border-radius: 10px;
   padding: 15px 25px;
@@ -337,7 +334,7 @@ body {
   border: 2px solid #e0e0e0;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 160px; /* tamaño mínimo de la tarjeta */
+  min-width: 160px; 
   text-align: center;
 }
 

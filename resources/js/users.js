@@ -1,13 +1,13 @@
 /**
  * users.js
- * Manejo del perfil Asana: carga usuario, workspaces, equipos, rol y proyectos.
+ * Manejo del perfil Asana: 
  */
 document.addEventListener('DOMContentLoaded', () => {
     loadUserInfo();
 });
 
 /**
- * Llamada AJAX a tu endpoint de Asana
+ * Llamada AJAX 
  */
 async function loadUserInfo() {
     const detailsElement = document.getElementById('user-details');
@@ -60,31 +60,27 @@ function renderUserInfo(data) {
     const workspacesList = document.getElementById('workspaces-list');
     const teamList = document.getElementById('team-list');
     
-    // --- NUEVOS ELEMENTOS ---
+  
     const userRoleElement = document.getElementById('user-role');
     const aboutMeElement = document.getElementById('user-about-me');
     const activeProjectsList = document.getElementById('active-projects-list');
 
-    // 1. Información Básica (Nombre, Correo, Foto)
+    // Información Básica 
     document.getElementById('user-name').textContent = data.name || 'Usuario desconocido';
     document.getElementById('user-email').textContent = data.email || '';
 
-    // CORRECCIÓN DE IMAGEN: Si no hay URL de foto o es inválida, usamos el placeholder
+    
     const initials = data.name ? data.name.split(' ').map(n => n[0]).join('') : 'U';
     
     if (data.photo_url) {
         photoElement.src = data.photo_url;
     } else {
-        // Establecer el placeholder inmediatamente si la URL es nula
         photoElement.src = `https://placehold.co/100x100/969696/FFFFFF?text=${initials}`;
-        
-        // Desactivar el onerror para evitar bucles si el placeholder falla (aunque es poco probable)
         photoElement.onerror = null; 
     }
 
-    // 2. Puesto y Descripción (USANDO 'title' enviado como 'role')
+
     if (userRoleElement) {
-        // Mostramos el valor, o una cadena vacía si es 'Rol no especificado' o nulo
         userRoleElement.textContent = data.role && data.role !== 'Rol no especificado' ? data.role : '';
     }
     
@@ -93,7 +89,7 @@ function renderUserInfo(data) {
     }
 
 
-    // 3. Workspaces (EXISTENTE)
+    // Workspaces 
     workspacesList.innerHTML = '';
     if (data.workspaces && data.workspaces.length > 0) {
         data.workspaces.forEach(ws => {
@@ -105,14 +101,9 @@ function renderUserInfo(data) {
     } else {
         workspacesList.textContent = 'No asociado a ningún workspace.';
     }
-
-    // 4. Equipos a los que Pertenece el Usuario (data.user_teams)
-    // CAMBIO A LISTA VERTICAL (<ul> con <li>)
     teamList.innerHTML = '';
     if (data.user_teams && data.user_teams.length > 0) {
-        // Se asume que teamList en el HTML es un <div> o <ul>
         const ul = document.createElement('ul');
-        // Usamos la misma clase que para la lista de proyectos para mantener la coherencia
         ul.classList.add('user-projects-list'); 
         
         data.user_teams.forEach(team => {
@@ -121,12 +112,12 @@ function renderUserInfo(data) {
             li.textContent = team.name;
             ul.appendChild(li);
         });
-        teamList.appendChild(ul); // Añadimos el <ul> al contenedor
+        teamList.appendChild(ul); 
     } else {
         teamList.textContent = 'No forma parte de ningún equipo.';
     }
 
-    // 5. Proyectos Activos
+    // Proyectos Activos
     if (activeProjectsList) {
         activeProjectsList.innerHTML = '';
         if (data.active_projects && data.active_projects.length > 0) {

@@ -2,7 +2,7 @@ import { animate as anime } from 'animejs';
 import interact from 'interactjs';
 
 /**
- * Anima un elemento a su posición inicial (0,0) si el arrastre se cancela.
+ * Anima un elemento a su posición inicial 
  */
 function animateToStartPosition(target) {
   if (!target) return;
@@ -26,11 +26,8 @@ function animateToStartPosition(target) {
  * GIDs de secciones por cuadrante.
  */
 const QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
-console.log('📦 Secciones cargadas desde Blade:', QUADRANT_SECTION_GIDS);
 
-/**
- * Actualiza la sección de una tarea en Asana.
- */
+
 function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   const url = `/asana/tasks/${taskId}/move`;
   const finalSectionGid = sectionGid || null;
@@ -54,7 +51,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
         data = await response.json();
       } else {
         const text = await response.text();
-        console.warn('⚠️ Respuesta no JSON del servidor:', text);
+        console.warn('Respuesta no JSON del servidor:', text);
         throw new Error(`Respuesta no válida del servidor (status ${response.status})`);
       }
 
@@ -66,10 +63,10 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
         throw new Error(asanaError);
       }
 
-      console.log(`✅ Tarea ${taskId} movida con éxito en Asana.`, data);
+      console.log(`Tarea ${taskId} movida con éxito en Asana.`, data);
     })
     .catch(error => {
-      console.error('❌ Error al actualizar la tarea en Asana:', error.message);
+      console.error('Error al actualizar la tarea en Asana:', error.message);
       const message = document.createElement('div');
       message.className =
         'fixed top-4 right-4 bg-red-600 text-white p-3 rounded shadow-lg transition-opacity duration-500 z-50';
@@ -144,7 +141,7 @@ function initDragAndDrop() {
             updateAsanaTaskSection(taskId, projectGid, newSectionGid);
           } else {
             console.warn(
-              '⚠️ Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.',
+              'Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.',
               { listId, newSectionGid, taskId, projectGid }
             );
           }
@@ -155,9 +152,6 @@ function initDragAndDrop() {
   });
 }
 
-/**
- * ⭐️ CRÍTICO ⭐️: Inicializa el selector de workspace y elimina el filtro de proyecto.
- */
 function initWorkspaceSelector() {
   const select = document.getElementById('workspaceSelector');
   if (!select) return;
@@ -167,14 +161,12 @@ function initWorkspaceSelector() {
     const currentUrl = new URL(window.location.href);
 
     if (workspaceGid) {
-      // 1. Añadir el nuevo workspace GID a la URL
       currentUrl.searchParams.set('workspace', workspaceGid);
     } else {
       currentUrl.searchParams.delete('workspace');
     }
     currentUrl.searchParams.delete('project'); 
 
-    // 3. Forzar la recarga de la página
     window.location.href = currentUrl.toString(); 
   });
 }
@@ -197,7 +189,7 @@ function initProjectSelector() {
       currentUrl.searchParams.delete('project');
     }
 
-    // Recargamos la página (mantiene el 'workspace' que ya debe estar en la URL)
+    
     window.location.href = currentUrl.toString();
   });
 }

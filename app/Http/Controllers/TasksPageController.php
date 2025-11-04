@@ -15,30 +15,28 @@ class TasksPageController extends Controller
 
         $projectId   = $request->query('project');
         $workspaceId = $request->query('workspace');
-
-        // Si se pasó project pero no workspace, intentamos inferir el workspace del project
         if ($projectId && !$workspaceId) {
             try {
                 $projectResp = $asana->getProject($projectId, ['gid', 'name', 'workspace']);
                 $inferred = $projectResp['data']['workspace']['gid'] ?? null;
                 if ($inferred) {
-                    Log::info('🔀 TasksPage: inferido workspace desde project', ['project' => $projectId, 'workspace' => $inferred]);
+                    Log::info('TasksPage: inferido workspace desde project', ['project' => $projectId, 'workspace' => $inferred]);
                     return redirect($request->fullUrlWithQuery(['workspace' => $inferred]));
                 }
             } catch (\Exception $e) {
-                Log::warning('⚠️ No se pudo inferir workspace desde proyecto', ['error' => $e->getMessage(), 'project' => $projectId]);
+                Log::warning('No se pudo inferir workspace desde proyecto', ['error' => $e->getMessage(), 'project' => $projectId]);
             }
         }
 
-        // Obtener workspaces (para el selector)
+        // Obtener workspaces)
         $workspaces = $asana->getWorkspaces();
 
-        // Si no hay workspace definido, usar el default del servicio
+        // usar el default 
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // Obtener proyectos filtrados por workspace actual
+        // Obtener proyectos filtrados 
         $projects = $asana->getUserProjects($workspaceId);
         
         $filters = [
@@ -77,7 +75,7 @@ class TasksPageController extends Controller
                     : '—');
         }
 
-        Log::info('✅ TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);
+        Log::info('TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);
 
         return view('pages.tasks', compact('tasks', 'projects', 'workspaces', 'workspaceId'));
     }

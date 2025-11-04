@@ -15,7 +15,6 @@
         </div>
 
         <div id="user-details" class="user-details" style="display:none;">
-            {{-- Bloque superior: Foto + Datos personales + Acerca de mí --}}
             <div class="user-profile-main-info-grid">
                 <div class="user-profile-header-container">
                     <div class="user-profile-header">
@@ -39,8 +38,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Bloque lateral derecho: Workspaces y Equipos --}}
                 <div class="user-profile-collaboration-details">
                     <div class="user-workspaces-section user-section-card">
                         <div class="section-header">
@@ -61,8 +58,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Bloque inferior: Proyectos Activos --}}
             <div class="user-active-projects-section user-section-card mt-6">
                 <div class="section-header sticky-header">
                     <h3><i data-lucide="folder-open"></i> Proyectos Activos Asignados</h3>

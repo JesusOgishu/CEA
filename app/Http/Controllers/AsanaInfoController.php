@@ -10,57 +10,51 @@ use Illuminate\Support\Facades\Log;
 class AsanaInfoController extends Controller
 {
     /**
-     * Muestra el dashboard principal, filtrado por workspace y proyecto.
+     * Muestra el dashboard principal
      */
     public function dashboard(Request $request)
     {
-        // 1. Inicializar el Servicio
+        // inicializar service
         $asana = new AsanaService();
 
-        // 2. Obtener filtros de la URL
+        // filtros
         $projectId = $request->query('project');
         $workspaceId = $request->query('workspace');
 
-        // ======================================================
-        // NUEVA LÓGICA: si hay project en la URL pero NO hay workspace,
-        // intentamos obtener el workspace asociado al proyecto y
-        // redirigimos a la misma URL añadiendo workspace=...
-        // ======================================================
         if ($projectId && !$workspaceId) {
             try {
                 $projectResp = $asana->getProject($projectId, ['gid', 'name', 'workspace']);
                 $projectWorkspaceGid = $projectResp['data']['workspace']['gid'] ?? null;
 
                 if ($projectWorkspaceGid) {
-                    Log::info('🔀 Dashboard: inferido workspace desde project y redirigiendo', [
+                    Log::info('Dashboard: inferido workspace desde project y redirigiendo', [
                         'project' => $projectId,
                         'inferred_workspace' => $projectWorkspaceGid
                     ]);
-                    // Redirigimos a la misma URL añadiendo workspace
                     return redirect($request->fullUrlWithQuery(['workspace' => $projectWorkspaceGid]));
                 } else {
-                    Log::warning('⚠️ Dashboard: no se pudo inferir workspace desde project', ['project' => $projectId]);
+                    Log::warning('Dashboard: no se pudo inferir workspace desde project', ['project' => $projectId]);
                 }
             } catch (\Exception $e) {
-                Log::warning('⚠️ Error al obtener proyecto para inferir workspace', [
+                Log::warning('Error al obtener proyecto para inferir workspace', [
                     'project' => $projectId,
                     'error' => $e->getMessage()
                 ]);
             }
         }
 
-        // 3. Obtener todos los workspaces del usuario (para el selector)
+        // workspaces
         $workspaces = $asana->getWorkspaces();
 
-        // 4. Determinar el Workspace ID a usar
+        // workspace id
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // 5. Obtener Proyectos (filtrados por el workspace actual)
+        // proyectos
         $projects = $asana->getUserProjects($workspaceId);
 
-        // 6. Configurar los filtros para la API de tareas (corregido)
+        // filtros
         $filters = ['assignee' => 'me', 'limit' => 50];
 
         if ($projectId) {
@@ -70,7 +64,7 @@ class AsanaInfoController extends Controller
             $filters['completed_since'] = 'now';
         }
 
-        Log::info('✅ DEBUG FILTRO ASANA:', [
+        Log::info('DEBUG FILTRO ASANA:', [
             'URL_Workspace_ID' => $request->query('workspace'),
             'Workspace_Usado' => $workspaceId,
             'Project_Usado' => $projectId,
@@ -85,11 +79,11 @@ class AsanaInfoController extends Controller
             'memberships.section.name', 'memberships.section.gid'
         ];
 
-        // 7. Llamar a la API para listar las tareas
+        // listado con API
         $resp = $asana->listTasks($filters, $fields);
         $tasks = $resp['data'] ?? [];
 
-        // 8. Mapear GIDs de Secciones (solo si hay un proyecto filtrado)
+        // mapeo 
         $sectionMap = ['pending-tasks-list' => null];
 
         if ($projectId) {
@@ -111,14 +105,14 @@ class AsanaInfoController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                Log::warning('⚠️ No se pudieron obtener secciones del proyecto', [
+                Log::warning('No se pudieron obtener secciones del proyecto', [
                     'error' => $e->getMessage(),
                     'project_gid' => $projectId
                 ]);
             }
         }
 
-        // 9. Clasificar tareas por Cuadrante
+        // clasificacion
         $tasksByQuadrant = [
             'do' => [], 'decide' => [], 'delegate' => [], 'delete' => [], 'pending' => [],
         ];
@@ -145,12 +139,12 @@ class AsanaInfoController extends Controller
 
         $sectionMapJson = json_encode($sectionMap, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        // 10. Devolver la vista con todos los datos
+        // return
         return view('pages.dashboard', compact('projects', 'tasksByQuadrant', 'sectionMapJson', 'workspaces', 'workspaceId'));
     }
 
     /**
-     * Mueve una tarea a una sección específica del proyecto (utilizado por JS drag-and-drop).
+     * Mueve una tarea a una sección específica 
      */
     public function moveTaskToSection(Request $request, string $gid)
     {
@@ -177,7 +171,7 @@ class AsanaInfoController extends Controller
     }
 
     /**
-     * Obtiene todos los proyectos (utilizado potencialmente por AJAX en otra parte).
+     * Obtiene todos los proyectos 
      */
     public function getProjects()
     {
@@ -192,7 +186,7 @@ class AsanaInfoController extends Controller
 
             return response()->json($data);
         } catch (\Exception $e) {
-            Log::error('❌ Error al obtener proyectos desde Asana', [
+            Log::error('Error al obtener proyectos desde Asana', [
                 'error' => $e->getMessage()
             ]);
             return response()->json(['error' => 'No se pudieron cargar los proyectos.'], 500);

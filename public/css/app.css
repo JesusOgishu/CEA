@@ -76,7 +76,7 @@ nav {
   z-index: -1;
   transform: translateY(-100%);
 }
-/* Aplica a todo el documento */
+
 html, body {
   height: 100%;
   margin: 0;
@@ -84,7 +84,7 @@ html, body {
   flex-direction: column;
 }
 
-/* El contenido principal debe crecer */
+
 main {
   flex: 1;
 }
@@ -409,13 +409,13 @@ footer {
 .cards-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem; /* espacio entre cards */
-    padding: 2rem; /* espacio alrededor de todo el contenedor */
-    background-color: #f5f5f5; /* fondo general */
+    gap: 2rem; 
+    padding: 2rem; 
+    background-color: #f5f5f5; 
 }
 
 .task-card {
-    background-color: #ffffff; /* blanco para resaltar */
+    background-color: #ffffff; 
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.12);
     display: flex;
@@ -498,20 +498,20 @@ footer {
     color: var(--primary-color-dark);
 }
 
-/* === ESTILOS AÑADIDOS PARA ARREGLAR FILTROS === */
+
 .filters-container {
   display: flex;
-  flex-wrap: wrap; /* Para que se apilen en pantallas pequeñas si es necesario */
+  flex-wrap: wrap; 
   align-items: center;
-  gap: 1.5rem; /* Espacio entre el filtro de Workspace y el de Proyecto */
+  gap: 1.5rem; 
 }
 
 .filter-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Espacio entre la etiqueta (label) y el selector (select) */
+  gap: 0.5rem; 
 }
-/* === FIN DE ESTILOS AÑADIDOS === */
+
 
 
 .task-page-wrapper {
@@ -686,7 +686,6 @@ font-size: 1.1rem;
 }
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-/* Set CSS Variables for easy theme customization */
 :root {
     --main-bg-color: #e6e8ed;
     --card-bg-color: #ffffff;
@@ -717,8 +716,6 @@ body {
 .text-green { color: #367952; }
 .text-orange { color: #f5b74f; }
 .font-weight-bold { font-weight: 600; }
-
-/* Default state is mobile-first (sidebar hidden) */
 .grid-container {
     display: grid;
     grid-template-columns: 0 1fr;
@@ -824,7 +821,7 @@ body {
     padding: 20px;
 }
 
-/* ---------- ESTILOS DEL DASHBOARD ---------- */
+/* ---------- DASHBOARD ---------- */
 
 .dashboard-grid {
   display: grid;
@@ -918,10 +915,10 @@ body {
 }
 
 /* --- Colores por cuadrante --- */
-.matrix-quadrant.do { border-top-color: #28a745; }      /* Verde */
-.matrix-quadrant.decide { border-top-color: #246dec; }  /* Azul */
-.matrix-quadrant.delegate { border-top-color: #f5b74f; }/* Amarillo */
-.matrix-quadrant.delete { border-top-color: #dc3545; }  /* Rojo */
+.matrix-quadrant.do { border-top-color: #28a745; } 
+.matrix-quadrant.decide { border-top-color: #246dec; } 
+.matrix-quadrant.delegate { border-top-color: #f5b74f; }
+.matrix-quadrant.delete { border-top-color: #dc3545; }  
 
 .task-list {
   list-style-type: none;
@@ -934,7 +931,7 @@ body {
   height: 100%;
 }
 
-/* Borde lateral de las tarjetas según el cuadrante */
+/* Borde lateral  */
 .matrix-quadrant.do .task-card { border-left-color: #28a745; }
 .matrix-quadrant.decide .task-card { border-left-color: #246dec; }
 .matrix-quadrant.delegate .task-card { border-left-color: #f5b74f; }
@@ -1003,7 +1000,7 @@ body {
     border-color: #246dec !important;
     border-style: dashed !important;
 }
-/* ---------- PROYECTOS COMO CARDS ---------- */
+
 .projects-container {
   display: flex;
   gap: 15px;
@@ -1015,7 +1012,7 @@ body {
 
 
 .project-card {
-  flex: 0 0 auto; /* evita que se estiren, siempre se ven como tarjeta */
+  flex: 0 0 auto; 
   background-color: var(--card-bg-color);
   border-radius: 10px;
   padding: 15px 25px;
@@ -1023,7 +1020,7 @@ body {
   border: 2px solid #e0e0e0;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 160px; /* tamaño mínimo de la tarjeta */
+  min-width: 160px; 
   text-align: center;
 }
 
@@ -1105,7 +1102,7 @@ body {
 .user-section-card h3 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #555; /* gris en lugar de azul */
+  color: #555; 
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -1234,7 +1231,7 @@ body {
   background: #b92d3a;
 }
 
-/* Scrollable secciones */
+
 .scrollable-section {
   max-height: 180px;
   overflow-y: auto;
@@ -1253,7 +1250,6 @@ body {
   border-radius: 10px;
 }
 
-/* Tarjetas con headers y contenido separados */
 .user-section-card {
   background: #fff;
   border-radius: 12px;
@@ -1269,7 +1265,7 @@ body {
 }
 
 .section-header h3 {
-  color: #555; /* gris en lugar de azul */
+  color: #555; 
   font-size: 1rem;
   font-weight: 600;
   display: flex;
@@ -1307,15 +1303,15 @@ body {
 .user-projects-list li:last-child {
   border-bottom: none;
 }
-/* Alinear ambos contenedores principales (izquierdo y derecho) */
+
 .user-profile-main-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
-  align-items: start; /* 🔹 Esto alinea las tarjetas por la parte superior */
+  align-items: start; 
 }
 
-/* Igualar comportamiento visual de los contenedores */
+
 .user-profile-header-container,
 .user-profile-collaboration-details {
   display: flex;
@@ -1324,19 +1320,19 @@ body {
   height: 100%;
 }
 
-/* Evita que los bordes del card se mezclen y da equilibrio */
+
 .user-section-card {
-  flex: 1; /* 🔹 Hace que ambos crezcan igual */
+  flex: 1; 
   display: flex;
   flex-direction: column;
 }
 
-/* La parte interna del card (header + contenido) */
+
 .user-section-card .section-content {
   flex: 1;
 }
 
-/* Responsive: una sola columna en pantallas pequeñas */
+
 @media (max-width: 768px) {
   .user-profile-main-info-grid {
     grid-template-columns: 1fr;

@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     
-    {{-- 🔥 SOLO CARGAMOS EL BUNDLE PRINCIPAL DE CSS 🔥 --}}
+  
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    {{-- @stack('styles') ELIMINADO --}}
+  
 </head>
 <body>
     <div class="grid-container">
@@ -19,7 +19,7 @@
                 <div class="menu-icon">
                     <span class="material-icons-outlined">menu</span>
                 </div>
-                {{-- Es una buena práctica verificar si el usuario está autenticado --}}
+                
                 @auth 
                     <span class="remove-span">Welcome back, {{ auth()->user()->username ?? 'User' }}!</span>
                 @endauth
@@ -72,14 +72,12 @@
         </main>
     </div>
 
-    {{-- Scripts JS, interact y apexcharts se mantienen como dependencias externas si no están en app.js --}}
+    {{-- Scripts JS --}}
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
     
-    {{-- 🔥 SOLO CARGAMOS EL BUNDLE PRINCIPAL DE JS 🔥 --}}
-    <script src="{{ asset('js/app.js') }}"></script>
-    {{-- @stack('scripts') ELIMINADO --}}
     
+    <script src="{{ asset('js/app.js') }}"></script>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>

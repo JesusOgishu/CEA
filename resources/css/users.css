@@ -64,7 +64,7 @@
 .user-section-card h3 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #555; /* gris en lugar de azul */
+  color: #555; 
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -193,7 +193,7 @@
   background: #b92d3a;
 }
 
-/* Scrollable secciones */
+
 .scrollable-section {
   max-height: 180px;
   overflow-y: auto;
@@ -212,7 +212,6 @@
   border-radius: 10px;
 }
 
-/* Tarjetas con headers y contenido separados */
 .user-section-card {
   background: #fff;
   border-radius: 12px;
@@ -228,7 +227,7 @@
 }
 
 .section-header h3 {
-  color: #555; /* gris en lugar de azul */
+  color: #555; 
   font-size: 1rem;
   font-weight: 600;
   display: flex;
@@ -266,15 +265,15 @@
 .user-projects-list li:last-child {
   border-bottom: none;
 }
-/* Alinear ambos contenedores principales (izquierdo y derecho) */
+
 .user-profile-main-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
-  align-items: start; /* 🔹 Esto alinea las tarjetas por la parte superior */
+  align-items: start; 
 }
 
-/* Igualar comportamiento visual de los contenedores */
+
 .user-profile-header-container,
 .user-profile-collaboration-details {
   display: flex;
@@ -283,19 +282,19 @@
   height: 100%;
 }
 
-/* Evita que los bordes del card se mezclen y da equilibrio */
+
 .user-section-card {
-  flex: 1; /* 🔹 Hace que ambos crezcan igual */
+  flex: 1; 
   display: flex;
   flex-direction: column;
 }
 
-/* La parte interna del card (header + contenido) */
+
 .user-section-card .section-content {
   flex: 1;
 }
 
-/* Responsive: una sola columna en pantallas pequeñas */
+
 @media (max-width: 768px) {
   .user-profile-main-info-grid {
     grid-template-columns: 1fr;
