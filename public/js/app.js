@@ -15729,9 +15729,6 @@ function initWorkspaceSelector() {
     } else {
       currentUrl.searchParams["delete"]('workspace');
     }
-
-    // 2. 💥 ELIMINAR EL FILTRO DE PROYECTO 💥 
-    // Esto es NECESARIO para que el controlador muestre todas las tareas del nuevo workspace
     currentUrl.searchParams["delete"]('project');
 
     // 3. Forzar la recarga de la página
@@ -15868,10 +15865,24 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 /**
  * task_filter.js
- * Maneja el selector de proyectos para recargar
- * la vista de tareas con el filtro aplicado.
+ * Maneja los selectores de Workspace y Proyecto
  */
 
+function initWorkspaceSelector() {
+  var select = document.getElementById('workspaceSelector');
+  if (!select) return;
+  select.addEventListener('change', function (e) {
+    var workspaceGid = e.target.value;
+    var currentUrl = new URL(window.location.href);
+    if (workspaceGid) {
+      currentUrl.searchParams.set('workspace', workspaceGid);
+    } else {
+      currentUrl.searchParams["delete"]('workspace');
+    }
+    currentUrl.searchParams["delete"]('project');
+    window.location.href = currentUrl.toString();
+  });
+}
 function initProjectSelector() {
   var select = document.getElementById('projectSelector');
   if (!select) return;
@@ -15886,7 +15897,10 @@ function initProjectSelector() {
     window.location.href = currentUrl.toString();
   });
 }
-document.addEventListener('DOMContentLoaded', initProjectSelector);
+document.addEventListener('DOMContentLoaded', function () {
+  initWorkspaceSelector();
+  initProjectSelector();
+});
 
 /***/ }),
 

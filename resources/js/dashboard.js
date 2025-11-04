@@ -172,9 +172,6 @@ function initWorkspaceSelector() {
     } else {
       currentUrl.searchParams.delete('workspace');
     }
-
-    // 2. 💥 ELIMINAR EL FILTRO DE PROYECTO 💥 
-    // Esto es NECESARIO para que el controlador muestre todas las tareas del nuevo workspace
     currentUrl.searchParams.delete('project'); 
 
     // 3. Forzar la recarga de la página
