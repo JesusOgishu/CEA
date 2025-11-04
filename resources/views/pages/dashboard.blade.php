@@ -79,7 +79,6 @@
                                 <small>{{ $task['project_name'] }} | <strong>Actualizado:</strong> {{ $task['updated'] }}</small>
                             </li>
                         @empty
-                            <li class="p-3 text-muted small">Arrastra tareas aquí.</li>
                         @endforelse
                     </ul>
                 </div>
@@ -91,7 +90,7 @@
 
 <script>
     window.QUADRANT_SECTION_GIDS = {!! $sectionMapJson !!};
-    console.log('🧭 QUADRANT_SECTION_GIDS cargado:', window.QUADRANT_SECTION_GIDS);
+    console.log('', window.QUADRANT_SECTION_GIDS);
 </script>
 
 @endsection

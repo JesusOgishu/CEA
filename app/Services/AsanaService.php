@@ -5,7 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth; // <-- 1. IMPORTAR AUTH
+use Illuminate\Support\Facades\Auth; 
 
 class AsanaService
 {
@@ -19,8 +19,6 @@ class AsanaService
     $token = $user->asana_access_token ?? $user->access_token ?? null;
 
     if (!$user || !$token) {
-            // Si no hay usuario o token, también redirigimos
-            // (Esto puede pasar si la sesión de Laravel expiró pero la de Asana no)
             Auth::logout();
             redirect()->route('landing')->send();
             exit;
@@ -55,22 +53,22 @@ class AsanaService
       $body = $response?->getBody()->getContents();
       Log::error('Error Asana API [' . $method . ' ' . $endpoint . ' - ' . $code . ']: ' . $body);
 
-            // --- 2. ESTA ES LA MODIFICACIÓN ---
+            
       if ($code == 401) {
-                // El token expiró o es inválido
-                Auth::logout(); // Cerramos la sesión de Laravel
                 
-                // Redirigimos al landing page.
-                // Usamos send() y exit para forzar la redirección desde el servicio.
+                Auth::logout(); 
+                
+                
+                
                 redirect()->route('landing')->send();
                 exit;
       }
-            // --- FIN DE LA MODIFICACIÓN ---
+            
 
       $decodedBody = json_decode($body, true);
       $errorMessage = $decodedBody['errors'][0]['message'] ?? 'Error en API de Asana: HTTP ' . $code;
       
-            // Si fue otro error (404, 500, etc.), sí lanzamos la excepción
+            
       throw new \Exception($errorMessage);
     } catch (\Exception $e) {
       Log::error('Error Asana API [' . $method . ' ' . $endpoint . ']: ' . $e->getMessage());
