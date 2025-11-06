@@ -28,34 +28,34 @@
         <li><a href="https://jesusogishu.github.io/cvJesusCampos/">Jesus Campos</a></li>
       </ul>
       <div class="nav__btns">
-        <button class="btn sign__in"><a style="color: white" href="{{ route('login.asana') }}">Sing in with asana</a></button>
+        <button class="btn sign__in"><a style="color: white" href="{{ route('login.asana') }}">Sign in with Asana</a></button>
       </div>
     </nav>
     <header class="header__container">
       <div class="header__image">
         <div class="header__image__card header__image__card-1">
           <span><i class="ri-key-line"></i></span>
-          Organiza
+          Organize
         </div>
         <div class="header__image__card header__image__card-2">
           <span><i class="ri-passport-line"></i></span>
-          Visualiza
+          Visualize
         </div>
         <div class="header__image__card header__image__card-3">
           <span><i class="ri-map-2-line"></i></span>
-          Prioriza
+          Prioritize
         </div>
         <div class="header__image__card header__image__card-4">
           <span><i class="ri-guide-line"></i></span>
-          Delega
+          Delegate
         </div>
         <img src="{{ asset('img/icon/CEAHOME.png') }}" alt="header" />
       </div>
       <div class="header__content">
-        <h1>CONÓCENOS!<br />EL <span>ÓRDEN</span> TE ESPERA</h1>
+        <h1>GET TO KNOW US!<br /><span>ORDER</span> AWAITS YOU</h1>
         <p>
-          Mediante el uso de la app C.E.A (cuadrante de Eisenhower con asana) organizaras tus
-          tareas de una manera mas visual y será fácil para ti realizarlas.
+          By using the C.E.A app (Eisenhower quadrant with Asana), you will organize your
+          tasks in a more visual way, and it will be easy for you to complete them.
         </p>
         <form action="/">
           <div class="input__row">
@@ -72,7 +72,7 @@
               </div>
             </div>
           </div>
-          <button type="submit">Contáctanos</button>
+          <button type="submit">Contact Us</button>
         </form>
       </div>
     </header>
@@ -83,7 +83,6 @@
         </div>
       </div>
     </footer>
-    <!-- Enlazamos el archivo JS compilado -->
     <script src="{{ asset('js/main.js') }}"></script>
   </body>
 </html>

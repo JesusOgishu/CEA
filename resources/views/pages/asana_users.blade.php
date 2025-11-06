@@ -6,12 +6,12 @@
 <div class="user-profile-container">
     <div id="user-info-card" class="user-profile-card">
         <h1 class="user-title">
-            <i data-lucide="user"></i> Perfil de Usuario Asana
+            <i data-lucide="user"></i> Asana Profile
         </h1>
 
         <div id="loading-section" class="user-loading-section">
             <div class="loading-spinner"></div>
-            <p>Cargando datos de Asana...</p>
+            <p>Loading information...</p>
         </div>
 
         <div id="user-details" class="user-details" style="display:none;">
@@ -31,10 +31,10 @@
 
                     <div class="user-about-me-section user-section-card">
                         <div class="section-header">
-                            <h3><i data-lucide="book-open"></i> Acerca de Mí</h3>
+                            <h3><i data-lucide="book-open"></i> About me</h3>
                         </div>
                         <div class="section-content">
-                            <p id="user-about-me" class="user-about-me-text">Cargando...</p>
+                            <p id="user-about-me" class="user-about-me-text">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
 
                     <div class="user-team-section user-section-card">
                         <div class="section-header">
-                            <h3><i data-lucide="users"></i> Equipos a los que pertenezco</h3>
+                            <h3><i data-lucide="users"></i> Teams</h3>
                         </div>
                         <div class="section-content scrollable-section">
                             <div id="team-list" class="user-tag-list"></div>
@@ -60,7 +60,7 @@
             </div>
             <div class="user-active-projects-section user-section-card mt-6">
                 <div class="section-header sticky-header">
-                    <h3><i data-lucide="folder-open"></i> Proyectos Activos Asignados</h3>
+                    <h3><i data-lucide="folder-open"></i> Active projects</h3>
                 </div>
                 <div class="section-content scrollable-section">
                     <ul id="active-projects-list" class="user-projects-list"></ul>
@@ -69,9 +69,9 @@
         </div>
 
         <div id="error-message" class="user-error-message" style="display:none;">
-            <p>No se pudo cargar la información del usuario.</p>
+            <p>Could not load information.</p>
             <p id="error-detail"></p>
-            <button onclick="window.location.reload()" class="user-btn-refresh">Reintentar</button>
+            <button onclick="window.location.reload()" class="user-btn-refresh">Try again.</button>
         </div>
     </div>
 </div>

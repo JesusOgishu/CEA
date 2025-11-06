@@ -24,7 +24,7 @@
         @endif
 
         <div class="project-filter filter-item">
-            <label for="projectSelector" class="font-weight-bold">Proyecto:</label>
+            <label for="projectSelector" class="font-weight-bold">Project:</label>
             <select id="projectSelector" class="form-control" style="width: 300px;">
                 @foreach ($projects as $project)
                     <option 
@@ -39,7 +39,7 @@
     </div>
 
     @if(empty($tasks))
-        <p class="text-muted text-center mt-5">No se encontraron tareas disponibles.</p>
+        <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
         <div class="prj-cards-container">
             @foreach ($tasks as $task)
@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="prj-card__projects">
-                        <strong>Proyecto:</strong>
+                        <strong>Project:</strong>
                         @if(!empty($task['projects']))
                             <ul>
                                 @foreach ($task['projects'] as $project)
