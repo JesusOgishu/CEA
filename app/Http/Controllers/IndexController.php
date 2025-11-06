@@ -15,5 +15,9 @@ class IndexController extends Controller
     public function tasks(){
         return view("pages.tasks");
     }
+
+    public function metrics(){
+        return view("pages.metrics");
+    }
 }
 

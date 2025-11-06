@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li class="sidebar-list-item">
-                    <a href="#" target="_self">
+                    <a href="{{ route('metrics.page') }}" target="_self">
                         <span class="material-icons-outlined">poll</span> Metrics
                     </a>
                 </li>

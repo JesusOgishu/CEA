@@ -26,7 +26,6 @@
         <div class="project-filter filter-item">
             <label for="projectSelector" class="font-weight-bold">Proyecto:</label>
             <select id="projectSelector" class="form-control" style="width: 300px;">
-                <option value="">— Todos —</option>
                 @foreach ($projects as $project)
                     <option 
                         value="{{ $project['gid'] }}" 

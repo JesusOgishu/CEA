@@ -15480,6 +15480,7 @@ __webpack_require__(/*! ./main */ "./resources/js/main.js");
 __webpack_require__(/*! ./dashboard */ "./resources/js/dashboard.js");
 __webpack_require__(/*! ./tasks */ "./resources/js/tasks.js");
 __webpack_require__(/*! ./users */ "./resources/js/users.js");
+__webpack_require__(/*! ./metrics */ "./resources/js/metrics.js");
 
 /***/ }),
 
@@ -15837,6 +15838,401 @@ document.addEventListener('DOMContentLoaded', function (event) {
       duration: 1000,
       interval: 500,
       delay: 2500
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/metrics.js":
+/*!*********************************!*\
+  !*** ./resources/js/metrics.js ***!
+  \*********************************/
+/***/ (() => {
+
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+/* ==========================================================================
+   Metrics Dashboard - Asana Integration (Fixed Refresh on Workspace Change)
+   With Loading State Fix
+   ========================================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+  var workspaceSelect = document.querySelector("#workspaceSelect");
+  var baseUrl = '/metrics/api';
+  var endpoints = function endpoints(workspace) {
+    return {
+      overview: "".concat(baseUrl, "/overview?workspace=").concat(workspace),
+      tasksCompleted: "".concat(baseUrl, "/tasks-completed?workspace=").concat(workspace),
+      tasksByProject: "".concat(baseUrl, "/tasks-by-project?workspace=").concat(workspace),
+      topAssignees: "".concat(baseUrl, "/top-assignees?workspace=").concat(workspace),
+      overdue: "".concat(baseUrl, "/overdue?workspace=").concat(workspace)
+    };
+  };
+  function setLoadingState(selector) {
+    var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var el = document.querySelector(selector);
+    if (!el) return;
+    if (loading) {
+      el.textContent = 'Loading...';
+      el.classList.add('loading');
+    } else {
+      el.classList.remove('loading');
+    }
+  }
+  function fetchData(_x) {
+    return _fetchData.apply(this, arguments);
+  }
+  function _fetchData() {
+    _fetchData = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(url) {
+      var response, data, _t;
+      return _regenerator().w(function (_context) {
+        while (1) switch (_context.n) {
+          case 0:
+            _context.p = 0;
+            _context.n = 1;
+            return fetch(url);
+          case 1:
+            response = _context.v;
+            if (response.ok) {
+              _context.n = 2;
+              break;
+            }
+            throw new Error("HTTP ".concat(response.status));
+          case 2:
+            _context.n = 3;
+            return response.json();
+          case 3:
+            data = _context.v;
+            return _context.a(2, (data === null || data === void 0 ? void 0 : data.data) || {});
+          case 4:
+            _context.p = 4;
+            _t = _context.v;
+            console.error("[Metrics API Error] ".concat(url, ":"), _t);
+            return _context.a(2, {});
+        }
+      }, _callee, null, [[0, 4]]);
+    }));
+    return _fetchData.apply(this, arguments);
+  }
+  function loadOverview(_x2) {
+    return _loadOverview.apply(this, arguments);
+  }
+  function _loadOverview() {
+    _loadOverview = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(ep) {
+      var _data$open_tasks, _data$completed_last_, _data$completed_last_2, _data$overdue_tasks, _data$active_projects;
+      var selectors, data;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
+          case 0:
+            selectors = ['#metric-total-tasks', '#metric-completed-tasks', '#metric-overdue-tasks', '#metric-active-projects']; // Mostrar loading pequeño
+            selectors.forEach(function (sel) {
+              return setLoadingState(sel, true);
+            });
+            _context2.n = 1;
+            return fetchData(ep.overview);
+          case 1:
+            data = _context2.v;
+            // Actualizar valores
+            document.querySelector('#metric-total-tasks').textContent = ((_data$open_tasks = data.open_tasks) !== null && _data$open_tasks !== void 0 ? _data$open_tasks : 0) + ((_data$completed_last_ = data.completed_last_days) !== null && _data$completed_last_ !== void 0 ? _data$completed_last_ : 0);
+            document.querySelector('#metric-completed-tasks').textContent = (_data$completed_last_2 = data.completed_last_days) !== null && _data$completed_last_2 !== void 0 ? _data$completed_last_2 : 0;
+            document.querySelector('#metric-overdue-tasks').textContent = (_data$overdue_tasks = data.overdue_tasks) !== null && _data$overdue_tasks !== void 0 ? _data$overdue_tasks : 0;
+            document.querySelector('#metric-active-projects').textContent = (_data$active_projects = data.active_projects) !== null && _data$active_projects !== void 0 ? _data$active_projects : 0;
+
+            // Quitar clase .loading para que el tamaño grande vuelva
+            selectors.forEach(function (sel) {
+              return setLoadingState(sel, false);
+            });
+          case 2:
+            return _context2.a(2);
+        }
+      }, _callee2);
+    }));
+    return _loadOverview.apply(this, arguments);
+  }
+  function renderTasksCompletedChart(_x3) {
+    return _renderTasksCompletedChart.apply(this, arguments);
+  }
+  function _renderTasksCompletedChart() {
+    _renderTasksCompletedChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(ep) {
+      var _data$labels, _data$series;
+      var container, data, labels, values;
+      return _regenerator().w(function (_context3) {
+        while (1) switch (_context3.n) {
+          case 0:
+            container = document.querySelector("#chart-tasks-completed");
+            setLoadingState("#chart-tasks-completed", true);
+            _context3.n = 1;
+            return fetchData(ep.tasksCompleted);
+          case 1:
+            data = _context3.v;
+            container.textContent = '';
+            labels = (_data$labels = data.labels) !== null && _data$labels !== void 0 ? _data$labels : [];
+            values = (_data$series = data.series) !== null && _data$series !== void 0 ? _data$series : [];
+            if (!(!labels.length || !values.length)) {
+              _context3.n = 2;
+              break;
+            }
+            container.textContent = 'No data available';
+            return _context3.a(2);
+          case 2:
+            new ApexCharts(container, {
+              chart: {
+                type: 'line',
+                height: 300,
+                toolbar: {
+                  show: false
+                }
+              },
+              series: [{
+                name: 'Completed Tasks',
+                data: values
+              }],
+              xaxis: {
+                categories: labels,
+                title: {
+                  text: 'Days'
+                }
+              },
+              yaxis: {
+                title: {
+                  text: 'Tasks'
+                }
+              },
+              stroke: {
+                curve: 'smooth',
+                width: 3
+              },
+              colors: ['#00b894']
+            }).render();
+            setLoadingState("#chart-tasks-completed", false);
+          case 3:
+            return _context3.a(2);
+        }
+      }, _callee3);
+    }));
+    return _renderTasksCompletedChart.apply(this, arguments);
+  }
+  function renderTasksByProjectChart(_x4) {
+    return _renderTasksByProjectChart.apply(this, arguments);
+  }
+  function _renderTasksByProjectChart() {
+    _renderTasksByProjectChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(ep) {
+      var container, data, labels, values;
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.n) {
+          case 0:
+            container = document.querySelector("#chart-tasks-by-project");
+            setLoadingState("#chart-tasks-by-project", true);
+            _context4.n = 1;
+            return fetchData(ep.tasksByProject);
+          case 1:
+            data = _context4.v;
+            container.textContent = '';
+            labels = data.map(function (d) {
+              return d.project_name;
+            });
+            values = data.map(function (d) {
+              return d.total_tasks;
+            });
+            if (!(!labels.length || !values.length)) {
+              _context4.n = 2;
+              break;
+            }
+            container.textContent = 'No data available';
+            return _context4.a(2);
+          case 2:
+            new ApexCharts(container, {
+              chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: {
+                  show: false
+                }
+              },
+              series: [{
+                name: 'Tasks',
+                data: values
+              }],
+              xaxis: {
+                categories: labels,
+                title: {
+                  text: 'Projects'
+                }
+              },
+              plotOptions: {
+                bar: {
+                  borderRadius: 4,
+                  horizontal: false
+                }
+              },
+              colors: ['#0984e3']
+            }).render();
+            setLoadingState("#chart-tasks-by-project", false);
+          case 3:
+            return _context4.a(2);
+        }
+      }, _callee4);
+    }));
+    return _renderTasksByProjectChart.apply(this, arguments);
+  }
+  function renderTopAssigneesChart(_x5) {
+    return _renderTopAssigneesChart.apply(this, arguments);
+  }
+  function _renderTopAssigneesChart() {
+    _renderTopAssigneesChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(ep) {
+      var container, data, labels, values;
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.n) {
+          case 0:
+            container = document.querySelector("#chart-top-assignees");
+            setLoadingState("#chart-top-assignees", true);
+            _context5.n = 1;
+            return fetchData(ep.topAssignees);
+          case 1:
+            data = _context5.v;
+            container.textContent = '';
+            labels = data.map(function (d) {
+              return d.name;
+            });
+            values = data.map(function (d) {
+              return d.count;
+            });
+            if (!(!labels.length || !values.length)) {
+              _context5.n = 2;
+              break;
+            }
+            container.textContent = 'No data available';
+            return _context5.a(2);
+          case 2:
+            new ApexCharts(container, {
+              chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: {
+                  show: false
+                }
+              },
+              series: [{
+                name: 'Completed Tasks',
+                data: values
+              }],
+              xaxis: {
+                categories: labels,
+                title: {
+                  text: 'Users'
+                }
+              },
+              plotOptions: {
+                bar: {
+                  horizontal: true,
+                  borderRadius: 4
+                }
+              },
+              colors: ['#6c5ce7']
+            }).render();
+            setLoadingState("#chart-top-assignees", false);
+          case 3:
+            return _context5.a(2);
+        }
+      }, _callee5);
+    }));
+    return _renderTopAssigneesChart.apply(this, arguments);
+  }
+  function renderOverdueChart(_x6) {
+    return _renderOverdueChart.apply(this, arguments);
+  }
+  function _renderOverdueChart() {
+    _renderOverdueChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(ep) {
+      var container, data, labels, values;
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.n) {
+          case 0:
+            container = document.querySelector("#chart-overdue");
+            setLoadingState("#chart-overdue", true);
+            _context6.n = 1;
+            return fetchData(ep.overdue);
+          case 1:
+            data = _context6.v;
+            container.textContent = '';
+            labels = data.map(function (d) {
+              var _d$name;
+              return (_d$name = d.name) !== null && _d$name !== void 0 ? _d$name : 'Unnamed Task';
+            });
+            values = data.map(function () {
+              return 1;
+            });
+            if (labels.length) {
+              _context6.n = 2;
+              break;
+            }
+            container.textContent = 'No data available';
+            return _context6.a(2);
+          case 2:
+            new ApexCharts(container, {
+              chart: {
+                type: 'donut',
+                height: 300
+              },
+              series: values,
+              labels: labels,
+              colors: ['#d63031', '#fdcb6e', '#e17055', '#fab1a0', '#ff7675'],
+              legend: {
+                position: 'bottom'
+              }
+            }).render();
+            setLoadingState("#chart-overdue", false);
+          case 3:
+            return _context6.a(2);
+        }
+      }, _callee6);
+    }));
+    return _renderOverdueChart.apply(this, arguments);
+  }
+  function initDashboard(_x7) {
+    return _initDashboard.apply(this, arguments);
+  }
+  function _initDashboard() {
+    _initDashboard = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(workspace) {
+      var ep;
+      return _regenerator().w(function (_context7) {
+        while (1) switch (_context7.n) {
+          case 0:
+            document.querySelectorAll(".apexcharts-canvas").forEach(function (e) {
+              return e.remove();
+            });
+            ep = endpoints(workspace);
+            _context7.n = 1;
+            return loadOverview(ep);
+          case 1:
+            _context7.n = 2;
+            return renderTasksCompletedChart(ep);
+          case 2:
+            _context7.n = 3;
+            return renderTasksByProjectChart(ep);
+          case 3:
+            _context7.n = 4;
+            return renderTopAssigneesChart(ep);
+          case 4:
+            _context7.n = 5;
+            return renderOverdueChart(ep);
+          case 5:
+            return _context7.a(2);
+        }
+      }, _callee7);
+    }));
+    return _initDashboard.apply(this, arguments);
+  }
+  var urlParams = new URLSearchParams(window.location.search);
+  var currentWorkspace = urlParams.get("workspace") || (workspaceSelect === null || workspaceSelect === void 0 ? void 0 : workspaceSelect.value) || '';
+  if (workspaceSelect) workspaceSelect.value = currentWorkspace;
+  initDashboard(currentWorkspace);
+  if (workspaceSelect) {
+    workspaceSelect.addEventListener("change", function (e) {
+      var workspace = e.target.value;
+      window.location.href = "/metrics?workspace=".concat(workspace);
     });
   }
 });

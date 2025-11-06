@@ -1,0 +1,179 @@
+/* ==========================================================================
+   Asana Metrics Dashboard Styles
+   File: public/css/metrics.css
+   Description: Scoped styles for metrics dashboard components
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
+
+/* ============================
+   Contenedor principal
+   ============================ */
+.metrics-container {
+  font-family: "Montserrat", sans-serif;
+  background-color: #f9fafb;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ============================
+   Filtro de workspace
+   ============================ */
+.workspace-filter-metrics {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #e9ecf1;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.workspace-filter-metrics label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.workspace-filter-metrics select {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.workspace-filter-metrics select:hover {
+  border-color: #999;
+}
+
+.workspace-filter-metrics select:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+/* ============================
+   Sección de métricas
+   ============================ */
+.metrics-section-title-metrics {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2d3436;
+  margin-bottom: 1rem;
+}
+
+/* ============================
+   Cards
+   ============================ */
+.metrics-cards-grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.metrics-card-metrics {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metrics-card-metrics:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.metrics-card-title-metrics {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #636e72;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metrics-card-value-metrics {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #2d3436;
+}
+
+/* ============================
+   Gráficas
+   ============================ */
+.metrics-charts-grid-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .metrics-charts-grid-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metrics-chart-card-metrics {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.metrics-chart-card-metrics h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #2d3436;
+}
+
+/* ============================
+   Loading
+   ============================ */
+.metrics-loading-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #b2bec3;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.loading-metrics {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+}
+
+.metrics-card-value-metrics.loading-metrics {
+  font-size: 0.9rem; /* solo mientras carga */
+  font-weight: 400;
+  color: #888;
+}
+
+/* ============================
+   Animación
+   ============================ */
+@keyframes metrics-fade-in-metrics {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metrics-chart-card-metrics,
+.metrics-card-metrics {
+  animation: metrics-fade-in-metrics 0.3s ease forwards;
+}

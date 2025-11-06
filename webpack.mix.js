@@ -17,5 +17,6 @@ mix.js('resources/js/app.js', 'public/js')
        'resources/css/styles.css',
        'resources/css/task.css',
        'resources/css/dashboard.css',
-       'resources/css/users.css'
+       'resources/css/users.css',
+       'resources/css/metrics.css'
    ], 'public/css/app.css'); // Bundle all CSS files into one
