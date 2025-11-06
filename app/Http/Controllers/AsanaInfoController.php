@@ -13,40 +13,45 @@ class AsanaInfoController extends Controller
     {
         $asana = new AsanaService();
 
-        $projectId = $request->query('project');
+        $projectId   = $request->query('project');
         $workspaceId = $request->query('workspace');
 
+        // 🔹 Si hay projectId pero no workspace, inferir workspace desde el proyecto
         if ($projectId && !$workspaceId) {
             try {
                 $projectResp = $asana->getProject($projectId, ['gid', 'name', 'workspace']);
                 $projectWorkspaceGid = $projectResp['data']['workspace']['gid'] ?? null;
 
                 if ($projectWorkspaceGid) {
-                    Log::info('Dashboard: inferido workspace desde project y redirigiendo', [
+                    Log::info('Dashboard: inferido workspace desde project', [
                         'project' => $projectId,
-                        'inferred_workspace' => $projectWorkspaceGid
+                        'workspace_inferido' => $projectWorkspaceGid,
                     ]);
                     return redirect($request->fullUrlWithQuery(['workspace' => $projectWorkspaceGid]));
-                } else {
-                    Log::warning('Dashboard: no se pudo inferir workspace desde project', ['project' => $projectId]);
                 }
             } catch (\Exception $e) {
-                Log::warning('Error al obtener proyecto para inferir workspace', [
+                Log::warning('Error al obtener workspace desde project', [
                     'project' => $projectId,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
 
+        // 🔹 Obtener workspaces
         $workspaces = $asana->getWorkspaces();
-
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
+        // 🔹 Proyectos del workspace
         $projects = $asana->getUserProjects($workspaceId);
 
-        $filters = ['assignee' => 'me', 'limit' => 50];
+        // 🔹 Filtros: solo tareas no completadas
+        $filters = [
+            'assignee'  => 'me',
+            'limit'     => 100,
+            'completed' => false, // ✅ Solo tareas no completadas
+        ];
 
         if ($projectId) {
             $filters['project'] = $projectId;
@@ -55,24 +60,28 @@ class AsanaInfoController extends Controller
             $filters['completed_since'] = 'now';
         }
 
-        Log::info('DEBUG FILTRO ASANA:', [
-            'URL_Workspace_ID' => $request->query('workspace'),
-            'Workspace_Usado' => $workspaceId,
-            'Project_Usado' => $projectId,
-            'Filtros_API_Tareas' => $filters,
-            'Workspaces_Detectados' => collect($workspaces)->pluck('gid', 'name')->toArray()
+        Log::info('DEBUG FILTRO ASANA', [
+            'workspace' => $workspaceId,
+            'project'   => $projectId,
+            'filtros'   => $filters,
         ]);
 
+        // 🔹 Campos a traer
         $fields = [
             'gid', 'name', 'due_on', 'completed', 'permalink_url',
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
-            'memberships.section.name', 'memberships.section.gid'
+            'memberships.section.name', 'memberships.section.gid',
         ];
 
+        // 🔹 Obtener tareas
         $resp = $asana->listTasks($filters, $fields);
-        $tasks = $resp['data'] ?? [];
+        $tasks = collect($resp['data'] ?? [])
+            ->filter(fn($t) => empty($t['completed'])) // seguridad extra
+            ->values()
+            ->toArray();
 
+        // 🔹 Secciones esperadas (abreviadas)
         $sectionMap = ['pending-tasks-list' => null];
 
         if ($projectId) {
@@ -80,10 +89,10 @@ class AsanaInfoController extends Controller
                 $sections = $asana->ensureSections($projectId);
 
                 $quadrantAliases = [
-                    'im/ur'      => 'do-list',      // Importante - Urgente
-                    'im/no ur'   => 'decide-list',  // Importante - No Urgente
-                    'no im/ur'   => 'delegate-list',// No Importante - Urgente
-                    'no im/no ur'=> 'delete-list',  // No Importante - No Urgente
+                    'im/ur'        => 'do-list',       // Importante - Urgente
+                    'im/no ur'     => 'decide-list',   // Importante - No Urgente
+                    'no im/ur'     => 'delegate-list', // No Importante - Urgente
+                    'no im/no ur'  => 'delete-list',   // No Importante - No Urgente
                 ];
 
                 foreach ($quadrantAliases as $alias => $key) {
@@ -94,22 +103,23 @@ class AsanaInfoController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                Log::warning('No se pudieron obtener secciones del proyecto', [
+                Log::warning('Error al obtener secciones del proyecto', [
                     'error' => $e->getMessage(),
-                    'project_gid' => $projectId
+                    'project_gid' => $projectId,
                 ]);
             }
         }
 
+        // 🔹 Clasificación de tareas por cuadrante
         $tasksByQuadrant = [
             'do' => [], 'decide' => [], 'delegate' => [], 'delete' => [], 'pending' => [],
         ];
 
         $quadrantMap = [
-            'im/ur'       => 'do',
-            'im/no ur'    => 'decide',
-            'no im/ur'    => 'delegate',
-            'no im/no ur' => 'delete',
+            'im/ur'        => 'do',
+            'im/no ur'     => 'decide',
+            'no im/ur'     => 'delegate',
+            'no im/no ur'  => 'delete',
         ];
 
         foreach ($tasks as $task) {
@@ -127,7 +137,13 @@ class AsanaInfoController extends Controller
 
         $sectionMapJson = json_encode($sectionMap, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        return view('pages.dashboard', compact('projects', 'tasksByQuadrant', 'sectionMapJson', 'workspaces', 'workspaceId'));
+        return view('pages.dashboard', compact(
+            'projects',
+            'tasksByQuadrant',
+            'sectionMapJson',
+            'workspaces',
+            'workspaceId'
+        ));
     }
 
     public function moveTaskToSection(Request $request, string $gid)
@@ -142,13 +158,17 @@ class AsanaInfoController extends Controller
         try {
             $asana = new AsanaService();
             $result = $asana->moveTaskToSection($gid, $projectGid, $sectionGid);
-            return response()->json(['message' => 'Tarea movida con éxito', 'data' => $result]);
+
+            return response()->json([
+                'message' => 'Tarea movida con éxito',
+                'data' => $result,
+            ]);
         } catch (\Exception $e) {
-            Log::error('Error al mover tarea:', [
+            Log::error('Error al mover tarea', [
                 'task_gid' => $gid,
                 'project_gid' => $projectGid,
                 'section_gid' => $sectionGid,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -158,17 +178,20 @@ class AsanaInfoController extends Controller
     {
         try {
             $asana = new AsanaService();
-            $projects = $asana->getUserProjects(); 
+            $projects = $asana->getUserProjects();
 
-            $data = collect($projects)->map(fn($p) => [
-                'gid' => $p['gid'] ?? null,
-                'name' => $p['name'] ?? 'Proyecto sin nombre',
-            ])->filter(fn($p) => !empty($p['gid']))->values();
+            $data = collect($projects)
+                ->map(fn($p) => [
+                    'gid' => $p['gid'] ?? null,
+                    'name' => $p['name'] ?? 'Proyecto sin nombre',
+                ])
+                ->filter(fn($p) => !empty($p['gid']))
+                ->values();
 
             return response()->json($data);
         } catch (\Exception $e) {
             Log::error('Error al obtener proyectos desde Asana', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             return response()->json(['error' => 'No se pudieron cargar los proyectos.'], 500);
         }
