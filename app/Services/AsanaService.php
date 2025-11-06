@@ -173,28 +173,32 @@ class AsanaService
 
   public function ensureSections(string $projectId): array
   {
-    $sections = $this->getSections($projectId);
-    $map = [];
+      $sections = $this->getSections($projectId);
+      $map = [];
 
-    foreach ($sections as $section) {
-      $map[strtolower($section['name'])] = $section['gid'];
-    }
-
-    $requiredSections = [
-      'hacer ahora', 'decidir', 'delegar', 'eliminar'
-    ];
-
-    foreach ($requiredSections as $sectionName) {
-      if (!isset($map[strtolower($sectionName)])) {
-        $created = $this->createSectionForProject($projectId, ucfirst($sectionName));
-        $map[strtolower($sectionName)] = $created['data']['gid'] ?? null;
+      foreach ($sections as $section) {
+          $map[strtolower($section['name'])] = $section['gid'];
       }
-    }
+      
+      $requiredSections = [
+          'IM/UR',     // Importante - Urgente
+          'IM/NO UR',  // Importante - No Urgente
+          'NO IM/UR',  // No Importante - Urgente
+          'NO IM/NO UR'// No Importante - No Urgente
+      ];
 
-    Log::info('Secciones detectadas y creadas en proyecto ' . $projectId, $map);
+      foreach ($requiredSections as $sectionName) {
+          if (!isset($map[strtolower($sectionName)])) {
+              $created = $this->createSectionForProject($projectId, $sectionName);
+              $map[strtolower($sectionName)] = $created['data']['gid'] ?? null;
+          }
+      }
 
-    return $map;
+      Log::info('Secciones detectadas y creadas en proyecto ' . $projectId, $map);
+
+      return $map;
   }
+
 
   public function moveTaskToSection(string $taskGid, string $projectGid, ?string $sectionGid)
   {

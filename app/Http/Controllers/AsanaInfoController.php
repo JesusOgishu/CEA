@@ -9,15 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class AsanaInfoController extends Controller
 {
-    /**
-     * Muestra el dashboard principal
-     */
     public function dashboard(Request $request)
     {
-        // inicializar service
         $asana = new AsanaService();
 
-        // filtros
         $projectId = $request->query('project');
         $workspaceId = $request->query('workspace');
 
@@ -43,18 +38,14 @@ class AsanaInfoController extends Controller
             }
         }
 
-        // workspaces
         $workspaces = $asana->getWorkspaces();
 
-        // workspace id
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // proyectos
         $projects = $asana->getUserProjects($workspaceId);
 
-        // filtros
         $filters = ['assignee' => 'me', 'limit' => 50];
 
         if ($projectId) {
@@ -79,11 +70,9 @@ class AsanaInfoController extends Controller
             'memberships.section.name', 'memberships.section.gid'
         ];
 
-        // listado con API
         $resp = $asana->listTasks($filters, $fields);
         $tasks = $resp['data'] ?? [];
 
-        // mapeo 
         $sectionMap = ['pending-tasks-list' => null];
 
         if ($projectId) {
@@ -91,10 +80,10 @@ class AsanaInfoController extends Controller
                 $sections = $asana->ensureSections($projectId);
 
                 $quadrantAliases = [
-                    'hacer ahora' => 'do-list',
-                    'decidir'     => 'decide-list',
-                    'delegar'     => 'delegate-list',
-                    'eliminar'    => 'delete-list',
+                    'im/ur'      => 'do-list',      // Importante - Urgente
+                    'im/no ur'   => 'decide-list',  // Importante - No Urgente
+                    'no im/ur'   => 'delegate-list',// No Importante - Urgente
+                    'no im/no ur'=> 'delete-list',  // No Importante - No Urgente
                 ];
 
                 foreach ($quadrantAliases as $alias => $key) {
@@ -112,16 +101,15 @@ class AsanaInfoController extends Controller
             }
         }
 
-        // clasificacion
         $tasksByQuadrant = [
             'do' => [], 'decide' => [], 'delegate' => [], 'delete' => [], 'pending' => [],
         ];
 
         $quadrantMap = [
-            'hacer ahora' => 'do',
-            'decidir'     => 'decide',
-            'delegar'     => 'delegate',
-            'eliminar'    => 'delete',
+            'im/ur'       => 'do',
+            'im/no ur'    => 'decide',
+            'no im/ur'    => 'delegate',
+            'no im/no ur' => 'delete',
         ];
 
         foreach ($tasks as $task) {
@@ -139,13 +127,9 @@ class AsanaInfoController extends Controller
 
         $sectionMapJson = json_encode($sectionMap, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        // return
         return view('pages.dashboard', compact('projects', 'tasksByQuadrant', 'sectionMapJson', 'workspaces', 'workspaceId'));
     }
 
-    /**
-     * Mueve una tarea a una sección específica 
-     */
     public function moveTaskToSection(Request $request, string $gid)
     {
         $projectGid = $request->input('project_gid');
@@ -170,9 +154,6 @@ class AsanaInfoController extends Controller
         }
     }
 
-    /**
-     * Obtiene todos los proyectos 
-     */
     public function getProjects()
     {
         try {
