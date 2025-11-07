@@ -6,6 +6,7 @@ use App\Services\AsanaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+
 class AsanaUsersController extends Controller
 {
     public function __construct()
@@ -16,6 +17,38 @@ class AsanaUsersController extends Controller
     public function index()
     {
         return view('pages.asana_users');
+    }
+    public function getUsersForWorkspace(Request $request, AsanaService $asana)
+    {
+        // workspace valdiator
+        $workspaceGid = $request->query('workspace_gid');
+
+        if (empty($workspaceGid)) {
+            return response()->json(['error' => 'Workspace GID is required'], 400);
+        }
+
+        try {
+            $users = $asana->getUsersByWorkspace($workspaceGid);
+
+            // filter
+            $formattedUsers = collect($users)->map(function ($user) {
+                return [
+                    'gid' => $user['gid'],
+                    'name' => $user['name'] ?? 'Unnamed User',
+                    'photo' => $user['photo']['image_32x32'] ?? null,
+                ];
+            })->sortBy('name')->values(); // order by name
+
+            // return on json
+            return response()->json($formattedUsers);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener usuarios del workspace', [
+                'workspace' => $workspaceGid,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function getUserInfo(Request $request)

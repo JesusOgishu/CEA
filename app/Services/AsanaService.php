@@ -227,8 +227,7 @@ class AsanaService
      */
     public function createTask(array $data)
     {
-        // Tu helper 'request' ya está configurado para enviar 'json'
-        // La API de Asana espera que todos los datos estén dentro de una clave "data"
+        
         return $this->request('POST', 'tasks', ['data' => $data]);
     }
 }

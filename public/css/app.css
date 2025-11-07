@@ -529,7 +529,7 @@ footer {
   flex-grow: 1; 
   overflow-y: auto; 
   min-height: 300px; 
-  align-content: start; /* <-- ESTA ES LA LÍNEA MÁGICA */
+  align-content: start; 
 }
 
 .prj-card {
@@ -541,7 +541,7 @@ footer {
   flex-direction: column;
   padding: 1.25rem;
   transition: transform 0.3s, box-shadow 0.3s;
-  min-height: 260px; /* Mantenemos la altura mínima que pusimos */
+  min-height: 260px;
 }
 
 .prj-card::before {
@@ -655,7 +655,7 @@ footer {
     flex-grow: 1; 
     overflow-y: auto; 
     min-height: 300px; 
-    align-content: start; /* <-- Y la añadimos aquí también */
+    align-content: start; 
   }
 
   .task-page-wrapper {
@@ -682,16 +682,12 @@ footer {
     padding-top: 0.5rem;
   }
 }
-/* ================================================= */
-/* ESTILOS DEL BOTÓN Y MODAL DE TAREAS          */
-/* ================================================= */
 
-/* 1. Contenedor del botón de creación */
 .tk-create-container {
-  margin-left: auto; /* Lo empuja a la derecha */
+  margin-left: auto; /
 }
 
-/* 2. Estilo del botón (reutiliza tk-btn-primary) */
+
 .tk-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -699,7 +695,7 @@ footer {
   padding: 10px 20px;
   font-weight: 600;
   color: #ffffff;
-  background-color: #4f35a1; /* Tu color principal */
+  background-color: #4f35a1; 
   border: none;
   border-radius: 8px;
   text-decoration: none;
@@ -709,7 +705,7 @@ footer {
 }
 
 .tk-btn-primary:hover {
-  background-color: #3a277a; /* Tono más oscuro */
+  background-color: #3a277a; 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transform: translateY(-2px);
 }
@@ -718,8 +714,6 @@ footer {
     cursor: not-allowed;
 }
 
-
-/* 3. Fondo oscuro del modal */
 .tk-modal-overlay {
   position: fixed;
   top: 0;
@@ -736,7 +730,6 @@ footer {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* 4. Contenedor principal del modal */
 .tk-modal-content {
   background: #ffffff;
   padding: 25px;
@@ -749,7 +742,7 @@ footer {
   z-index: 1001;
 }
 
-/* 5. Estado "abierto" para el modal */
+
 .tk-modal-overlay.open {
   opacity: 1;
   visibility: visible;
@@ -758,7 +751,6 @@ footer {
   transform: scale(1);
 }
 
-/* 6. Cabecera del modal */
 .tk-modal-header {
   display: flex;
   justify-content: space-between;
@@ -772,7 +764,7 @@ footer {
   color: #333;
 }
 
-/* 7. Botón de cerrar (X) */
+
 .tk-modal-close {
   font-size: 2rem;
   font-weight: 300;
@@ -787,7 +779,6 @@ footer {
   color: #000;
 }
 
-/* 8. Grupos del formulario (label + input) */
 .tk-modal-content .tk-form-group {
   margin-bottom: 15px;
 }
@@ -798,21 +789,20 @@ footer {
   color: #555;
 }
 
-/* 9. Estilos para tus inputs (asumiendo que .form-control es tu clase) */
-/* Lo hacemos específico para que no afecte a otros .form-control */
+
 .tk-modal-content .form-control {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  box-sizing: border-box; /* Importante */
+  box-sizing: border-box; 
 }
 .tk-modal-content textarea.form-control {
   resize: vertical;
   min-height: 80px;
 }
 
-/* 10. Pie del modal */
+
 .tk-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -823,11 +813,42 @@ footer {
   border-top: 1px solid #e0e0e0;
 }
 
-/* 11. Mensaje de error */
+
 .tk-modal-error {
-  color: #dc3545; /* Rojo de error */
+  color: #dc3545; 
   font-size: 0.9rem;
   margin-right: auto;
+}
+
+
+.tk-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.tk-modal-wheeler {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #9799ab;
+  border-top-color: #4f35a1;
+  border-radius: 50%;
+  animation: tk-spinner-spin 1s linear infinite;
+  z-index: 5;
+}
+
+.tk-select-wrapper select:disabled {
+  background-color: #f8f8f8;
+  cursor: not-allowed;
+}
+
+@keyframes tk-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
 

@@ -31,6 +31,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/load-project/{projectId}', [AsanaInfoController::class, 'loadProject'])->name('asana.load.project');
     });
 
+    Route::get('/api/asana/workspace-users', [AsanaUsersController::class, 'getUsersForWorkspace'])
+            ->name('api.asana.users.workspace');
+
     Route::get('/tasks', [TasksPageController::class, 'index'])->name('tasks.page');
     Route::post('/tasks/store', [TasksPageController::class, 'store'])->name('tasks.store');
 

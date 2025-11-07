@@ -5,9 +5,9 @@
 @section('content')
 <div class="task-page-wrapper">
 
+    {{-- 1. CONTENEDOR DE FILTROS Y BOTÓN (Sin cambios) --}}
     <div class="filters-container mb-4" style="margin-bottom: 2rem;">
 
-        {{-- ... tus filtros (sin cambios) ... --}}
         @if(isset($workspaces) && count($workspaces) > 1)
         <div class="workspace-filter filter-item">
             <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
@@ -40,21 +40,20 @@
             </select>
         </div>
         
-        <div class="tk-create-container"> {{-- CLASE ACTUALIZADA --}}
-            <button id="createTaskBtn" class="tk-btn-primary"> {{-- CLASE ACTUALIZADA --}}
+        <div class="tk-create-container"> 
+            <button id="createTaskBtn" class="tk-btn-primary"> 
                 Create Task
             </button>
         </div>
 
     </div>
 
-    {{-- ... tu contenedor de tareas (sin cambios) ... --}}
+    {{-- 2. CONTENEDOR DE TAREFAS (Sin cambios) --}}
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
         <div class="prj-cards-container">
             @foreach ($tasks as $task)
-                {{-- (Todo tu HTML de prj-card va aquí) --}}
                 <div class="prj-card">
                     <div class="prj-card__header">
                         <p class="prj-card__title">{{ $task['name'] ?? 'Untitled Task' }}</p>
@@ -108,34 +107,46 @@
 </div> 
 
 
-<div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> {{-- CLASE ACTUALIZADA --}}
-    <div class="tk-modal-content"> {{-- CLASE ACTUALIZADA --}}
+<div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> 
+    <div class="tk-modal-content"> 
         
-        <div class="tk-modal-header"> {{-- CLASE ACTUALIZADA --}}
+        <div class="tk-modal-header"> 
             <h3>Create New Task</h3>
-            <button id="closeModalBtn" class="tk-modal-close">&times;</button> {{-- CLASE ACTUALIZADA --}}
+            <button id="closeModalBtn" class="tk-modal-close">&times;</button> 
         </div>
 
         <form id="createTaskForm">
             @csrf 
             
-            <div class="tk-form-group"> {{-- CLASE ACTUALIZADA --}}
+            <div class="tk-form-group"> 
                 <label for="task_name">Task Name (required)</label>
-                <input type="text" id="task_name" name="name" class="form-control" required> {{-- (Clase 'form-control' sin prefijo) --}}
+                <input type="text" id="task_name" name="name" class="form-control" required>
             </div>
             
-            <div class="tk-form-group"> {{-- CLASE ACTUALIZADA --}}
+            <div class="tk-form-group">
+                <label for="task_assignee">Assignee</label>
+                {{-- Este wrapper es para posicionar el spinner --}}
+                <div class="tk-select-wrapper">
+                    <select id="task_assignee" name="assignee_gid" class="form-control" disabled>
+                        {{-- El JS llenará esto --}}
+                        <option value="">Loading users...</option>
+                    </select>
+                    {{-- Este es el spinner (wheeler) --}}
+                    <div id="assigneeWheeler" class="tk-modal-wheeler" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="tk-form-group"> 
                 <label for="task_description">Description</label>
-                <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea> {{-- (Clase 'form-control' sin prefijo) --}}
+                <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea>
             </div>
 
             <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
             <input type="hidden" id="modal_project_gid" name="project_gid">
 
-            <div class="tk-modal-footer"> {{-- CLASE ACTUALIZADA --}}
-                <div id="modalError" class="tk-modal-error" style="display: none;"></div> {{-- CLASE ACTUALIZADA --}}
+            <div class="tk-modal-footer"> 
+                <div id="modalError" class="tk-modal-error" style="display: none;"></div> 
                 
-                <button type="submit" id="submitTaskBtn" class="tk-btn-primary"> {{-- CLASE ACTUALIZADA --}}
+                <button type="submit" id="submitTaskBtn" class="tk-btn-primary"> 
                     Submit Task
                 </button>
             </div>
