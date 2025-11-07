@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use App\Services\AsanaService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator; // 👈 1. IMPORTANTE: AÑADE ESTE IMPORT
 
 class TasksPageController extends Controller
 {
+    /**
+     * Muestra la lista de tareas.
+     */
     public function index(Request $request)
     {
         $asana = new AsanaService();
@@ -78,11 +82,73 @@ class TasksPageController extends Controller
             
             // asignee
             $raw_name = $task['assignee']['name'] ?? null;
+            // CORREGÍ ESTO: DEBE SER 'assignee_name'
             $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
         }
 
         Log::info('TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);
 
         return view('pages.tasks', compact('tasks', 'projects', 'workspaces', 'workspaceId'));
+    }
+
+    // ==========================================================
+    // 👇 2. AQUÍ ESTÁ EL MÉTODO 'store' QUE FALTABA 👇
+    // ==========================================================
+    
+    /**
+     * Almacena una nueva tarea en Asana.
+     */
+    public function store(Request $request)
+    {
+        // 1. Validar los datos que llegan del formulario
+        $validator = Validator::make($request->all(), [
+            'name'          => 'required|string|max:255',
+            'notes'         => 'nullable|string',
+            'workspace_gid' => 'required|string', // El workspace es obligatorio
+            'project_gid'   => 'nullable|string', // El proyecto puede ser opcional
+        ]);
+
+        // Si la validación falla, regresa un error JSON
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        try {
+            $asana = new AsanaService();
+            $data = $validator->validated();
+
+            // 2. Preparamos los datos para la API de Asana
+            $taskData = [
+                'name'      => $data['name'],
+                'notes'     => $data['notes'] ?? '',
+                'workspace' => $data['workspace_gid'],
+                'assignee'  => 'me' // Asignármela a mí por defecto
+            ];
+
+            // 3. Si se especificó un proyecto, lo añadimos
+            if (!empty($data['project_gid'])) {
+                $taskData['projects'] = [$data['project_gid']];
+            }
+            
+            Log::info('Creando nueva tarea en Asana', $taskData);
+
+            // 4. Llamamos al servicio de Asana
+            $result = $asana->createTask($taskData);
+
+            // 5. Devolvemos una respuesta JSON de éxito
+            return response()->json([
+                'message' => 'Task created successfully!',
+                'task'    => $result['data'] ?? null
+            ]);
+
+        } catch (\Exception $e) {
+            // 6. Si algo falla, capturamos el error
+            Log::error('Error al crear tarea en Asana', [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+            
+            return response()->json(['error' => 'Could not create task in Asana: ' . $e->getMessage()], 500);
+        }
     }
 }

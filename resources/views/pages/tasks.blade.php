@@ -7,6 +7,7 @@
 
     <div class="filters-container mb-4" style="margin-bottom: 2rem;">
 
+        {{-- ... tus filtros (sin cambios) ... --}}
         @if(isset($workspaces) && count($workspaces) > 1)
         <div class="workspace-filter filter-item">
             <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
@@ -22,10 +23,12 @@
             </select>
         </div>
         @endif
-
         <div class="project-filter filter-item">
             <label for="projectSelector" class="font-weight-bold">Project:</label>
             <select id="projectSelector" class="form-control" style="width: 300px;">
+                <option value="" {{ !request('project') ? 'selected' : '' }}>
+                    All my tasks in Workspace
+                </option>
                 @foreach ($projects as $project)
                     <option 
                         value="{{ $project['gid'] }}" 
@@ -36,19 +39,27 @@
                 @endforeach
             </select>
         </div>
+        
+        <div class="tk-create-container"> {{-- CLASE ACTUALIZADA --}}
+            <button id="createTaskBtn" class="tk-btn-primary"> {{-- CLASE ACTUALIZADA --}}
+                Create Task
+            </button>
+        </div>
+
     </div>
 
+    {{-- ... tu contenedor de tareas (sin cambios) ... --}}
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
         <div class="prj-cards-container">
             @foreach ($tasks as $task)
+                {{-- (Todo tu HTML de prj-card va aquí) --}}
                 <div class="prj-card">
                     <div class="prj-card__header">
                         <p class="prj-card__title">{{ $task['name'] ?? 'Untitled Task' }}</p>
                         <span class="prj-card__section">{{ $task['section_name'] }}</span>
                     </div>
-
                     <div class="prj-card__projects">
                         <strong>Project:</strong>
                         @if(!empty($task['projects']))
@@ -69,18 +80,15 @@
                             <p>—</p>
                         @endif
                     </div>
-
                     <div class="prj-card__description">
                         <strong>Description:</strong>
                         <p>{{ $task['notes'] ?? 'No description' }}</p>
                     </div>
-
                     <div class="prj-card__footer">
                         <div>
                             <small>Due:</small>
                             <strong>{{ $task['due_on'] ?? '—' }}</strong>
                         </div>
-                        
                         @if(!empty($task['assignee_name']))
                             <div>
                                 <small>Assignee:</small>
@@ -97,6 +105,42 @@
             @endforeach
         </div>
     @endif
+</div> 
+
+
+<div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> {{-- CLASE ACTUALIZADA --}}
+    <div class="tk-modal-content"> {{-- CLASE ACTUALIZADA --}}
+        
+        <div class="tk-modal-header"> {{-- CLASE ACTUALIZADA --}}
+            <h3>Create New Task</h3>
+            <button id="closeModalBtn" class="tk-modal-close">&times;</button> {{-- CLASE ACTUALIZADA --}}
+        </div>
+
+        <form id="createTaskForm">
+            @csrf 
+            
+            <div class="tk-form-group"> {{-- CLASE ACTUALIZADA --}}
+                <label for="task_name">Task Name (required)</label>
+                <input type="text" id="task_name" name="name" class="form-control" required> {{-- (Clase 'form-control' sin prefijo) --}}
+            </div>
+            
+            <div class="tk-form-group"> {{-- CLASE ACTUALIZADA --}}
+                <label for="task_description">Description</label>
+                <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea> {{-- (Clase 'form-control' sin prefijo) --}}
+            </div>
+
+            <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
+            <input type="hidden" id="modal_project_gid" name="project_gid">
+
+            <div class="tk-modal-footer"> {{-- CLASE ACTUALIZADA --}}
+                <div id="modalError" class="tk-modal-error" style="display: none;"></div> {{-- CLASE ACTUALIZADA --}}
+                
+                <button type="submit" id="submitTaskBtn" class="tk-btn-primary"> {{-- CLASE ACTUALIZADA --}}
+                    Submit Task
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection

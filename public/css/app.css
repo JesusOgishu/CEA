@@ -682,6 +682,153 @@ footer {
     padding-top: 0.5rem;
   }
 }
+/* ================================================= */
+/* ESTILOS DEL BOTÓN Y MODAL DE TAREAS          */
+/* ================================================= */
+
+/* 1. Contenedor del botón de creación */
+.tk-create-container {
+  margin-left: auto; /* Lo empuja a la derecha */
+}
+
+/* 2. Estilo del botón (reutiliza tk-btn-primary) */
+.tk-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #4f35a1; /* Tu color principal */
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.tk-btn-primary:hover {
+  background-color: #3a277a; /* Tono más oscuro */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+.tk-btn-primary:disabled {
+    background-color: #9799ab;
+    cursor: not-allowed;
+}
+
+
+/* 3. Fondo oscuro del modal */
+.tk-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* 4. Contenedor principal del modal */
+.tk-modal-content {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 500px;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+/* 5. Estado "abierto" para el modal */
+.tk-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.tk-modal-overlay.open .tk-modal-content {
+  transform: scale(1);
+}
+
+/* 6. Cabecera del modal */
+.tk-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+.tk-modal-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+/* 7. Botón de cerrar (X) */
+.tk-modal-close {
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.tk-modal-close:hover {
+  color: #000;
+}
+
+/* 8. Grupos del formulario (label + input) */
+.tk-modal-content .tk-form-group {
+  margin-bottom: 15px;
+}
+.tk-modal-content .tk-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* 9. Estilos para tus inputs (asumiendo que .form-control es tu clase) */
+/* Lo hacemos específico para que no afecte a otros .form-control */
+.tk-modal-content .form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box; /* Importante */
+}
+.tk-modal-content textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* 10. Pie del modal */
+.tk-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* 11. Mensaje de error */
+.tk-modal-error {
+  color: #dc3545; /* Rojo de error */
+  font-size: 0.9rem;
+  margin-right: auto;
+}
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 :root {

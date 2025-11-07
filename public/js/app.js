@@ -16247,8 +16247,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /**
  * task_filter.js
- * Maneja los selectores de Workspace y Proyecto
+ * Maneja filtros y modal de creación de tareas.
  */
+
+// --- 1. LÓGICA DE FILTROS ---
 
 function initWorkspaceSelector() {
   var select = document.getElementById('workspaceSelector');
@@ -16279,9 +16281,100 @@ function initProjectSelector() {
     window.location.href = currentUrl.toString();
   });
 }
+
+// --- 2. LÓGICA DEL MODAL ---
+
+function initCreateTaskModal() {
+  var modal = document.getElementById('createTaskModal');
+  var openBtn = document.getElementById('createTaskBtn');
+  var closeBtn = document.getElementById('closeModalBtn');
+  var form = document.getElementById('createTaskForm');
+  var submitBtn = document.getElementById('submitTaskBtn');
+  var errorMsgDiv = document.getElementById('modalError');
+  var workspaceSelector = document.getElementById('workspaceSelector');
+  var projectSelector = document.getElementById('projectSelector');
+  var modalWorkspaceGid = document.getElementById('modal_workspace_gid');
+  var modalProjectGid = document.getElementById('modal_project_gid');
+  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector) {
+    console.warn('Faltan elementos del modal para inicializar.');
+    return;
+  }
+  function openModal() {
+    var workspaceGid = workspaceSelector.value;
+    var projectGid = projectSelector.value;
+    if (modalWorkspaceGid) modalWorkspaceGid.value = workspaceGid;
+    if (modalProjectGid) modalProjectGid.value = projectGid;
+    form.reset();
+    if (errorMsgDiv) {
+      errorMsgDiv.style.display = 'none';
+      errorMsgDiv.textContent = '';
+    }
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Task';
+    modal.style.display = 'flex';
+    setTimeout(function () {
+      return modal.classList.add('open');
+    }, 10);
+  }
+  function closeModal() {
+    modal.classList.remove('open');
+    setTimeout(function () {
+      return modal.style.display = 'none';
+    }, 300);
+  }
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating...';
+    if (errorMsgDiv) errorMsgDiv.style.display = 'none';
+    var formData = new FormData(form);
+    var csrfToken = document.querySelector('input[name="_token"]').value;
+    fetch('/tasks/store', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken,
+        'Accept': 'application/json'
+      },
+      body: formData
+    }).then(function (response) {
+      if (!response.ok) {
+        return response.json().then(function (err) {
+          return Promise.reject(err);
+        });
+      }
+      return response.json();
+    }).then(function (data) {
+      console.log('Tarea creada:', data);
+      closeModal();
+      window.location.reload();
+    })["catch"](function (error) {
+      console.error('Error al crear tarea:', error);
+      var msg = error.error || error.message || 'An unknown error occurred.';
+      if (errorMsgDiv) {
+        errorMsgDiv.textContent = msg;
+        errorMsgDiv.style.display = 'block';
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Task';
+    });
+  }
+
+  // --- Asignar eventos ---
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  form.addEventListener('submit', handleFormSubmit);
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+}
+
+// --- 3. INICIALIZADOR GENERAL ---
 document.addEventListener('DOMContentLoaded', function () {
   initWorkspaceSelector();
   initProjectSelector();
+  initCreateTaskModal();
 });
 
 /***/ }),
