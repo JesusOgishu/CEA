@@ -54,7 +54,13 @@
                     <a href="{{ $task['permalink_url'] }}" target="_blank">
                         <p>{{ $task['name'] }}</p>
                     </a>
-                    <small>{{ $task['project_name'] }} | <strong>Updated:</strong> {{ $task['updated'] }}</small>
+                    <small>
+                        {{ $task['project_name'] }} | 
+                        @if (!empty($task['assignee_name']))
+                            <strong>Assignee:</strong> {{ $task['assignee_name'] }} |
+                        @endif
+                        <strong>Updated:</strong> {{ $task['updated'] }}
+                    </small>
                 </li>
             @empty
                 <li class="p-3 text-muted">No unclassified pending tasks.</li>
@@ -76,7 +82,13 @@
                                 <a href="{{ $task['permalink_url'] }}" target="_blank">
                                     <p>{{ $task['name'] }}</p>
                                 </a>
-                                <small>{{ $task['project_name'] }} | <strong>Updated:</strong> {{ $task['updated'] }}</small>
+                                <small>
+                                    {{ $task['project_name'] }} | 
+                                    @if (!empty($task['assignee_name']))
+                                        <strong>Assignee:</strong> {{ $task['assignee_name'] }} |
+                                    @endif
+                                    <strong>Updated:</strong> {{ $task['updated'] }}
+                                </small>
                             </li>
                         @empty
                         @endforelse
@@ -90,7 +102,7 @@
 
 <script>
     window.QUADRANT_SECTION_GIDS = {!! $sectionMapJson !!};
-    console.log('', window.QUADRANT_SECTION_GIDS);
+    console.log('Quadrant GIDs:', window.QUADRANT_SECTION_GIDS);
 </script>
 
 @endsection

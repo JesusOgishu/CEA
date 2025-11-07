@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\AsanaService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str; 
 
 class TasksPageController extends Controller
 {
@@ -58,6 +59,7 @@ class TasksPageController extends Controller
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name',
+            'assignee.name' 
         ];
 
         $resp = $asana->listTasks($filters, $fields);
@@ -73,6 +75,10 @@ class TasksPageController extends Controller
                 : (!empty($task['created_at'])
                     ? Carbon::parse($task['created_at'])->diffForHumans()
                     : '—');
+            
+            // asignee
+            $raw_name = $task['assignee']['name'] ?? null;
+            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
         }
 
         Log::info('TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);

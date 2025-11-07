@@ -6,6 +6,7 @@ use App\Services\AsanaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AsanaInfoController extends Controller
 {
@@ -16,7 +17,7 @@ class AsanaInfoController extends Controller
         $projectId   = $request->query('project');
         $workspaceId = $request->query('workspace');
 
-        // 🔹 Si hay projectId pero no workspace, inferir workspace desde el proyecto
+       
         if ($projectId && !$workspaceId) {
             try {
                 $projectResp = $asana->getProject($projectId, ['gid', 'name', 'workspace']);
@@ -37,20 +38,20 @@ class AsanaInfoController extends Controller
             }
         }
 
-        // 🔹 Obtener workspaces
+        //Obtener workspaces
         $workspaces = $asana->getWorkspaces();
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // 🔹 Proyectos del workspace
+        //Proyectos del workspace
         $projects = $asana->getUserProjects($workspaceId);
 
-        // 🔹 Filtros: solo tareas no completadas
+        // solo tareas no completadas
         $filters = [
             'assignee'  => 'me',
             'limit'     => 100,
-            'completed' => false, // ✅ Solo tareas no completadas
+            'completed' => false, 
         ];
 
         if ($projectId) {
@@ -66,22 +67,23 @@ class AsanaInfoController extends Controller
             'filtros'   => $filters,
         ]);
 
-        // 🔹 Campos a traer
+        // campos
         $fields = [
             'gid', 'name', 'due_on', 'completed', 'permalink_url',
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name', 'memberships.section.gid',
+            'assignee.name'
         ];
 
         // 🔹 Obtener tareas
         $resp = $asana->listTasks($filters, $fields);
         $tasks = collect($resp['data'] ?? [])
-            ->filter(fn($t) => empty($t['completed'])) // seguridad extra
+            ->filter(fn($t) => empty($t['completed']))
             ->values()
             ->toArray();
 
-        // 🔹 Secciones esperadas (abreviadas)
+        // secciones
         $sectionMap = ['pending-tasks-list' => null];
 
         if ($projectId) {
@@ -110,7 +112,7 @@ class AsanaInfoController extends Controller
             }
         }
 
-        // 🔹 Clasificación de tareas por cuadrante
+        // cuadrantes
         $tasksByQuadrant = [
             'do' => [], 'decide' => [], 'delegate' => [], 'delete' => [], 'pending' => [],
         ];
@@ -132,6 +134,8 @@ class AsanaInfoController extends Controller
             $task['project_gid']  = $task['projects'][0]['gid'] ?? null;
 
             $quadrantKey = $quadrantMap[$sectionName] ?? 'pending';
+            $raw_name = $task['assignee']['name'] ?? null;
+            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
             $tasksByQuadrant[$quadrantKey][] = $task;
         }
 

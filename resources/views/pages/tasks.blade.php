@@ -80,6 +80,13 @@
                             <small>Due:</small>
                             <strong>{{ $task['due_on'] ?? '—' }}</strong>
                         </div>
+                        
+                        @if(!empty($task['assignee_name']))
+                            <div>
+                                <small>Assignee:</small>
+                                <strong>{{ $task['assignee_name'] }}</strong>
+                            </div>
+                        @endif
                         <div class="prj-card__link">
                             @if(!empty($task['permalink_url']))
                                 <a href="{{ $task['permalink_url'] }}" target="_blank" rel="noopener">Open Task</a>
