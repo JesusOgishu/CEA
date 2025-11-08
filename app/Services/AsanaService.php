@@ -38,7 +38,7 @@ class AsanaService
         try {
             $response = match ($method) {
                 'GET' => $this->client->get($endpoint, ['query' => $options]),
-                'POST' => $this->client->post($endpoint, ['json' => $options]), // <-- Tu 'request' ya maneja 'json'
+                'POST' => $this->client->post($endpoint, ['json' => $options]), 
                 'PUT' => $this->client->put($endpoint, ['json' => $options]),
                 'DELETE' => $this->client->delete($endpoint),
                 default => throw new \Exception("Método HTTP no soportado: {$method}")
@@ -221,9 +221,9 @@ class AsanaService
     }
 
     /**
-     * Crea una nueva tarea en Asana.
-     * @param array $data Los datos de la tarea (name, notes, workspace, projects, etc.)
-     * @return array La respuesta de la API
+     * 
+     * @param array 
+     * @return array 
      */
     public function createTask(array $data)
     {

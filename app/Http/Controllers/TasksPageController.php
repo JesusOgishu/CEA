@@ -92,22 +92,19 @@ class TasksPageController extends Controller
 
 
     
-    /**
-     * Almacena una nueva tarea en Asana.
-     * (ACTUALIZADO para 'assignee_gid')
-     */
+  
     public function store(Request $request)
     {
-        // 1. Validar los datos (con el nuevo campo 'assignee_gid')
+        // validation
         $validator = Validator::make($request->all(), [
             'name'          => 'required|string|max:255',
             'notes'         => 'nullable|string',
             'workspace_gid' => 'required|string', 
             'project_gid'   => 'nullable|string', 
-            'assignee_gid'  => 'nullable|string', // <-- CAMPO NUEVO
+            'assignee_gid'  => 'nullable|string',
         ]);
 
-        // validacion
+        // validation
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
@@ -116,37 +113,36 @@ class TasksPageController extends Controller
             $asana = new AsanaService();
             $data = $validator->validated();
 
-            // 2. datos para la api
+            // api data
             $taskData = [
                 'name'      => $data['name'],
                 'notes'     => $data['notes'] ?? '',
                 'workspace' => $data['workspace_gid'],
             ];
 
-            // 3. Añadir asignado
-            // Si el valor es 'me', lo pasamos. Si está vacío (Unassigned), no lo enviamos.
+            //asignee
             if (!empty($data['assignee_gid'])) {
-                $taskData['assignee'] = $data['assignee_gid']; // Asana entiende "me"
+                $taskData['assignee'] = $data['assignee_gid']; 
             }
 
-            // 4. project
+            //project
             if (!empty($data['project_gid'])) {
                 $taskData['projects'] = [$data['project_gid']];
             }
             
             Log::info('Creando nueva tarea en Asana', $taskData);
 
-            // 5. service
+            //service
             $result = $asana->createTask($taskData);
 
-            // 6. json return
+            //json return
             return response()->json([
                 'message' => 'Task created successfully!',
                 'task'    => $result['data'] ?? null
             ]);
 
         } catch (\Exception $e) {
-            // 7. error
+            //error
             Log::error('Error al crear tarea en Asana', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()

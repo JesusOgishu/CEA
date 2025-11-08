@@ -1,9 +1,4 @@
-/**
- * task_filter.js
- * Maneja filtros y modal de creación de tareas (con carga de usuarios).
- */
 
-// --- 1. LÓGICA DE FILTROS ---
 
 function initWorkspaceSelector() {
     const select = document.getElementById('workspaceSelector');
@@ -39,10 +34,8 @@ function initProjectSelector() {
     });
 }
 
-// --- 2. LÓGICA DEL MODAL ---
 
 function initCreateTaskModal() {
-    // Elementos del Modal
     const modal = document.getElementById('createTaskModal');
     const openBtn = document.getElementById('createTaskBtn');
     const closeBtn = document.getElementById('closeModalBtn');
@@ -50,31 +43,27 @@ function initCreateTaskModal() {
     const submitBtn = document.getElementById('submitTaskBtn');
     const errorMsgDiv = document.getElementById('modalError');
 
-    // Elementos de Filtros (para leer)
+
     const workspaceSelector = document.getElementById('workspaceSelector');
     const projectSelector = document.getElementById('projectSelector');
     
-    // Campos del Formulario (Inputs)
+    
     const modalWorkspaceGid = document.getElementById('modal_workspace_gid');
     const modalProjectGid = document.getElementById('modal_project_gid');
     
-    // Elementos del Asignado
+ 
     const assigneeSelect = document.getElementById('task_assignee');
     const assigneeWheeler = document.getElementById('assigneeWheeler');
 
-    // Chequeo de elementos
+
     if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect) {
         console.warn('Faltan elementos del modal para inicializar.');
         return;
     }
 
-    /**
-     * Carga la lista de usuarios desde nuestra API
-     */
+    
     async function loadAssignees(workspaceGid) {
         if (!workspaceGid) return;
-
-        // 1. Mostrar spinner y deshabilitar select
         assigneeWheeler.style.display = 'block';
         assigneeSelect.disabled = true;
         assigneeSelect.innerHTML = '<option value="">Loading users...</option>';
@@ -89,19 +78,11 @@ function initCreateTaskModal() {
             }
 
             const users = await response.json();
-
-            // 2. Rellenar el select
-            assigneeSelect.innerHTML = ''; // Limpiar "Loading..."
-
-            // Añadir opción "Asignar a mí" (usa "me" como GID especial)
+            assigneeSelect.innerHTML = ''; 
             const meOption = new Option('Assign to Me (Default)', 'me');
-            meOption.selected = true; // Seleccionada por defecto
+            meOption.selected = true; 
             assigneeSelect.add(meOption);
-
-            // Añadir opción "Sin asignar"
             assigneeSelect.add(new Option('Unassigned', ''));
-
-            // Añadir el resto de usuarios
             users.forEach(user => {
                 assigneeSelect.add(new Option(user.name, user.gid));
             });
@@ -110,24 +91,20 @@ function initCreateTaskModal() {
             console.error('Error loading assignees:', error);
             assigneeSelect.innerHTML = '<option value="">Error loading users</option>';
         } finally {
-            // 3. Ocultar spinner y habilitar select
             assigneeWheeler.style.display = 'none';
             assigneeSelect.disabled = false;
         }
     }
 
-    /**
-     * Abre el modal
-     */
+    //modal
     function openModal() {
         const workspaceGid = workspaceSelector.value;
         const projectGid = projectSelector.value;
 
-        // Rellenar campos ocultos
         if (modalWorkspaceGid) modalWorkspaceGid.value = workspaceGid;
         if (modalProjectGid) modalProjectGid.value = projectGid;
 
-        // Limpiar formulario
+        // form clear
         form.reset(); 
         if (errorMsgDiv) {
             errorMsgDiv.style.display = 'none';
@@ -139,22 +116,18 @@ function initCreateTaskModal() {
         // Cargar usuarios
         loadAssignees(workspaceGid);
 
-        // Mostrar modal
+        // show modal
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('open'), 10);
     }
 
-    /**
-     * Cierra el modal
-     */
+   //closse modal
     function closeModal() {
         modal.classList.remove('open');
         setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    /**
-     * Maneja el envío del formulario
-     */
+  
     function handleFormSubmit(e) {
         e.preventDefault(); 
         submitBtn.disabled = true;
@@ -197,7 +170,7 @@ function initCreateTaskModal() {
         });
     }
 
-    // --- Asignar eventos ---
+    // events
     openBtn.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
     form.addEventListener('submit', handleFormSubmit);
@@ -209,7 +182,6 @@ function initCreateTaskModal() {
     });
 }
 
-// --- 3. INICIALIZADOR GENERAL ---
 document.addEventListener('DOMContentLoaded', () => {
     initWorkspaceSelector();
     initProjectSelector();

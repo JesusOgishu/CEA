@@ -16249,13 +16249,6 @@ function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present,
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-/**
- * task_filter.js
- * Maneja filtros y modal de creación de tareas (con carga de usuarios).
- */
-
-// --- 1. LÓGICA DE FILTROS ---
-
 function initWorkspaceSelector() {
   var select = document.getElementById('workspaceSelector');
   if (!select) return;
@@ -16285,45 +16278,26 @@ function initProjectSelector() {
     window.location.href = currentUrl.toString();
   });
 }
-
-// --- 2. LÓGICA DEL MODAL ---
-
 function initCreateTaskModal() {
-  // Elementos del Modal
   var modal = document.getElementById('createTaskModal');
   var openBtn = document.getElementById('createTaskBtn');
   var closeBtn = document.getElementById('closeModalBtn');
   var form = document.getElementById('createTaskForm');
   var submitBtn = document.getElementById('submitTaskBtn');
   var errorMsgDiv = document.getElementById('modalError');
-
-  // Elementos de Filtros (para leer)
   var workspaceSelector = document.getElementById('workspaceSelector');
   var projectSelector = document.getElementById('projectSelector');
-
-  // Campos del Formulario (Inputs)
   var modalWorkspaceGid = document.getElementById('modal_workspace_gid');
   var modalProjectGid = document.getElementById('modal_project_gid');
-
-  // Elementos del Asignado
   var assigneeSelect = document.getElementById('task_assignee');
   var assigneeWheeler = document.getElementById('assigneeWheeler');
-
-  // Chequeo de elementos
   if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect) {
     console.warn('Faltan elementos del modal para inicializar.');
     return;
   }
-
-  /**
-   * Carga la lista de usuarios desde nuestra API
-   */
   function loadAssignees(_x) {
     return _loadAssignees.apply(this, arguments);
-  }
-  /**
-   * Abre el modal
-   */
+  } //modal
   function _loadAssignees() {
     _loadAssignees = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(workspaceGid) {
       var response, users, meOption, _t;
@@ -16336,7 +16310,6 @@ function initCreateTaskModal() {
             }
             return _context.a(2);
           case 1:
-            // 1. Mostrar spinner y deshabilitar select
             assigneeWheeler.style.display = 'block';
             assigneeSelect.disabled = true;
             assigneeSelect.innerHTML = '<option value="">Loading users...</option>';
@@ -16359,18 +16332,11 @@ function initCreateTaskModal() {
             return response.json();
           case 5:
             users = _context.v;
-            // 2. Rellenar el select
-            assigneeSelect.innerHTML = ''; // Limpiar "Loading..."
-
-            // Añadir opción "Asignar a mí" (usa "me" como GID especial)
+            assigneeSelect.innerHTML = '';
             meOption = new Option('Assign to Me (Default)', 'me');
-            meOption.selected = true; // Seleccionada por defecto
+            meOption.selected = true;
             assigneeSelect.add(meOption);
-
-            // Añadir opción "Sin asignar"
             assigneeSelect.add(new Option('Unassigned', ''));
-
-            // Añadir el resto de usuarios
             users.forEach(function (user) {
               assigneeSelect.add(new Option(user.name, user.gid));
             });
@@ -16383,7 +16349,6 @@ function initCreateTaskModal() {
             assigneeSelect.innerHTML = '<option value="">Error loading users</option>';
           case 7:
             _context.p = 7;
-            // 3. Ocultar spinner y habilitar select
             assigneeWheeler.style.display = 'none';
             assigneeSelect.disabled = false;
             return _context.f(7);
@@ -16397,12 +16362,10 @@ function initCreateTaskModal() {
   function openModal() {
     var workspaceGid = workspaceSelector.value;
     var projectGid = projectSelector.value;
-
-    // Rellenar campos ocultos
     if (modalWorkspaceGid) modalWorkspaceGid.value = workspaceGid;
     if (modalProjectGid) modalProjectGid.value = projectGid;
 
-    // Limpiar formulario
+    // form clear
     form.reset();
     if (errorMsgDiv) {
       errorMsgDiv.style.display = 'none';
@@ -16414,26 +16377,20 @@ function initCreateTaskModal() {
     // Cargar usuarios
     loadAssignees(workspaceGid);
 
-    // Mostrar modal
+    // show modal
     modal.style.display = 'flex';
     setTimeout(function () {
       return modal.classList.add('open');
     }, 10);
   }
 
-  /**
-   * Cierra el modal
-   */
+  //closse modal
   function closeModal() {
     modal.classList.remove('open');
     setTimeout(function () {
       return modal.style.display = 'none';
     }, 300);
   }
-
-  /**
-   * Maneja el envío del formulario
-   */
   function handleFormSubmit(e) {
     e.preventDefault();
     submitBtn.disabled = true;
@@ -16471,7 +16428,7 @@ function initCreateTaskModal() {
     });
   }
 
-  // --- Asignar eventos ---
+  // events
   openBtn.addEventListener('click', openModal);
   closeBtn.addEventListener('click', closeModal);
   form.addEventListener('submit', handleFormSubmit);
@@ -16481,8 +16438,6 @@ function initCreateTaskModal() {
     }
   });
 }
-
-// --- 3. INICIALIZADOR GENERAL ---
 document.addEventListener('DOMContentLoaded', function () {
   initWorkspaceSelector();
   initProjectSelector();

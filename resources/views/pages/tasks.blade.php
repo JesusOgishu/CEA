@@ -4,8 +4,6 @@
 
 @section('content')
 <div class="task-page-wrapper">
-
-    {{-- 1. CONTENEDOR DE FILTROS Y BOTÓN (Sin cambios) --}}
     <div class="filters-container mb-4" style="margin-bottom: 2rem;">
 
         @if(isset($workspaces) && count($workspaces) > 1)
@@ -47,8 +45,6 @@
         </div>
 
     </div>
-
-    {{-- 2. CONTENEDOR DE TAREFAS (Sin cambios) --}}
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
@@ -125,13 +121,10 @@
             
             <div class="tk-form-group">
                 <label for="task_assignee">Assignee</label>
-                {{-- Este wrapper es para posicionar el spinner --}}
                 <div class="tk-select-wrapper">
                     <select id="task_assignee" name="assignee_gid" class="form-control" disabled>
-                        {{-- El JS llenará esto --}}
                         <option value="">Loading users...</option>
                     </select>
-                    {{-- Este es el spinner (wheeler) --}}
                     <div id="assigneeWheeler" class="tk-modal-wheeler" style="display: none;"></div>
                 </div>
             </div>
