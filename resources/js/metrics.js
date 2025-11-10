@@ -1,28 +1,42 @@
 /* ==========================================================================
-   Metrics Dashboard - Asana Integration (Fixed Refresh on Workspace Change)
-   With Loading State Fix
+   Metrics Dashboard - Asana Integration
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
     const workspaceSelect = document.querySelector("#workspaceSelect");
-
     const baseUrl = '/metrics/api';
+
+    // CAMBIO: tasksCompleted ahora pide 30 días
     const endpoints = (workspace) => ({
         overview: `${baseUrl}/overview?workspace=${workspace}`,
-        tasksCompleted: `${baseUrl}/tasks-completed?workspace=${workspace}`,
+        tasksCompleted: `${baseUrl}/tasks-completed?workspace=${workspace}&days=30`,
         tasksByProject: `${baseUrl}/tasks-by-project?workspace=${workspace}`,
         topAssignees: `${baseUrl}/top-assignees?workspace=${workspace}`,
         overdue: `${baseUrl}/overdue?workspace=${workspace}`,
     });
 
+    /**
+     * Maneja el estado de carga (con spinners)
+     */
     function setLoadingState(selector, loading = true) {
         const el = document.querySelector(selector);
         if (!el) return;
+        
         if (loading) {
-            el.textContent = 'Loading...';
-            el.classList.add('loading');
+            el.classList.add('loading-metrics');
+            
+            if (el.classList.contains('metrics-card-value-metrics')) {
+                el.textContent = '...'; // Texto para tarjetas
+            }
+            
+            const spinner = el.querySelector('.metrics-spinner'); 
+            if (spinner) spinner.style.display = 'block';
+
         } else {
-            el.classList.remove('loading');
+            el.classList.remove('loading-metrics');
+            
+            const spinner = el.querySelector('.metrics-spinner');
+            if (spinner) spinner.style.display = 'none';
         }
     }
 
@@ -45,21 +59,17 @@ document.addEventListener("DOMContentLoaded", () => {
             '#metric-overdue-tasks',
             '#metric-active-projects'
         ];
-
-        // Mostrar loading pequeño
+        
         selectors.forEach(sel => setLoadingState(sel, true));
-
         const data = await fetchData(ep.overview);
 
-        // Actualizar valores
+        selectors.forEach(sel => setLoadingState(sel, false));
+
         document.querySelector('#metric-total-tasks').textContent =
             (data.open_tasks ?? 0) + (data.completed_last_days ?? 0);
         document.querySelector('#metric-completed-tasks').textContent = data.completed_last_days ?? 0;
         document.querySelector('#metric-overdue-tasks').textContent = data.overdue_tasks ?? 0;
         document.querySelector('#metric-active-projects').textContent = data.active_projects ?? 0;
-
-        // Quitar clase .loading para que el tamaño grande vuelva
-        selectors.forEach(sel => setLoadingState(sel, false));
     }
 
     async function renderTasksCompletedChart(ep) {
@@ -67,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setLoadingState("#chart-tasks-completed", true);
 
         const data = await fetchData(ep.tasksCompleted);
-        container.textContent = '';
+        
+        setLoadingState("#chart-tasks-completed", false);
+        
         const labels = data.labels ?? [];
         const values = data.series ?? [];
         if (!labels.length || !values.length) {
@@ -78,13 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
         new ApexCharts(container, {
             chart: { type: 'line', height: 300, toolbar: { show: false } },
             series: [{ name: 'Completed Tasks', data: values }],
-            xaxis: { categories: labels, title: { text: 'Days' } },
+            xaxis: { categories: labels, title: { text: 'Days' } }, // Eje X por Días
             yaxis: { title: { text: 'Tasks' } },
             stroke: { curve: 'smooth', width: 3 },
             colors: ['#00b894'],
         }).render();
-
-        setLoadingState("#chart-tasks-completed", false);
     }
 
     async function renderTasksByProjectChart(ep) {
@@ -92,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setLoadingState("#chart-tasks-by-project", true);
 
         const data = await fetchData(ep.tasksByProject);
-        container.textContent = '';
+        
+        setLoadingState("#chart-tasks-by-project", false);
+        
         const labels = data.map(d => d.project_name);
         const values = data.map(d => d.total_tasks);
         if (!labels.length || !values.length) {
@@ -107,8 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
             plotOptions: { bar: { borderRadius: 4, horizontal: false } },
             colors: ['#0984e3'],
         }).render();
-
-        setLoadingState("#chart-tasks-by-project", false);
     }
 
     async function renderTopAssigneesChart(ep) {
@@ -116,7 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setLoadingState("#chart-top-assignees", true);
 
         const data = await fetchData(ep.topAssignees);
-        container.textContent = '';
+        
+        setLoadingState("#chart-top-assignees", false);
+        
         const labels = data.map(d => d.name);
         const values = data.map(d => d.count);
         if (!labels.length || !values.length) {
@@ -131,8 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
             plotOptions: { bar: { horizontal: true, borderRadius: 4 } },
             colors: ['#6c5ce7'],
         }).render();
-
-        setLoadingState("#chart-top-assignees", false);
     }
 
     async function renderOverdueChart(ep) {
@@ -140,7 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setLoadingState("#chart-overdue", true);
 
         const data = await fetchData(ep.overdue);
-        container.textContent = '';
+        
+        setLoadingState("#chart-overdue", false);
+
         const labels = data.map(d => d.name ?? 'Unnamed Task');
         const values = data.map(() => 1);
         if (!labels.length) {
@@ -155,8 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
             colors: ['#d63031', '#fdcb6e', '#e17055', '#fab1a0', '#ff7675'],
             legend: { position: 'bottom' },
         }).render();
-
-        setLoadingState("#chart-overdue", false);
     }
 
     async function initDashboard(workspace) {

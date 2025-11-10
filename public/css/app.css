@@ -521,7 +521,8 @@ gap: 0.5rem;
 
 .tk-create-container {
 margin-left: auto;
-display: flex; 
+display: flex;
+padding-bottom: 10px; 
 gap: 10px; 
  flex-shrink: 0; 
 }
@@ -1781,17 +1782,9 @@ body {
   }
 }
 
-/* ==========================================================================
-   Asana Metrics Dashboard Styles
-   File: public/css/metrics.css
-   Description: Scoped styles for metrics dashboard components
-   ========================================================================== */
-
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
-/* ============================
-   Contenedor principal
-   ============================ */
+
 .metrics-container {
   font-family: "Montserrat", sans-serif;
   background-color: #f9fafb;
@@ -1801,9 +1794,7 @@ body {
   gap: 2rem;
 }
 
-/* ============================
-   Filtro de workspace
-   ============================ */
+
 .workspace-filter-metrics {
   display: flex;
   align-items: center;
@@ -1841,9 +1832,7 @@ body {
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
 }
 
-/* ============================
-   Sección de métricas
-   ============================ */
+
 .metrics-section-title-metrics {
   font-size: 1.4rem;
   font-weight: 600;
@@ -1851,9 +1840,7 @@ body {
   margin-bottom: 1rem;
 }
 
-/* ============================
-   Cards
-   ============================ */
+
 .metrics-cards-grid-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1888,9 +1875,6 @@ body {
   color: #2d3436;
 }
 
-/* ============================
-   Gráficas
-   ============================ */
 .metrics-charts-grid-metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1917,9 +1901,6 @@ body {
   color: #2d3436;
 }
 
-/* ============================
-   Loading
-   ============================ */
 .metrics-loading-metrics {
   display: flex;
   align-items: center;
@@ -1937,14 +1918,12 @@ body {
 }
 
 .metrics-card-value-metrics.loading-metrics {
-  font-size: 0.9rem; /* solo mientras carga */
+  font-size: 0.9rem;
   font-weight: 400;
   color: #888;
 }
 
-/* ============================
-   Animación
-   ============================ */
+
 @keyframes metrics-fade-in-metrics {
   from {
     opacity: 0;
@@ -1959,4 +1938,30 @@ body {
 .metrics-chart-card-metrics,
 .metrics-card-metrics {
   animation: metrics-fade-in-metrics 0.3s ease forwards;
+}
+
+
+.metrics-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 0, 0, 0.1); 
+  border-top-color: #0984e3; 
+  border-radius: 50%;
+  animation: metrics-spinner-spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes metrics-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.metrics-spinner {
+    display: none;
+}
+
+.loading-metrics .metrics-spinner {
+    display: block;
 }

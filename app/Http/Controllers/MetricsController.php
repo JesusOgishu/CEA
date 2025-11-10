@@ -7,21 +7,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Handles analytical metrics for Asana data,
- * used by the Metrics Dashboard.
- */
 class MetricsController extends Controller
 {
-    /**
-     * Display the metrics dashboard view.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
         $asana = new AsanaService();
-
         $workspace = $asana->getDefaultWorkspaceGid();
         $projects  = $workspace ? $asana->getProjectsByWorkspace($workspace) : [];
         $workspaces = $asana->getWorkspaces() ?? [];
@@ -29,14 +19,10 @@ class MetricsController extends Controller
         return view('pages.metrics', [
             'workspaceGid' => $workspace,
             'projects'     => $projects,
-            'workspaces'   => $workspaces, // ← esta faltaba
+            'workspaces'   => $workspaces,
         ]);
-
     }
 
-    /**
-     * Returns general overview metrics for the authenticated user.
-     */
     public function apiOverview(Request $request)
     {
         try {
@@ -45,16 +31,17 @@ class MetricsController extends Controller
             $days      = (int) ($request->get('days') ?? 30);
             $since     = Carbon::now()->subDays($days)->toIso8601String();
 
-            // Completed tasks in period
+            // Tareas completadas (1 llamada)
             $completed = $asana->listTasks([
                 'workspace'       => $workspace,
+                'assignee'        => 'me',
                 'completed_since' => $since,
-                'opt_fields'      => 'gid,completed,completed_at',
+                'opt_fields'      => 'gid,completed',
             ]);
             $completedData  = $completed['data'] ?? ($completed ?? []);
             $completedCount = count(array_filter($completedData, fn($t) => !empty($t['completed'])));
 
-            // Open (incomplete) tasks
+            // Tareas abiertas (1 llamada)
             $open = $asana->listTasks([
                 'workspace'  => $workspace,
                 'assignee'   => 'me',
@@ -63,13 +50,13 @@ class MetricsController extends Controller
             $openData  = $open['data'] ?? ($open ?? []);
             $openCount = count(array_filter($openData, fn($t) => empty($t['completed'])));
 
-            // Overdue tasks
+            // Tareas vencidas (usa la data de 'open')
             $today        = Carbon::now()->toDateString();
             $overdueCount = count(array_filter($openData, fn($t) =>
                 !empty($t['due_on']) && !$t['completed'] && $t['due_on'] < $today
             ));
 
-            // Active projects
+            // Proyectos activos (1 llamada)
             $projects      = $asana->getUserActiveProjects($workspace);
             $projectsCount = count($projects);
 
@@ -88,19 +75,17 @@ class MetricsController extends Controller
         }
     }
 
-    /**
-     * Returns time series data for tasks completed over time.
-     */
     public function apiTasksCompleted(Request $request)
     {
         try {
             $asana     = new AsanaService();
             $days      = (int) ($request->get('days') ?? 30);
             $workspace = $request->get('workspace') ?? $asana->getDefaultWorkspaceGid();
-            $since     = Carbon::now()->subDays($days)->toIso8601String();
+            $since     = Carbon::now()->subDays($days)->toIso8601String(); 
 
             $response = $asana->listTasks([
                 'workspace'       => $workspace,
+                'assignee'        => 'me',
                 'completed_since' => $since,
                 'opt_fields'      => 'gid,completed,completed_at',
             ]);
@@ -133,9 +118,6 @@ class MetricsController extends Controller
         }
     }
 
-    /**
-     * Returns total task count per project.
-     */
     public function apiTasksByProject(Request $request)
     {
         try {
@@ -143,29 +125,31 @@ class MetricsController extends Controller
             $workspace = $request->get('workspace') ?? $asana->getDefaultWorkspaceGid();
             $limit     = (int) ($request->get('top') ?? 10);
 
-            $projects = $asana->getProjectsByWorkspace($workspace) ?? [];
-            $metrics  = [];
+            $response = $asana->listTasks([
+                'workspace'  => $workspace,
+                'assignee'   => 'me',
+                'opt_fields' => 'gid,projects.name,projects.gid',
+            ]);
+            $tasks = $response['data'] ?? ($response ?? []);
 
-            foreach ($projects as $project) {
-                $projectGid = $project['gid'] ?? null;
-                if (!$projectGid) continue;
-
-                $tasksResponse = $asana->listTasks([
-                    'project'    => $projectGid,
-                    'opt_fields' => 'gid,completed',
-                ]);
-
-                $tasks = $tasksResponse['data'] ?? ($tasksResponse ?? []);
-                $metrics[] = [
-                    'project_gid'  => $projectGid,
-                    'project_name' => $project['name'] ?? 'Unnamed Project',
-                    'total_tasks'  => count($tasks),
-                    'completed'    => count(array_filter($tasks, fn($t) => !empty($t['completed']))),
-                ];
+            $projectMap = [];
+            foreach ($tasks as $task) {
+                if (empty($task['projects'])) continue;
+                foreach ($task['projects'] as $project) {
+                    $gid = $project['gid'];
+                    $name = $project['name'] ?? 'Unnamed Project';
+                    if (!isset($projectMap[$gid])) {
+                        $projectMap[$gid] = ['project_name' => $name, 'total_tasks' => 0];
+                    }
+                    $projectMap[$gid]['total_tasks']++;
+                }
             }
 
-            usort($metrics, fn($a, $b) => $b['total_tasks'] <=> $a['total_tasks']);
-            $metrics = array_slice($metrics, 0, $limit);
+            $metrics = collect($projectMap)
+                ->sortByDesc('total_tasks')
+                ->take($limit)
+                ->values()
+                ->all();
 
             return response()->json(['success' => true, 'data' => $metrics]);
         } catch (\Exception $e) {
@@ -175,7 +159,8 @@ class MetricsController extends Controller
     }
 
     /**
-     * Returns the top assignees based on completed tasks.
+     * MODIFICADO: Lógica Híbrida.
+     * Pide solo los proyectos activos del usuario y cicla sobre esos.
      */
     public function apiTopAssignees(Request $request)
     {
@@ -186,12 +171,12 @@ class MetricsController extends Controller
             $limit     = (int) ($request->get('top') ?? 10);
             $since     = Carbon::now()->subDays($days)->toIso8601String();
 
-            // 🔹 Obtener todos los proyectos del workspace (no solo los del usuario)
-            $projects = $asana->getProjectsByWorkspace($workspace) ?? [];
+            // 1. Pedir solo los proyectos activos del usuario (1 llamada)
+            $projects = $asana->getUserActiveProjects($workspace);
 
             $map = [];
 
-            // 🔹 Recorrer todos los proyectos y acumular tareas completadas por cada usuario
+            // 2. Ciclar solo sobre esos proyectos (N llamadas, pero N es chico)
             foreach ($projects as $project) {
                 $projectGid = $project['gid'] ?? null;
                 if (!$projectGid) continue;
@@ -201,7 +186,6 @@ class MetricsController extends Controller
                     'completed_since' => $since,
                     'opt_fields'      => 'gid,completed,completed_at,assignee.name,assignee.gid'
                 ]);
-
                 $tasks = $tasksResponse['data'] ?? ($tasksResponse ?? []);
 
                 foreach ($tasks as $task) {
@@ -209,23 +193,16 @@ class MetricsController extends Controller
                         $assignee = $task['assignee'];
                         $gid = $assignee['gid'] ?? 'unknown';
                         $name = $assignee['name'] ?? 'Unknown';
-
                         if (!isset($map[$gid])) {
                             $map[$gid] = ['name' => $name, 'count' => 0];
                         }
-
                         $map[$gid]['count']++;
                     }
                 }
             }
-
-            // 🔹 Ordenar los resultados por número de tareas completadas
+            
             $result = collect($map)
-                ->map(fn($data, $gid) => [
-                    'gid'   => $gid,
-                    'name'  => $data['name'],
-                    'count' => $data['count']
-                ])
+                ->map(fn($data, $gid) => ['gid' => $gid, 'name' => $data['name'], 'count' => $data['count']])
                 ->sortByDesc('count')
                 ->take($limit)
                 ->values()
@@ -238,9 +215,6 @@ class MetricsController extends Controller
         }
     }
 
-    /**
-     * Returns overdue tasks for the current user.
-     */
     public function apiOverdue(Request $request)
     {
         try {

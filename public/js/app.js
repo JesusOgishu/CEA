@@ -15855,31 +15855,42 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /* ==========================================================================
-   Metrics Dashboard - Asana Integration (Fixed Refresh on Workspace Change)
-   With Loading State Fix
+   Metrics Dashboard - Asana Integration
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
   var workspaceSelect = document.querySelector("#workspaceSelect");
   var baseUrl = '/metrics/api';
+
+  // CAMBIO: tasksCompleted ahora pide 30 días
   var endpoints = function endpoints(workspace) {
     return {
       overview: "".concat(baseUrl, "/overview?workspace=").concat(workspace),
-      tasksCompleted: "".concat(baseUrl, "/tasks-completed?workspace=").concat(workspace),
+      tasksCompleted: "".concat(baseUrl, "/tasks-completed?workspace=").concat(workspace, "&days=30"),
       tasksByProject: "".concat(baseUrl, "/tasks-by-project?workspace=").concat(workspace),
       topAssignees: "".concat(baseUrl, "/top-assignees?workspace=").concat(workspace),
       overdue: "".concat(baseUrl, "/overdue?workspace=").concat(workspace)
     };
   };
+
+  /**
+   * Maneja el estado de carga (con spinners)
+   */
   function setLoadingState(selector) {
     var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     var el = document.querySelector(selector);
     if (!el) return;
     if (loading) {
-      el.textContent = 'Loading...';
-      el.classList.add('loading');
+      el.classList.add('loading-metrics');
+      if (el.classList.contains('metrics-card-value-metrics')) {
+        el.textContent = '...'; // Texto para tarjetas
+      }
+      var spinner = el.querySelector('.metrics-spinner');
+      if (spinner) spinner.style.display = 'block';
     } else {
-      el.classList.remove('loading');
+      el.classList.remove('loading-metrics');
+      var _spinner = el.querySelector('.metrics-spinner');
+      if (_spinner) _spinner.style.display = 'none';
     }
   }
   function fetchData(_x) {
@@ -15927,7 +15938,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.n) {
           case 0:
-            selectors = ['#metric-total-tasks', '#metric-completed-tasks', '#metric-overdue-tasks', '#metric-active-projects']; // Mostrar loading pequeño
+            selectors = ['#metric-total-tasks', '#metric-completed-tasks', '#metric-overdue-tasks', '#metric-active-projects'];
             selectors.forEach(function (sel) {
               return setLoadingState(sel, true);
             });
@@ -15935,16 +15946,13 @@ document.addEventListener("DOMContentLoaded", function () {
             return fetchData(ep.overview);
           case 1:
             data = _context2.v;
-            // Actualizar valores
+            selectors.forEach(function (sel) {
+              return setLoadingState(sel, false);
+            });
             document.querySelector('#metric-total-tasks').textContent = ((_data$open_tasks = data.open_tasks) !== null && _data$open_tasks !== void 0 ? _data$open_tasks : 0) + ((_data$completed_last_ = data.completed_last_days) !== null && _data$completed_last_ !== void 0 ? _data$completed_last_ : 0);
             document.querySelector('#metric-completed-tasks').textContent = (_data$completed_last_2 = data.completed_last_days) !== null && _data$completed_last_2 !== void 0 ? _data$completed_last_2 : 0;
             document.querySelector('#metric-overdue-tasks').textContent = (_data$overdue_tasks = data.overdue_tasks) !== null && _data$overdue_tasks !== void 0 ? _data$overdue_tasks : 0;
             document.querySelector('#metric-active-projects').textContent = (_data$active_projects = data.active_projects) !== null && _data$active_projects !== void 0 ? _data$active_projects : 0;
-
-            // Quitar clase .loading para que el tamaño grande vuelva
-            selectors.forEach(function (sel) {
-              return setLoadingState(sel, false);
-            });
           case 2:
             return _context2.a(2);
         }
@@ -15968,7 +15976,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return fetchData(ep.tasksCompleted);
           case 1:
             data = _context3.v;
-            container.textContent = '';
+            setLoadingState("#chart-tasks-completed", false);
             labels = (_data$labels = data.labels) !== null && _data$labels !== void 0 ? _data$labels : [];
             values = (_data$series = data.series) !== null && _data$series !== void 0 ? _data$series : [];
             if (!(!labels.length || !values.length)) {
@@ -15996,6 +16004,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   text: 'Days'
                 }
               },
+              // Eje X por Días
               yaxis: {
                 title: {
                   text: 'Tasks'
@@ -16007,7 +16016,6 @@ document.addEventListener("DOMContentLoaded", function () {
               },
               colors: ['#00b894']
             }).render();
-            setLoadingState("#chart-tasks-completed", false);
           case 3:
             return _context3.a(2);
         }
@@ -16030,7 +16038,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return fetchData(ep.tasksByProject);
           case 1:
             data = _context4.v;
-            container.textContent = '';
+            setLoadingState("#chart-tasks-by-project", false);
             labels = data.map(function (d) {
               return d.project_name;
             });
@@ -16070,7 +16078,6 @@ document.addEventListener("DOMContentLoaded", function () {
               },
               colors: ['#0984e3']
             }).render();
-            setLoadingState("#chart-tasks-by-project", false);
           case 3:
             return _context4.a(2);
         }
@@ -16093,7 +16100,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return fetchData(ep.topAssignees);
           case 1:
             data = _context5.v;
-            container.textContent = '';
+            setLoadingState("#chart-top-assignees", false);
             labels = data.map(function (d) {
               return d.name;
             });
@@ -16133,7 +16140,6 @@ document.addEventListener("DOMContentLoaded", function () {
               },
               colors: ['#6c5ce7']
             }).render();
-            setLoadingState("#chart-top-assignees", false);
           case 3:
             return _context5.a(2);
         }
@@ -16156,7 +16162,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return fetchData(ep.overdue);
           case 1:
             data = _context6.v;
-            container.textContent = '';
+            setLoadingState("#chart-overdue", false);
             labels = data.map(function (d) {
               var _d$name;
               return (_d$name = d.name) !== null && _d$name !== void 0 ? _d$name : 'Unnamed Task';
@@ -16183,7 +16189,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 position: 'bottom'
               }
             }).render();
-            setLoadingState("#chart-overdue", false);
           case 3:
             return _context6.a(2);
         }

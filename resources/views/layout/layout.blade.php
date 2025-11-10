@@ -25,8 +25,7 @@
                 @endauth
             </div>
             <div class="header-right">
-                <span class="material-icons-outlined">notifications</span>
-                <span class="material-icons-outlined">email</span>
+                
                 <a class="text-primary" href="{{ route('logout') }}"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="material-icons-outlined">logout</span>
