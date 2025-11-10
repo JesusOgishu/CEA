@@ -5,18 +5,14 @@
 @section('content')
 <div class="task-page-wrapper">
 
-    <div class="filters-container mb-4" style="margin-bottom: 2rem;">
+    <div class="filters-container mb-4">
 
-       
         @if(isset($workspaces) && count($workspaces) > 1)
         <div class="workspace-filter filter-item">
             <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
-            <select id="workspaceSelector" class="form-control" style="width: 250px;">
+            <select id="workspaceSelector" class="form-control">
                 @foreach ($workspaces as $ws)
-                    <option 
-                        value="{{ $ws['gid'] }}" 
-                        {{ request('workspace') == $ws['gid'] ? 'selected' : '' }}
-                    >
+                    <option value="{{ $ws['gid'] }}" {{ request('workspace') == $ws['gid'] ? 'selected' : '' }}>
                         {{ $ws['name'] }}
                     </option>
                 @endforeach
@@ -25,15 +21,12 @@
         @endif
         <div class="project-filter filter-item">
             <label for="projectSelector" class="font-weight-bold">Project:</label>
-            <select id="projectSelector" class="form-control" style="width: 300px;">
+            <select id="projectSelector" class="form-control" >
                 <option value="" {{ !request('project') ? 'selected' : '' }}>
                     All my tasks in Workspace
                 </option>
                 @foreach ($projects as $project)
-                    <option 
-                        value="{{ $project['gid'] }}" 
-                        {{ request('project') == $project['gid'] ? 'selected' : '' }}
-                    >
+                    <option value="{{ $project['gid'] }}" {{ request('project') == $project['gid'] ? 'selected' : '' }}>
                         {{ $project['name'] }}
                     </option>
                 @endforeach
@@ -41,12 +34,17 @@
         </div>
         
         <div class="tk-create-container"> 
-            <button id="createTaskBtn" class="tk-btn-primary"> 
-                Create Task
+            
+            <button id="createTaskBtn" class="tk-btn-primary tk-btn-icon">
+                <i class="material-icons-outlined">add</i>
             </button>
             
-            <button id="editTaskToggleBtn" class="tk-btn-secondary">
-                Edit Task
+            <button id="editTaskToggleBtn" class="tk-btn-secondary tk-btn-icon">
+                <i class="material-icons-outlined">edit</i>
+            </button>
+            
+            <button id="deleteTaskToggleBtn" class="tk-btn-danger tk-btn-icon">
+                <i class="material-icons-outlined">delete_outline</i>
             </button>
         </div>
 
@@ -55,9 +53,8 @@
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
-        <div id="taskCardsContainer" class="prj-cards-container"> 
+        <div id="taskCardsContainer" class="prj-cards-container">
             @foreach ($tasks as $task)
-                
                 <div class="prj-card" data-task-json='@json($task)'>
                     <div class="prj-card__header">
                         <p class="prj-card__title">{{ $task['name'] ?? 'Untitled Task' }}</p>
@@ -113,7 +110,7 @@
 <div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> 
     <div class="tk-modal-content"> 
         <div class="tk-modal-header"> 
-            <h3 id="modalTitle">Create New Task</h3> 
+            <h3 id="modalTitle">Create New Task</h3>
             <button id="closeModalBtn" class="tk-modal-close">&times;</button> 
         </div>
         <form id="createTaskForm">
@@ -135,12 +132,9 @@
                 <label for="task_description">Description</label>
                 <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea>
             </div>
-
             <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
             <input type="hidden" id="modal_project_gid" name="project_gid">
-            
             <input type="hidden" id="modal_task_gid" name="task_gid">
-
             <div class="tk-modal-footer"> 
                 <div id="modalError" class="tk-modal-error" style="display: none;"></div> 
                 <button type="submit" id="submitTaskBtn" class="tk-btn-primary"> 
@@ -155,4 +149,13 @@
     Please select a task to edit.
 </div>
 
+<div id="deleteConfirmBar" class="tk-delete-bar">
+    <span id="deleteCountText">
+        <span id="deleteCount">0</span> tasks selected.
+    </span>
+    <div classs="tk-delete-bar__actions">
+        <button id="confirmDeleteBtn" class="tk-btn-danger" disabled>Delete Selected</button>
+        <button id="cancelDeleteBtn" class="tk-btn-secondary">Cancel</button>
+    </div>
+</div>
 @endsection

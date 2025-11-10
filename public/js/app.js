@@ -16279,7 +16279,6 @@ function initProjectSelector() {
   });
 }
 function initTaskModal() {
-  //Elementos del Modal
   var modal = document.getElementById('createTaskModal');
   var openBtn = document.getElementById('createTaskBtn');
   var closeBtn = document.getElementById('closeModalBtn');
@@ -16287,44 +16286,33 @@ function initTaskModal() {
   var submitBtn = document.getElementById('submitTaskBtn');
   var errorMsgDiv = document.getElementById('modalError');
   var modalTitle = document.getElementById('modalTitle');
-
-  // Campos Ocultos 
   var modalWorkspaceGid = document.getElementById('modal_workspace_gid');
   var modalProjectGid = document.getElementById('modal_project_gid');
   var modalTaskGid = document.getElementById('modal_task_gid');
-
-  // Filtros 
   var workspaceSelector = document.getElementById('workspaceSelector');
   var projectSelector = document.getElementById('projectSelector');
-
-  //Campo Asignado
   var assigneeSelect = document.getElementById('task_assignee');
   var assigneeWheeler = document.getElementById('assigneeWheeler');
-
-  // Edición
   var editToggleBtn = document.getElementById('editTaskToggleBtn');
   var editToast = document.getElementById('editModeToast');
   var taskCardsContainer = document.getElementById('taskCardsContainer');
   var pageWrapper = document.querySelector('.task-page-wrapper');
-
-  // Estado 
+  var deleteToggleBtn = document.getElementById('deleteTaskToggleBtn');
+  var deleteBar = document.getElementById('deleteConfirmBar');
+  var deleteCountEl = document.getElementById('deleteCount');
+  var confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  var cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
   var isEditMode = false;
+  var isDeleteMode = false;
+  var tasksToDelete = [];
   var toastTimer = null;
-  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect || !editToggleBtn || !editToast || !taskCardsContainer || !pageWrapper) {
-    console.warn('Faltan elementos del DOM para inicializar el modal o el modo edición.');
+  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect || !editToggleBtn || !editToast || !taskCardsContainer || !pageWrapper || !deleteToggleBtn || !deleteBar || !confirmDeleteBtn || !cancelDeleteBtn) {
+    console.warn('Faltan elementos del DOM para inicializar todas las funciones.');
     return;
   }
-
-  /**
-   * Carga la lista de usuarios desde nuestra API
-   */
   function loadAssignees(_x) {
     return _loadAssignees.apply(this, arguments);
   }
-  /**
-   * Abre el modal. Si recibe 'task', entra en Modo Edición.
-   * Si 'task' es null, entra en Modo Creación.
-   */
   function _loadAssignees() {
     _loadAssignees = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(workspaceGid) {
       var response, users, meOption, _t;
@@ -16359,7 +16347,7 @@ function initTaskModal() {
             return response.json();
           case 5:
             users = _context.v;
-            assigneeSelect.innerHTML = ''; // Limpiar
+            assigneeSelect.innerHTML = '';
             meOption = new Option('Assign to Me (Default)', 'me');
             meOption.selected = true;
             assigneeSelect.add(meOption);
@@ -16389,9 +16377,6 @@ function initTaskModal() {
   function openModal() {
     return _openModal.apply(this, arguments);
   }
-  /**
-   * Cierra el modal
-   */
   function _openModal() {
     _openModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
       var task,
@@ -16423,7 +16408,7 @@ function initTaskModal() {
                   assigneeSelect.value = task.assignee.gid;
                 }
               } else {
-                assigneeSelect.value = ''; // Sin asignar
+                assigneeSelect.value = '';
               }
             } else {
               modalTitle.textContent = 'Create New Task';
@@ -16432,8 +16417,6 @@ function initTaskModal() {
               modalWorkspaceGid.value = workspaceGid;
               modalProjectGid.value = projectSelector.value;
             }
-
-            //Mostrar modal
             modal.style.display = 'flex';
             setTimeout(function () {
               return modal.classList.add('open');
@@ -16451,10 +16434,6 @@ function initTaskModal() {
       return modal.style.display = 'none';
     }, 300);
   }
-
-  /**
-   * Maneja el envío del formulario (AHORA PARA CREAR Y EDITAR)
-   */
   function handleFormSubmit(e) {
     e.preventDefault();
     submitBtn.disabled = true;
@@ -16465,11 +16444,9 @@ function initTaskModal() {
     var method = 'POST';
     var taskGid = modalTaskGid.value;
     if (taskGid) {
-      // --- MODO EDICIÓN ---
       url = "/tasks/update/".concat(taskGid);
       submitBtn.textContent = 'Updating...';
     } else {
-      // --- MODO CREACIÓN ---
       url = '/tasks/store';
       submitBtn.textContent = 'Creating...';
     }
@@ -16490,7 +16467,7 @@ function initTaskModal() {
     }).then(function (data) {
       console.log('Respuesta:', data);
       closeModal();
-      window.location.reload(); // Recargar para ver cambios
+      window.location.reload();
     })["catch"](function (error) {
       console.error('Error al guardar tarea:', error);
       var msg = error.error || error.message || 'An unknown error occurred.';
@@ -16499,14 +16476,9 @@ function initTaskModal() {
         errorMsgDiv.style.display = 'block';
       }
       submitBtn.disabled = false;
-      // Restaurar texto del botón
       submitBtn.textContent = taskGid ? 'Update Task' : 'Submit Task';
     });
   }
-
-  /**
-   * Muestra el letrero (toast)
-   */
   function showToast() {
     if (toastTimer) clearTimeout(toastTimer);
     editToast.classList.add('show');
@@ -16514,11 +16486,24 @@ function initTaskModal() {
       editToast.classList.remove('show');
     }, 2000);
   }
-
-  /**
-   * Activa o desactiva el Modo Edición
-   */
+  function resetEditMode() {
+    isEditMode = false;
+    editToggleBtn.classList.remove('active');
+    pageWrapper.classList.remove('edit-mode-active');
+  }
+  function resetDeleteMode() {
+    isDeleteMode = false;
+    deleteToggleBtn.classList.remove('active');
+    pageWrapper.classList.remove('delete-mode-active');
+    deleteBar.classList.remove('show');
+    tasksToDelete = [];
+    document.querySelectorAll('.prj-card.selected').forEach(function (card) {
+      card.classList.remove('selected');
+    });
+    updateDeleteBar();
+  }
   function toggleEditMode() {
+    if (isDeleteMode) resetDeleteMode();
     isEditMode = !isEditMode;
     editToggleBtn.classList.toggle('active', isEditMode);
     pageWrapper.classList.toggle('edit-mode-active', isEditMode);
@@ -16526,41 +16511,91 @@ function initTaskModal() {
       showToast();
     }
   }
-
-  /**
-   * Manejador de clic en las tarjetas
-   */
+  function toggleDeleteMode() {
+    if (isEditMode) resetEditMode();
+    isDeleteMode = !isDeleteMode;
+    deleteToggleBtn.classList.toggle('active', isDeleteMode);
+    pageWrapper.classList.toggle('delete-mode-active', isDeleteMode);
+    deleteBar.classList.toggle('show', isDeleteMode);
+    if (!isDeleteMode) {
+      resetDeleteMode();
+    }
+  }
+  function updateDeleteBar() {
+    var count = tasksToDelete.length;
+    deleteCountEl.textContent = count;
+    confirmDeleteBtn.disabled = count === 0;
+    confirmDeleteBtn.textContent = "Delete ".concat(count, " Task(s)");
+  }
+  function handleDeleteCardClick(card, taskData) {
+    var taskGid = taskData.gid;
+    var index = tasksToDelete.indexOf(taskGid);
+    if (index > -1) {
+      tasksToDelete.splice(index, 1);
+      card.classList.remove('selected');
+    } else {
+      tasksToDelete.push(taskGid);
+      card.classList.add('selected');
+    }
+    updateDeleteBar();
+  }
+  function handleBulkDelete() {
+    confirmDeleteBtn.disabled = true;
+    confirmDeleteBtn.textContent = 'Deleting...';
+    var csrfToken = document.querySelector('input[name="_token"]').value;
+    fetch('/tasks/bulk-delete', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        gids: tasksToDelete
+      })
+    }).then(function (response) {
+      if (!response.ok) {
+        return response.json().then(function (err) {
+          return Promise.reject(err);
+        });
+      }
+      return response.json();
+    }).then(function (data) {
+      console.log(data.message);
+      window.location.reload();
+    })["catch"](function (error) {
+      console.error('Error al borrar tareas:', error);
+      alert('Error deleting tasks: ' + (error.error || error.message));
+      confirmDeleteBtn.disabled = false;
+      updateDeleteBar();
+    });
+  }
   function handleCardClick(e) {
-    if (!isEditMode) return;
     var card = e.target.closest('.prj-card');
     if (!card) return;
     var taskDataString = card.dataset.taskJson;
-    if (!taskDataString) {
-      console.error('La tarjeta no tiene data-task-json.');
-      return;
-    }
+    if (!taskDataString) return;
     var taskData = JSON.parse(taskDataString);
-
-    // Abrir el modal 
-    openModal(taskData);
-
-    // Salir del modo edición
-    toggleEditMode();
+    if (isEditMode) {
+      openModal(taskData);
+      resetEditMode();
+    } else if (isDeleteMode) {
+      handleDeleteCardClick(card, taskData);
+    }
   }
   openBtn.addEventListener('click', function () {
     return openModal(null);
-  }); // null = Modo Creación
-
-  // Eventos del modal
+  });
   closeBtn.addEventListener('click', closeModal);
   form.addEventListener('submit', handleFormSubmit);
   modal.addEventListener('click', function (e) {
-    if (e.target === modal) {
-      closeModal();
-    }
+    if (e.target === modal) closeModal();
   });
   editToggleBtn.addEventListener('click', toggleEditMode);
+  deleteToggleBtn.addEventListener('click', toggleDeleteMode);
   taskCardsContainer.addEventListener('click', handleCardClick);
+  cancelDeleteBtn.addEventListener('click', resetDeleteMode);
+  confirmDeleteBtn.addEventListener('click', handleBulkDelete);
 }
 document.addEventListener('DOMContentLoaded', function () {
   initWorkspaceSelector();

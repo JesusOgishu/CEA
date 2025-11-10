@@ -235,7 +235,14 @@ class AsanaService
      */
     public function updateTask(string $taskGid, array $data)
     {
-        
         return $this->request('PUT', "tasks/{$taskGid}", ['data' => $data]);
+    }
+
+    /**
+     * Borra una tarea por su GID.
+     */
+    public function deleteTask(string $taskGid)
+    {
+        return $this->request('DELETE', "tasks/{$taskGid}");
     }
 }

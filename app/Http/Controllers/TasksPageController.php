@@ -152,6 +152,9 @@ class TasksPageController extends Controller
         }
     }
 
+    /**
+     * Actualiza una tarea existente en Asana.
+     */
     public function update(Request $request, string $taskGid)
     {
         // validacion
@@ -179,7 +182,6 @@ class TasksPageController extends Controller
             if (!empty($data['assignee_gid'])) {
                 $taskData['assignee'] = $data['assignee_gid'];
             } else {
-                // set null 
                 $taskData['assignee'] = null; 
             }
             
@@ -202,5 +204,57 @@ class TasksPageController extends Controller
             ]);
             return response()->json(['error' => 'Could not update task in Asana: ' . $e->getMessage()], 500);
         }
+    }
+
+    
+
+    /**
+     * Borra múltiples tareas (una por una).
+     */
+    public function bulkDelete(Request $request)
+    {
+        // validacion
+        $validator = Validator::make($request->all(), [
+            'gids'   => 'required|array',
+            'gids.*' => 'required|string', 
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $asana = new AsanaService();
+        $gids = $request->input('gids');
+        
+        $successCount = 0;
+        $failCount = 0;
+        $errors = [];
+
+        // loop para borrar
+        foreach ($gids as $gid) {
+            try {
+                $asana->deleteTask($gid); 
+                $successCount++;
+            } catch (\Exception $e) {
+                $failCount++;
+                $errors[] = "Task $gid: " . $e->getMessage();
+            }
+        }
+
+        // log si algo falló
+        if ($failCount > 0) {
+            Log::warning('Error en borrado múltiple de tareas', [
+                'failed' => $failCount,
+                'errors' => $errors
+            ]);
+        }
+
+        // json return
+        return response()->json([
+            'message' => "Delete complete: $successCount succeeded, $failCount failed.",
+            'success' => $successCount,
+            'failed'  => $failCount,
+            'errors'  => $errors
+        ]);
     }
 }
