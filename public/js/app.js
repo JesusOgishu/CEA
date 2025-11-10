@@ -16405,6 +16405,10 @@ function initTaskModal() {
               form.task_name.value = task.name;
               form.notes.value = task.notes || '';
               modalTaskGid.value = task.gid;
+
+              // 👇 ¡AQUÍ ESTÁ LA NUEVA LÍNEA! 👇
+              form.task_due_on.value = task.due_on || ''; // Rellena la fecha
+
               if (task.assignee && task.assignee.gid) {
                 assigneeSelect.value = task.assignee.gid;
                 if (assigneeSelect.value !== task.assignee.gid) {

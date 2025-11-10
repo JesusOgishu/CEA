@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class TasksPageController extends Controller
 {
-    /**
+    /**ks
      * Muestra la lista de tareas.
      */
     public function index(Request $request)
@@ -59,7 +59,7 @@ class TasksPageController extends Controller
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name',
-            'assignee','assignee.name'
+            'assignee' 
         ];
 
         $resp = $asana->listTasks($filters, $fields);
@@ -76,10 +76,8 @@ class TasksPageController extends Controller
                     ? Carbon::parse($task['created_at'])->diffForHumans()
                     : '—');
             
-            // asignee
             $raw_name = $task['assignee']['name'] ?? null;
-            
-            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null; 
+            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
         }
 
         Log::info('TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);
@@ -101,6 +99,7 @@ class TasksPageController extends Controller
             'workspace_gid' => 'required|string', 
             'project_gid'   => 'nullable|string', 
             'assignee_gid'  => 'nullable|string',
+            'due_on'        => 'nullable|date', 
         ]);
 
         if ($validator->fails()) {
@@ -126,6 +125,11 @@ class TasksPageController extends Controller
             //project
             if (!empty($data['project_gid'])) {
                 $taskData['projects'] = [$data['project_gid']];
+            }
+            
+            //due_on (fecha)
+            if (!empty($data['due_on'])) {
+                $taskData['due_on'] = $data['due_on'];
             }
             
             Log::info('Creando nueva tarea en Asana', $taskData);
@@ -160,6 +164,7 @@ class TasksPageController extends Controller
             'name'         => 'required|string|max:255',
             'notes'        => 'nullable|string',
             'assignee_gid' => 'nullable|string',
+            'due_on'       => 'nullable|date', 
         ]);
 
         if ($validator->fails()) {
@@ -177,10 +182,13 @@ class TasksPageController extends Controller
             ];
             
             // asignar
-            if (!empty($data['assignee_gid'])) {
-                $taskData['assignee'] = $data['assignee_gid'];
-            } else {
-                $taskData['assignee'] = null; 
+            if (isset($data['assignee_gid'])) { 
+                $taskData['assignee'] = $data['assignee_gid'] ?: null; 
+            }
+            
+            // due_on (fecha)
+            if (isset($data['due_on'])) { 
+                $taskData['due_on'] = $data['due_on'] ?: null; 
             }
             
             Log::info("Actualizando tarea $taskGid", $taskData);
@@ -212,7 +220,7 @@ class TasksPageController extends Controller
         // validacion
         $validator = Validator::make($request->all(), [
             'gids'   => 'required|array',
-            'gids.*' => 'required|string', // cada GID debe ser string
+            'gids.*' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -229,7 +237,7 @@ class TasksPageController extends Controller
         // loop para borrar
         foreach ($gids as $gid) {
             try {
-                $asana->deleteTask($gid); // Llama al nuevo método del servicio
+                $asana->deleteTask($gid);
                 $successCount++;
             } catch (\Exception $e) {
                 $failCount++;

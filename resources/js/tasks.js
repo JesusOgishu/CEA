@@ -112,9 +112,12 @@ function initTaskModal() {
         if (task) {
             modalTitle.textContent = 'Edit Task';
             submitBtn.textContent = 'Update Task';
+            
             form.task_name.value = task.name;
             form.notes.value = task.notes || ''; 
             modalTaskGid.value = task.gid; 
+            form.task_due_on.value = task.due_on || ''; 
+
             if (task.assignee && task.assignee.gid) {
                 assigneeSelect.value = task.assignee.gid;
                 if (assigneeSelect.value !== task.assignee.gid) {

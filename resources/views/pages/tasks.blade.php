@@ -7,43 +7,42 @@
 
     <div class="filters-container mb-4">
 
-        @if(isset($workspaces) && count($workspaces) > 1)
-        <div class="workspace-filter filter-item">
-            <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
-            <select id="workspaceSelector" class="form-control">
-                @foreach ($workspaces as $ws)
-                    <option value="{{ $ws['gid'] }}" {{ request('workspace') == $ws['gid'] ? 'selected' : '' }}>
-                        {{ $ws['name'] }}
+        <div class="filters-wrapper"> 
+            @if(isset($workspaces) && count($workspaces) > 1)
+            <div class="workspace-filter filter-item">
+                <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
+                <select id="workspaceSelector" class="form-control">
+                    @foreach ($workspaces as $ws)
+                        <option value="{{ $ws['gid'] }}" {{ request('workspace') == $ws['gid'] ? 'selected' : '' }}>
+                            {{ $ws['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+            <div class="project-filter filter-item">
+                <label for="projectSelector" class="font-weight-bold">Project:</label>
+                <select id="projectSelector" class="form-control" >
+                    <option value="" {{ !request('project') ? 'selected' : '' }}>
+                        All my tasks in Workspace
                     </option>
-                @endforeach
-            </select>
-        </div>              
-        @endif
-        <div class="project-filter filter-item">
-            <label for="projectSelector" class="font-weight-bold">Project:</label>
-            <select id="projectSelector" class="form-control" >
-                <option value="" {{ !request('project') ? 'selected' : '' }}>
-                    All my tasks in Workspace
-                </option>
-                @foreach ($projects as $project)
-                    <option value="{{ $project['gid'] }}" {{ request('project') == $project['gid'] ? 'selected' : '' }}>
-                        {{ $project['name'] }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                    @foreach ($projects as $project)
+                        <option value="{{ $project['gid'] }}" {{ request('project') == $project['gid'] ? 'selected' : '' }}>
+                            {{ $project['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div> 
         
         <div class="tk-create-container"> 
-            
-            <button id="createTaskBtn" class="tk-btn-primary tk-btn-icon">
+            <button id="createTaskBtn" class="tk-btn-primary tk-btn-icon" >
                 <i class="material-icons-outlined">add</i>
             </button>
-            
-            <button id="editTaskToggleBtn" class="tk-btn-secondary tk-btn-icon">
+            <button id="editTaskToggleBtn" class="tk-btn-secondary tk-btn-icon" >
                 <i class="material-icons-outlined">edit</i>
             </button>
-            
-            <button id="deleteTaskToggleBtn" class="tk-btn-danger tk-btn-icon">
+            <button id="deleteTaskToggleBtn" class="tk-btn-danger tk-btn-icon" >
                 <i class="material-icons-outlined">delete_outline</i>
             </button>
         </div>
@@ -87,17 +86,20 @@
                     <div class="prj-card__footer">
                         <div>
                             <small>Due:</small>
-                            <strong>
-                                {{ isset($task['due_on']) ? \Carbon\Carbon::parse($task['due_on'])->format('d/m/Y') : '—' }}
-                            </strong>
+                            @if(!empty($task['due_on']))
+                                <strong>{{ $task['due_on'] }}</strong>
+                            @else
+                                <strong style="color: #999;">—</strong>
+                            @endif
                         </div>
-
-                        @if(!empty($task['assignee_name']))
-                            <div>
-                                <small>Assignee:</small>
+                        <div>
+                            <small>Assignee:</small>
+                            @if(!empty($task['assignee_name']))
                                 <strong>{{ $task['assignee_name'] }}</strong>
-                            </div>
-                        @endif
+                            @else
+                                <strong style="color: #999;">Unassigned</strong>
+                            @endif
+                        </div>
                         <div class="prj-card__link">
                             @if(!empty($task['permalink_url']))
                                 <a href="{{ $task['permalink_url'] }}" target="_blank" rel="noopener">Open Task</a>
@@ -131,10 +133,17 @@
                     <div id="assigneeWheeler" class="tk-modal-wheeler" style="display: none;"></div>
                 </div>
             </div>
+
+            <div class="tk-form-group"> 
+                <label for="task_due_on">Due Date</label>
+                <input type="date" id="task_due_on" name="due_on" class="form-control">
+            </div>
+            
             <div class="tk-form-group"> 
                 <label for="task_description">Description</label>
                 <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea>
             </div>
+            
             <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
             <input type="hidden" id="modal_project_gid" name="project_gid">
             <input type="hidden" id="modal_task_gid" name="task_gid">
