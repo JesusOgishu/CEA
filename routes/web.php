@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/tasks', [TasksPageController::class, 'index'])->name('tasks.page');
     Route::post('/tasks/store', [TasksPageController::class, 'store'])->name('tasks.store');
+    Route::post('/tasks/update/{gid}', [TasksPageController::class, 'update'])->name('tasks.update');
 
     // Metrics Dashboard
     Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics.page');

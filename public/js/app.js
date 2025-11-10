@@ -16278,26 +16278,53 @@ function initProjectSelector() {
     window.location.href = currentUrl.toString();
   });
 }
-function initCreateTaskModal() {
+function initTaskModal() {
+  //Elementos del Modal
   var modal = document.getElementById('createTaskModal');
   var openBtn = document.getElementById('createTaskBtn');
   var closeBtn = document.getElementById('closeModalBtn');
   var form = document.getElementById('createTaskForm');
   var submitBtn = document.getElementById('submitTaskBtn');
   var errorMsgDiv = document.getElementById('modalError');
-  var workspaceSelector = document.getElementById('workspaceSelector');
-  var projectSelector = document.getElementById('projectSelector');
+  var modalTitle = document.getElementById('modalTitle');
+
+  // Campos Ocultos 
   var modalWorkspaceGid = document.getElementById('modal_workspace_gid');
   var modalProjectGid = document.getElementById('modal_project_gid');
+  var modalTaskGid = document.getElementById('modal_task_gid');
+
+  // Filtros 
+  var workspaceSelector = document.getElementById('workspaceSelector');
+  var projectSelector = document.getElementById('projectSelector');
+
+  //Campo Asignado
   var assigneeSelect = document.getElementById('task_assignee');
   var assigneeWheeler = document.getElementById('assigneeWheeler');
-  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect) {
-    console.warn('Faltan elementos del modal para inicializar.');
+
+  // Edición
+  var editToggleBtn = document.getElementById('editTaskToggleBtn');
+  var editToast = document.getElementById('editModeToast');
+  var taskCardsContainer = document.getElementById('taskCardsContainer');
+  var pageWrapper = document.querySelector('.task-page-wrapper');
+
+  // Estado 
+  var isEditMode = false;
+  var toastTimer = null;
+  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect || !editToggleBtn || !editToast || !taskCardsContainer || !pageWrapper) {
+    console.warn('Faltan elementos del DOM para inicializar el modal o el modo edición.');
     return;
   }
+
+  /**
+   * Carga la lista de usuarios desde nuestra API
+   */
   function loadAssignees(_x) {
     return _loadAssignees.apply(this, arguments);
-  } //modal
+  }
+  /**
+   * Abre el modal. Si recibe 'task', entra en Modo Edición.
+   * Si 'task' es null, entra en Modo Creación.
+   */
   function _loadAssignees() {
     _loadAssignees = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(workspaceGid) {
       var response, users, meOption, _t;
@@ -16332,7 +16359,7 @@ function initCreateTaskModal() {
             return response.json();
           case 5:
             users = _context.v;
-            assigneeSelect.innerHTML = '';
+            assigneeSelect.innerHTML = ''; // Limpiar
             meOption = new Option('Assign to Me (Default)', 'me');
             meOption.selected = true;
             assigneeSelect.add(meOption);
@@ -16360,46 +16387,94 @@ function initCreateTaskModal() {
     return _loadAssignees.apply(this, arguments);
   }
   function openModal() {
-    var workspaceGid = workspaceSelector.value;
-    var projectGid = projectSelector.value;
-    if (modalWorkspaceGid) modalWorkspaceGid.value = workspaceGid;
-    if (modalProjectGid) modalProjectGid.value = projectGid;
-
-    // form clear
-    form.reset();
-    if (errorMsgDiv) {
-      errorMsgDiv.style.display = 'none';
-      errorMsgDiv.textContent = '';
-    }
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Task';
-
-    // Cargar usuarios
-    loadAssignees(workspaceGid);
-
-    // show modal
-    modal.style.display = 'flex';
-    setTimeout(function () {
-      return modal.classList.add('open');
-    }, 10);
+    return _openModal.apply(this, arguments);
   }
+  /**
+   * Cierra el modal
+   */
+  function _openModal() {
+    _openModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+      var task,
+        workspaceGid,
+        tempOption,
+        _args2 = arguments;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
+          case 0:
+            task = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
+            workspaceGid = workspaceSelector.value;
+            form.reset();
+            if (errorMsgDiv) errorMsgDiv.style.display = 'none';
+            submitBtn.disabled = false;
+            _context2.n = 1;
+            return loadAssignees(workspaceGid);
+          case 1:
+            if (task) {
+              modalTitle.textContent = 'Edit Task';
+              submitBtn.textContent = 'Update Task';
+              form.task_name.value = task.name;
+              form.notes.value = task.notes || '';
+              modalTaskGid.value = task.gid;
+              if (task.assignee && task.assignee.gid) {
+                assigneeSelect.value = task.assignee.gid;
+                if (assigneeSelect.value !== task.assignee.gid) {
+                  tempOption = new Option(task.assignee.name, task.assignee.gid);
+                  assigneeSelect.add(tempOption);
+                  assigneeSelect.value = task.assignee.gid;
+                }
+              } else {
+                assigneeSelect.value = ''; // Sin asignar
+              }
+            } else {
+              modalTitle.textContent = 'Create New Task';
+              submitBtn.textContent = 'Submit Task';
+              modalTaskGid.value = '';
+              modalWorkspaceGid.value = workspaceGid;
+              modalProjectGid.value = projectSelector.value;
+            }
 
-  //closse modal
+            //Mostrar modal
+            modal.style.display = 'flex';
+            setTimeout(function () {
+              return modal.classList.add('open');
+            }, 10);
+          case 2:
+            return _context2.a(2);
+        }
+      }, _callee2);
+    }));
+    return _openModal.apply(this, arguments);
+  }
   function closeModal() {
     modal.classList.remove('open');
     setTimeout(function () {
       return modal.style.display = 'none';
     }, 300);
   }
+
+  /**
+   * Maneja el envío del formulario (AHORA PARA CREAR Y EDITAR)
+   */
   function handleFormSubmit(e) {
     e.preventDefault();
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Creating...';
     if (errorMsgDiv) errorMsgDiv.style.display = 'none';
     var formData = new FormData(form);
     var csrfToken = document.querySelector('input[name="_token"]').value;
-    fetch('/tasks/store', {
-      method: 'POST',
+    var url;
+    var method = 'POST';
+    var taskGid = modalTaskGid.value;
+    if (taskGid) {
+      // --- MODO EDICIÓN ---
+      url = "/tasks/update/".concat(taskGid);
+      submitBtn.textContent = 'Updating...';
+    } else {
+      // --- MODO CREACIÓN ---
+      url = '/tasks/store';
+      submitBtn.textContent = 'Creating...';
+    }
+    fetch(url, {
+      method: method,
       headers: {
         'X-CSRF-TOKEN': csrfToken,
         'Accept': 'application/json'
@@ -16413,23 +16488,70 @@ function initCreateTaskModal() {
       }
       return response.json();
     }).then(function (data) {
-      console.log('Tarea creada:', data);
+      console.log('Respuesta:', data);
       closeModal();
-      window.location.reload();
+      window.location.reload(); // Recargar para ver cambios
     })["catch"](function (error) {
-      console.error('Error al crear tarea:', error);
+      console.error('Error al guardar tarea:', error);
       var msg = error.error || error.message || 'An unknown error occurred.';
       if (errorMsgDiv) {
         errorMsgDiv.textContent = msg;
         errorMsgDiv.style.display = 'block';
       }
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Task';
+      // Restaurar texto del botón
+      submitBtn.textContent = taskGid ? 'Update Task' : 'Submit Task';
     });
   }
 
-  // events
-  openBtn.addEventListener('click', openModal);
+  /**
+   * Muestra el letrero (toast)
+   */
+  function showToast() {
+    if (toastTimer) clearTimeout(toastTimer);
+    editToast.classList.add('show');
+    toastTimer = setTimeout(function () {
+      editToast.classList.remove('show');
+    }, 2000);
+  }
+
+  /**
+   * Activa o desactiva el Modo Edición
+   */
+  function toggleEditMode() {
+    isEditMode = !isEditMode;
+    editToggleBtn.classList.toggle('active', isEditMode);
+    pageWrapper.classList.toggle('edit-mode-active', isEditMode);
+    if (isEditMode) {
+      showToast();
+    }
+  }
+
+  /**
+   * Manejador de clic en las tarjetas
+   */
+  function handleCardClick(e) {
+    if (!isEditMode) return;
+    var card = e.target.closest('.prj-card');
+    if (!card) return;
+    var taskDataString = card.dataset.taskJson;
+    if (!taskDataString) {
+      console.error('La tarjeta no tiene data-task-json.');
+      return;
+    }
+    var taskData = JSON.parse(taskDataString);
+
+    // Abrir el modal 
+    openModal(taskData);
+
+    // Salir del modo edición
+    toggleEditMode();
+  }
+  openBtn.addEventListener('click', function () {
+    return openModal(null);
+  }); // null = Modo Creación
+
+  // Eventos del modal
   closeBtn.addEventListener('click', closeModal);
   form.addEventListener('submit', handleFormSubmit);
   modal.addEventListener('click', function (e) {
@@ -16437,11 +16559,13 @@ function initCreateTaskModal() {
       closeModal();
     }
   });
+  editToggleBtn.addEventListener('click', toggleEditMode);
+  taskCardsContainer.addEventListener('click', handleCardClick);
 }
 document.addEventListener('DOMContentLoaded', function () {
   initWorkspaceSelector();
   initProjectSelector();
-  initCreateTaskModal();
+  initTaskModal();
 });
 
 /***/ }),

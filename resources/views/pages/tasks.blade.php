@@ -4,8 +4,10 @@
 
 @section('content')
 <div class="task-page-wrapper">
+
     <div class="filters-container mb-4" style="margin-bottom: 2rem;">
 
+       
         @if(isset($workspaces) && count($workspaces) > 1)
         <div class="workspace-filter filter-item">
             <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
@@ -42,15 +44,21 @@
             <button id="createTaskBtn" class="tk-btn-primary"> 
                 Create Task
             </button>
+            
+            <button id="editTaskToggleBtn" class="tk-btn-secondary">
+                Edit Task
+            </button>
         </div>
 
     </div>
+
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
-        <div class="prj-cards-container">
+        <div id="taskCardsContainer" class="prj-cards-container"> 
             @foreach ($tasks as $task)
-                <div class="prj-card">
+                
+                <div class="prj-card" data-task-json='@json($task)'>
                     <div class="prj-card__header">
                         <p class="prj-card__title">{{ $task['name'] ?? 'Untitled Task' }}</p>
                         <span class="prj-card__section">{{ $task['section_name'] }}</span>
@@ -102,23 +110,18 @@
     @endif
 </div> 
 
-
 <div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> 
     <div class="tk-modal-content"> 
-        
         <div class="tk-modal-header"> 
-            <h3>Create New Task</h3>
+            <h3 id="modalTitle">Create New Task</h3> 
             <button id="closeModalBtn" class="tk-modal-close">&times;</button> 
         </div>
-
         <form id="createTaskForm">
-            @csrf 
-            
+            @csrf
             <div class="tk-form-group"> 
                 <label for="task_name">Task Name (required)</label>
                 <input type="text" id="task_name" name="name" class="form-control" required>
             </div>
-            
             <div class="tk-form-group">
                 <label for="task_assignee">Assignee</label>
                 <div class="tk-select-wrapper">
@@ -135,16 +138,21 @@
 
             <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
             <input type="hidden" id="modal_project_gid" name="project_gid">
+            
+            <input type="hidden" id="modal_task_gid" name="task_gid">
 
             <div class="tk-modal-footer"> 
                 <div id="modalError" class="tk-modal-error" style="display: none;"></div> 
-                
                 <button type="submit" id="submitTaskBtn" class="tk-btn-primary"> 
                     Submit Task
                 </button>
             </div>
         </form>
     </div>
+</div>
+
+<div id="editModeToast" class="tk-toast-notification">
+    Please select a task to edit.
 </div>
 
 @endsection

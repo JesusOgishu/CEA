@@ -33,15 +33,15 @@ class TasksPageController extends Controller
             }
         }
 
-        // Obtener workspaces
+        // workspaces
         $workspaces = $asana->getWorkspaces();
 
-        // usar el default 
+        // default
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // Obtener proyectos filtrados 
+        // proyectos
         $projects = $asana->getUserProjects($workspaceId);
         
         $filters = [
@@ -53,17 +53,17 @@ class TasksPageController extends Controller
         if ($workspaceId) {
             $filters['workspace'] = $workspaceId;
         }
-
         if ($projectId) {
             $filters['project'] = $projectId;
         }
 
+        // campos
         $fields = [
             'gid', 'name', 'due_on', 'completed', 'permalink_url',
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name',
-            'assignee.name' 
+            'assignee' 
         ];
 
         $resp = $asana->listTasks($filters, $fields);
@@ -80,7 +80,6 @@ class TasksPageController extends Controller
                     ? Carbon::parse($task['created_at'])->diffForHumans()
                     : '—');
             
-            // asignee
             $raw_name = $task['assignee']['name'] ?? null;
             $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
         }
@@ -92,10 +91,12 @@ class TasksPageController extends Controller
 
 
     
-  
+    /**
+     * Almacena una nueva tarea en Asana.
+     */
     public function store(Request $request)
     {
-        // validation
+        // validacion
         $validator = Validator::make($request->all(), [
             'name'          => 'required|string|max:255',
             'notes'         => 'nullable|string',
@@ -104,7 +105,6 @@ class TasksPageController extends Controller
             'assignee_gid'  => 'nullable|string',
         ]);
 
-        // validation
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
@@ -149,6 +149,58 @@ class TasksPageController extends Controller
             ]);
             
             return response()->json(['error' => 'Could not create task in Asana: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function update(Request $request, string $taskGid)
+    {
+        // validacion
+        $validator = Validator::make($request->all(), [
+            'name'         => 'required|string|max:255',
+            'notes'        => 'nullable|string',
+            'assignee_gid' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        try {
+            $asana = new AsanaService();
+            $data = $validator->validated();
+            
+            // datos para api
+            $taskData = [
+                'name'  => $data['name'],
+                'notes' => $data['notes'] ?? '',
+            ];
+            
+            // asignar
+            if (!empty($data['assignee_gid'])) {
+                $taskData['assignee'] = $data['assignee_gid'];
+            } else {
+                // set null 
+                $taskData['assignee'] = null; 
+            }
+            
+            Log::info("Actualizando tarea $taskGid", $taskData);
+
+            // service 
+            $result = $asana->updateTask($taskGid, $taskData);
+
+            // json return
+            return response()->json([
+                'message' => 'Task updated successfully!',
+                'task'    => $result['data'] ?? null
+            ]);
+
+        } catch (\Exception $e) {
+            // error
+            Log::error("Error al actualizar tarea $taskGid", [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+            return response()->json(['error' => 'Could not update task in Asana: ' . $e->getMessage()], 500);
         }
     }
 }

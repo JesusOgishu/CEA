@@ -230,4 +230,12 @@ class AsanaService
         
         return $this->request('POST', 'tasks', ['data' => $data]);
     }
+    /**
+     * Actualiza una tarea por su GID.
+     */
+    public function updateTask(string $taskGid, array $data)
+    {
+        
+        return $this->request('PUT', "tasks/{$taskGid}", ['data' => $data]);
+    }
 }
