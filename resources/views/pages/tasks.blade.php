@@ -17,7 +17,7 @@
                     </option>
                 @endforeach
             </select>
-        </div>
+        </div>              
         @endif
         <div class="project-filter filter-item">
             <label for="projectSelector" class="font-weight-bold">Project:</label>
@@ -87,8 +87,11 @@
                     <div class="prj-card__footer">
                         <div>
                             <small>Due:</small>
-                            <strong>{{ $task['due_on'] ?? '—' }}</strong>
+                            <strong>
+                                {{ isset($task['due_on']) ? \Carbon\Carbon::parse($task['due_on'])->format('d/m/Y') : '—' }}
+                            </strong>
                         </div>
+
                         @if(!empty($task['assignee_name']))
                             <div>
                                 <small>Assignee:</small>

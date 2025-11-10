@@ -33,15 +33,11 @@ class TasksPageController extends Controller
             }
         }
 
-        // workspaces
         $workspaces = $asana->getWorkspaces();
-
-        // default
         if (!$workspaceId) {
             $workspaceId = $asana->getDefaultWorkspaceGid();
         }
 
-        // proyectos
         $projects = $asana->getUserProjects($workspaceId);
         
         $filters = [
@@ -63,7 +59,7 @@ class TasksPageController extends Controller
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name',
-            'assignee' 
+            'assignee','assignee.name'
         ];
 
         $resp = $asana->listTasks($filters, $fields);
@@ -80,8 +76,10 @@ class TasksPageController extends Controller
                     ? Carbon::parse($task['created_at'])->diffForHumans()
                     : '—');
             
+            // asignee
             $raw_name = $task['assignee']['name'] ?? null;
-            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null;
+            
+            $task['assignee_name'] = $raw_name ? Str::limit($raw_name, 15, '...') : null; 
         }
 
         Log::info('TasksPage filtros', ['workspace' => $workspaceId, 'project' => $projectId, 'filters' => $filters]);
@@ -206,8 +204,6 @@ class TasksPageController extends Controller
         }
     }
 
-    
-
     /**
      * Borra múltiples tareas (una por una).
      */
@@ -216,7 +212,7 @@ class TasksPageController extends Controller
         // validacion
         $validator = Validator::make($request->all(), [
             'gids'   => 'required|array',
-            'gids.*' => 'required|string', 
+            'gids.*' => 'required|string', // cada GID debe ser string
         ]);
 
         if ($validator->fails()) {
@@ -233,7 +229,7 @@ class TasksPageController extends Controller
         // loop para borrar
         foreach ($gids as $gid) {
             try {
-                $asana->deleteTask($gid); 
+                $asana->deleteTask($gid); // Llama al nuevo método del servicio
                 $successCount++;
             } catch (\Exception $e) {
                 $failCount++;
