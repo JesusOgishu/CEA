@@ -1965,3 +1965,206 @@ body {
 .loading-metrics .metrics-spinner {
     display: block;
 }
+/* ================================================= */
+/* ESTILOS DE PÁGINA "TEAMMATES"                 */
+/* ================================================= */
+
+.teammates-page-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.teammates-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  width: 100%;
+}
+
+.teammate-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  text-decoration: none;
+  color: inherit; /* Hereda el color de texto normal */
+  transition: all 0.3s ease;
+  position: relative; /* Para el botón de acción */
+  overflow: hidden;
+}
+
+.teammate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  border-color: #4f35a1; /* Tu color primario */
+}
+
+/* --- Foto o Iniciales --- */
+.teammate-card__photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background-color: #f0f1f1;
+}
+
+.teammate-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teammate-card__initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #4f35a1;
+  background-color: #e6e8ed;
+}
+
+/* --- Info --- */
+.teammate-card__info {
+  text-align: center;
+}
+
+.teammate-card__name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.teammate-card__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #555;
+  margin: 0.25rem 0;
+}
+
+.teammate-card__email {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+  word-break: break-all; /* Evita que emails largos rompan el layout */
+}
+
+/* --- Botón "View Tasks" --- */
+.teammate-card__action {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background-color: #4f35a1;
+  color: #ffffff;
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  
+  /* Oculto por defecto */
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.teammate-card:hover .teammate-card__action {
+  transform: translateY(0); /* Se muestra al hacer hover */
+}
+
+/* ================================================= */
+/* ESTILOS PARA MODAL "TEAMMATE TASKS"           */
+/* ================================================= */
+
+/* 1. Hacemos el modal más grande */
+.tk-modal-content--large {
+  max-width: 800px; /* Más ancho */
+}
+
+/* 2. El cuerpo del modal */
+.tk-modal-body {
+  max-height: 60vh; /* Altura máxima */
+  overflow-y: auto;   /* Scroll interno */
+  padding: 5px;       /* Un poco de espacio */
+}
+
+/* 3. Contenedor del spinner (para centrarlo) */
+.tk-modal-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+/* Reutilizamos el spinner que ya tenías */
+.tk-modal-body .tk-modal-wheeler {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+/* 4. Estilos para la lista de tareas (que el JS va a crear) */
+.teammate-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.teammate-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.teammate-task-item:hover {
+  background-color: #fff;
+  border-color: #4f35a1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.teammate-task-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.teammate-task-item__name {
+  font-weight: 600;
+  color: #333;
+}
+
+.teammate-task-item__meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.teammate-task-item__link a {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #4f35a1;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.teammate-task-item__link a:hover {
+  background-color: #3a277a;
+}

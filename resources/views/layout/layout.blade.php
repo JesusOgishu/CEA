@@ -55,7 +55,7 @@
                     </a>
                 </li>
                 <li class="sidebar-list-item">
-                    <a href="#" target="_self">
+                    <a href="{{ route('teammates.index') }}" target="_self">
                         <span class="material-icons-outlined">group</span> Teammates
                     </a>
                 </li>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AsanaController;
 use App\Http\Controllers\AsanaInfoController;
 use App\Http\Controllers\TasksPageController;
 use App\Http\Controllers\AsanaUsersController;
+use App\Http\Controllers\TeammatesController;
 use App\Http\Controllers\MetricsController;
 
 Route::get('/', [IndexController::class, 'landing_page'])->name('landing');
@@ -41,6 +42,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Metrics Dashboard
     Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics.page');
+
+    //teammates
+    Route::get('/teammates', [TeammatesController::class, 'index'])->name('teammates.index');
+    Route::get('/api/teammate-tasks/{userGid}', [TeammatesController::class, 'showTasks'])->name('api.teammates.tasks');
 
     // Metrics API Endpoints
     Route::prefix('metrics/api')->group(function () {
