@@ -59,7 +59,7 @@ class TasksPageController extends Controller
             'projects.name', 'projects.permalink_url', 'projects.gid',
             'notes', 'created_at', 'modified_at',
             'memberships.section.name',
-            'assignee' 
+            'assignee','assignee.name'
         ];
 
         $resp = $asana->listTasks($filters, $fields);
