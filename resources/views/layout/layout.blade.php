@@ -32,12 +32,16 @@
                 </a>
             </div>
         </header>
+
         <aside id="sidebar">
             <div class="sidebar-title">
                 <div class="sidebar-brand">
                     <span class="material-icons-outlined">api</span> C.E.A
                 </div>
+                
+                <span class="material-icons-outlined" id="sidebar-close-btn">close</span>
             </div>
+            
             <ul class="sidebar-list">
                 <li class="sidebar-list-item">
                     <a href="{{ route('dashboard') }}" target="_self">
@@ -66,6 +70,9 @@
                 </li>
             </ul>
         </aside>
+
+        <div class="sidebar-overlay"></div>
+
         <main class="main-container">
             @yield('content')
         </main>
@@ -80,5 +87,8 @@
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
+    
+    {{-- Stack para scripts específicos de página (como teammates.js) --}}
+    @stack('scripts')
 </body>
 </html>

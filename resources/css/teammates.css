@@ -5,6 +5,7 @@
 .teammates-page-wrapper {
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 150px); /* Desktop */
 }
 
 .teammates-grid-container {
@@ -16,6 +17,12 @@
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   width: 100%;
+  
+  /* --- Scroll Interno --- */
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 300px;
+  align-content: start; /* Clave para que el grid no se estire */
 }
 
 .teammate-card {
@@ -28,16 +35,19 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid #e0e0e0;
   text-decoration: none;
-  color: inherit; /* Hereda el color de texto normal */
+  color: inherit;
   transition: all 0.3s ease;
-  position: relative; /* Para el botón de acción */
+  position: relative;
   overflow: hidden;
+
+  /* --- 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 --- */
+  min-height: 260px; /* Evita que la tarjeta colapse */
 }
 
 .teammate-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-  border-color: #4f35a1; /* Tu color primario */
+  border-color: #4f35a1;
 }
 
 /* --- Foto o Iniciales --- */
@@ -48,6 +58,7 @@
   margin-bottom: 1rem;
   overflow: hidden;
   background-color: #f0f1f1;
+  flex-shrink: 0; /* Evita que la foto se encoja */
 }
 
 .teammate-card__photo img {
@@ -91,7 +102,7 @@
   font-size: 0.85rem;
   color: #888;
   margin: 0;
-  word-break: break-all; /* Evita que emails largos rompan el layout */
+  word-break: break-all;
 }
 
 /* --- Botón "View Tasks" --- */
@@ -106,47 +117,41 @@
   padding: 0.75rem;
   font-weight: 600;
   font-size: 0.9rem;
-  
-  /* Oculto por defecto */
   transform: translateY(100%);
   transition: transform 0.3s ease;
 }
 
 .teammate-card:hover .teammate-card__action {
-  transform: translateY(0); /* Se muestra al hacer hover */
+  transform: translateY(0);
 }
 
 /* ================================================= */
-/* ESTILOS PARA MODAL "TEAMMATE TASKS"           */
+/* ESTILOS PARA MODAL "TEAMMATE TASKS"         */
 /* ================================================= */
 
-/* 1. Hacemos el modal más grande */
 .tk-modal-content--large {
-  max-width: 800px; /* Más ancho */
+  max-width: 800px;
 }
 
-/* 2. El cuerpo del modal */
 .tk-modal-body {
-  max-height: 60vh; /* Altura máxima */
-  overflow-y: auto;   /* Scroll interno */
-  padding: 5px;       /* Un poco de espacio */
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 5px;
 }
 
-/* 3. Contenedor del spinner (para centrarlo) */
 .tk-modal-spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
 }
-/* Reutilizamos el spinner que ya tenías */
+
 .tk-modal-body .tk-modal-wheeler {
   width: 40px;
   height: 40px;
   border-width: 4px;
 }
 
-/* 4. Estilos para la lista de tareas (que el JS va a crear) */
 .teammate-task-list {
   display: flex;
   flex-direction: column;
@@ -200,4 +205,12 @@
 
 .teammate-task-item__link a:hover {
   background-color: #3a277a;
+}
+
+/* --- Mobile --- */
+@media (max-width: 600px) {
+  .teammates-page-wrapper {
+    /* Ajusta '120px' a la altura de tu header móvil */
+    height: calc(100vh - 120px);
+  }
 }

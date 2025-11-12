@@ -8,7 +8,7 @@
 
     <div class="workspaces-container d-flex align-items-center">
         <label for="workspaceSelector" class="mr-3 font-weight-bold" style="margin-right: 10px; margin-bottom: 0;">Filter by Workspace:</label>
-        <select id="workspaceSelector" class="form-control" style="width: 300px;">
+        <select id="workspaceSelector" class="form-control" >
             @forelse ($workspaces as $workspace)
                 <option 
                     value="{{ $workspace['gid'] }}" 
@@ -24,7 +24,7 @@
 
     <div class="projects-container d-flex align-items-center">
         <label for="projectSelector" class="mr-3 font-weight-bold" style="margin-right: 10px; margin-bottom: 0;">Filter by Project:</label>
-        <select id="projectSelector" class="form-control" style="width: 300px;">
+        <select id="projectSelector" class="form-control" >
             <option value="" {{ !request('project') ? 'selected' : '' }}>
                 All my tasks in this Workspace
             </option>

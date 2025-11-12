@@ -25,6 +25,7 @@ function animateToStartPosition(target) {
 /**
  * GIDs de secciones por cuadrante.
  */
+// Dejamos esto aquí, pero solo se llenará si el Blade lo imprime
 const QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
 
 
@@ -32,6 +33,12 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   const url = `/asana/tasks/${taskId}/move`;
   const finalSectionGid = sectionGid || null;
 
+  // Prevenimos la llamada si es 'undefined' (estamos en "All tasks")
+  if (sectionGid === undefined) {
+      console.warn('Movimiento cancelado: No estás en una vista de proyecto.');
+      return;
+  }
+  
   fetch(url, {
     method: 'POST',
     headers: {
@@ -67,15 +74,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     })
     .catch(error => {
       console.error('Error al actualizar la tarea en Asana:', error.message);
-      const message = document.createElement('div');
-      message.className =
-        'fixed top-4 right-4 bg-red-600 text-white p-3 rounded shadow-lg transition-opacity duration-500 z-50';
-      message.textContent = `Error al mover la tarea: ${error.message.substring(
-        0,
-        100
-      )}... Revisa la consola.`;
-      document.body.appendChild(message);
-      setTimeout(() => message.remove(), 7000);
+      // (Tu código de manejo de errores...)
     });
 }
 
@@ -116,7 +115,10 @@ function initDragAndDrop() {
     overlap: 0.5,
     listeners: {
       dragenter(event) {
-        event.target.classList.add('drop-active');
+        // Solo activa si NO es el placeholder
+        if (!event.target.classList.contains('eisenhower-placeholder')) {
+            event.target.classList.add('drop-active');
+        }
       },
       dragleave(event) {
         event.target.classList.remove('drop-active');
@@ -124,6 +126,14 @@ function initDragAndDrop() {
       drop(event) {
         const draggableElement = event.relatedTarget;
         const dropzoneElement = event.target;
+        
+        // Si es el placeholder, regresa la tarjeta
+        if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
+            animateToStartPosition(draggableElement);
+            dropzoneElement.classList.remove('drop-active');
+            return;
+        }
+        
         const list = dropzoneElement.querySelector('.task-list, .task-cards-container');
 
         if (list && draggableElement) {
@@ -137,13 +147,21 @@ function initDragAndDrop() {
           const taskId = draggableElement.getAttribute('data-task-id');
           const projectGid = draggableElement.getAttribute('data-project-gid');
 
-          if (taskId && projectGid) {
-            updateAsanaTaskSection(taskId, projectGid, newSectionGid);
+          // Solo actualiza si la sección existe (evita errores en "All tasks")
+          if (newSectionGid !== undefined) { 
+              if (taskId && projectGid) {
+                updateAsanaTaskSection(taskId, projectGid, newSectionGid);
+              } else {
+                console.warn(
+                  'Faltan datos (taskId o projectGid) para mover la tarea.',
+                  { listId, newSectionGid, taskId, projectGid }
+                );
+              }
+          } else if (Object.keys(QUADRANT_SECTION_GIDS).length > 0) {
+              console.warn('Zona de drop no reconocida:', listId);
+              animateToStartPosition(draggableElement);
           } else {
-            console.warn(
-              'Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.',
-              { listId, newSectionGid, taskId, projectGid }
-            );
+              console.log('Movimiento dentro de "Pending" (sin API call).');
           }
         }
         dropzoneElement.classList.remove('drop-active');
@@ -172,9 +190,6 @@ function initWorkspaceSelector() {
 }
 
 
-/**
- * Inicializa el selector de proyectos.
- */
 function initProjectSelector() {
   const select = document.getElementById('projectSelector');
   if (!select) return;
@@ -188,22 +203,40 @@ function initProjectSelector() {
     } else {
       currentUrl.searchParams.delete('project');
     }
-
     
     window.location.href = currentUrl.toString();
   });
 }
 
+
+/* ================================== */
+/* 👇 ¡AQUÍ ESTÁ EL CAMBIO RESPONSIVE! 👇 */
+/* ================================== */
 /**
- * Inicializa el toggle del menú lateral.
+ * Inicializa el toggle del menú lateral (ahora para móvil y escritorio).
  */
 function initSidebarToggle() {
   const gridContainer = document.querySelector('.grid-container');
-  const menuIcon = document.querySelector('.menu-icon');
-  if (gridContainer && menuIcon) {
-    menuIcon.addEventListener('click', () => {
-      gridContainer.classList.toggle('sidebar-open');
-    });
+  const menuIcon = document.querySelector('.menu-icon'); // Hamburguesa
+  const closeBtn = document.getElementById('sidebar-close-btn'); // Botón "X"
+  const overlay = document.querySelector('.sidebar-overlay'); // Fondo oscuro
+
+  if (gridContainer && menuIcon && closeBtn && overlay) {
+    
+    // Función para abrir
+    const openSidebar = () => {
+      gridContainer.classList.add('sidebar-open');
+    };
+    
+    // Función para cerrar
+    const closeSidebar = () => {
+      gridContainer.classList.remove('sidebar-open');
+    };
+
+    // Asignar eventos
+    menuIcon.addEventListener('click', openSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
   }
 }
 
@@ -212,7 +245,7 @@ function initSidebarToggle() {
  * Inicializa todo.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  initSidebarToggle();
+  initSidebarToggle(); // <-- Esta es la función que acabamos de cambiar
   initDragAndDrop();
   initWorkspaceSelector(); 
   initProjectSelector();

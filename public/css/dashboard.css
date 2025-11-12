@@ -132,9 +132,11 @@ body {
 
 /* ---------- MAIN ---------- */
 .main-container {
-    grid-area: main;
-    overflow-y: auto;
-    padding: 20px;
+ grid-area: main;
+ overflow: hidden; 
+ padding: 20px;
+  height: 100%; 
+  box-sizing: border-box; 
 }
 
 .main-title {

@@ -15569,10 +15569,17 @@ function animateToStartPosition(target) {
 /**
  * GIDs de secciones por cuadrante.
  */
+// Dejamos esto aquí, pero solo se llenará si el Blade lo imprime
 var QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
 function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   var url = "/asana/tasks/".concat(taskId, "/move");
   var finalSectionGid = sectionGid || null;
+
+  // Prevenimos la llamada si es 'undefined' (estamos en "All tasks")
+  if (sectionGid === undefined) {
+    console.warn('Movimiento cancelado: No estás en una vista de proyecto.');
+    return;
+  }
   fetch(url, {
     method: 'POST',
     headers: {
@@ -15629,13 +15636,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     };
   }())["catch"](function (error) {
     console.error('Error al actualizar la tarea en Asana:', error.message);
-    var message = document.createElement('div');
-    message.className = 'fixed top-4 right-4 bg-red-600 text-white p-3 rounded shadow-lg transition-opacity duration-500 z-50';
-    message.textContent = "Error al mover la tarea: ".concat(error.message.substring(0, 100), "... Revisa la consola.");
-    document.body.appendChild(message);
-    setTimeout(function () {
-      return message.remove();
-    }, 7000);
+    // (Tu código de manejo de errores...)
   });
 }
 
@@ -15676,7 +15677,10 @@ function initDragAndDrop() {
     overlap: 0.5,
     listeners: {
       dragenter: function dragenter(event) {
-        event.target.classList.add('drop-active');
+        // Solo activa si NO es el placeholder
+        if (!event.target.classList.contains('eisenhower-placeholder')) {
+          event.target.classList.add('drop-active');
+        }
       },
       dragleave: function dragleave(event) {
         event.target.classList.remove('drop-active');
@@ -15684,6 +15688,13 @@ function initDragAndDrop() {
       drop: function drop(event) {
         var draggableElement = event.relatedTarget;
         var dropzoneElement = event.target;
+
+        // Si es el placeholder, regresa la tarjeta
+        if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
+          animateToStartPosition(draggableElement);
+          dropzoneElement.classList.remove('drop-active');
+          return;
+        }
         var list = dropzoneElement.querySelector('.task-list, .task-cards-container');
         if (list && draggableElement) {
           draggableElement.style.transform = '';
@@ -15694,15 +15705,24 @@ function initDragAndDrop() {
           var newSectionGid = QUADRANT_SECTION_GIDS[listId];
           var taskId = draggableElement.getAttribute('data-task-id');
           var projectGid = draggableElement.getAttribute('data-project-gid');
-          if (taskId && projectGid) {
-            updateAsanaTaskSection(taskId, projectGid, newSectionGid);
+
+          // Solo actualiza si la sección existe (evita errores en "All tasks")
+          if (newSectionGid !== undefined) {
+            if (taskId && projectGid) {
+              updateAsanaTaskSection(taskId, projectGid, newSectionGid);
+            } else {
+              console.warn('Faltan datos (taskId o projectGid) para mover la tarea.', {
+                listId: listId,
+                newSectionGid: newSectionGid,
+                taskId: taskId,
+                projectGid: projectGid
+              });
+            }
+          } else if (Object.keys(QUADRANT_SECTION_GIDS).length > 0) {
+            console.warn('Zona de drop no reconocida:', listId);
+            animateToStartPosition(draggableElement);
           } else {
-            console.warn('Faltan datos esenciales para mover la tarea. Asegúrate de que estás en un proyecto filtrado.', {
-              listId: listId,
-              newSectionGid: newSectionGid,
-              taskId: taskId,
-              projectGid: projectGid
-            });
+            console.log('Movimiento dentro de "Pending" (sin API call).');
           }
         }
         dropzoneElement.classList.remove('drop-active');
@@ -15725,10 +15745,6 @@ function initWorkspaceSelector() {
     window.location.href = currentUrl.toString();
   });
 }
-
-/**
- * Inicializa el selector de proyectos.
- */
 function initProjectSelector() {
   var select = document.getElementById('projectSelector');
   if (!select) return;
@@ -15744,16 +15760,33 @@ function initProjectSelector() {
   });
 }
 
+/* ================================== */
+/* 👇 ¡AQUÍ ESTÁ EL CAMBIO RESPONSIVE! 👇 */
+/* ================================== */
 /**
- * Inicializa el toggle del menú lateral.
+ * Inicializa el toggle del menú lateral (ahora para móvil y escritorio).
  */
 function initSidebarToggle() {
   var gridContainer = document.querySelector('.grid-container');
-  var menuIcon = document.querySelector('.menu-icon');
-  if (gridContainer && menuIcon) {
-    menuIcon.addEventListener('click', function () {
-      gridContainer.classList.toggle('sidebar-open');
-    });
+  var menuIcon = document.querySelector('.menu-icon'); // Hamburguesa
+  var closeBtn = document.getElementById('sidebar-close-btn'); // Botón "X"
+  var overlay = document.querySelector('.sidebar-overlay'); // Fondo oscuro
+
+  if (gridContainer && menuIcon && closeBtn && overlay) {
+    // Función para abrir
+    var openSidebar = function openSidebar() {
+      gridContainer.classList.add('sidebar-open');
+    };
+
+    // Función para cerrar
+    var closeSidebar = function closeSidebar() {
+      gridContainer.classList.remove('sidebar-open');
+    };
+
+    // Asignar eventos
+    menuIcon.addEventListener('click', openSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
   }
 }
 
@@ -15761,7 +15794,7 @@ function initSidebarToggle() {
  * Inicializa todo.
  */
 document.addEventListener('DOMContentLoaded', function () {
-  initSidebarToggle();
+  initSidebarToggle(); // <-- Esta es la función que acabamos de cambiar
   initDragAndDrop();
   initWorkspaceSelector();
   initProjectSelector();
