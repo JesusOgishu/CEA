@@ -51,9 +51,7 @@ async function loadUserInfo() {
     }
 }
 
-/**
- * Renderiza los datos en la vista
- */
+
 function renderUserInfo(data) {
     const detailsElement = document.getElementById('user-details');
     const photoElement = document.getElementById('profile-photo');
@@ -65,7 +63,7 @@ function renderUserInfo(data) {
     const aboutMeElement = document.getElementById('user-about-me');
     const activeProjectsList = document.getElementById('active-projects-list');
 
-    // Información Básica 
+    
     document.getElementById('user-name').textContent = data.name || 'Usuario desconocido';
     document.getElementById('user-email').textContent = data.email || '';
 

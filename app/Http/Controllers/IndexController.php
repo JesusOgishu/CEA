@@ -10,8 +10,6 @@ class IndexController extends Controller
         return view("pages.landing_page"); 
     }
 
-    
-
     public function tasks(){
         return view("pages.tasks");
     }

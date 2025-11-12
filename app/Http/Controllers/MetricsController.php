@@ -31,7 +31,7 @@ class MetricsController extends Controller
             $days      = (int) ($request->get('days') ?? 30);
             $since     = Carbon::now()->subDays($days)->toIso8601String();
 
-            // Tareas completadas (1 llamada)
+            
             $completed = $asana->listTasks([
                 'workspace'       => $workspace,
                 'assignee'        => 'me',
@@ -41,7 +41,7 @@ class MetricsController extends Controller
             $completedData  = $completed['data'] ?? ($completed ?? []);
             $completedCount = count(array_filter($completedData, fn($t) => !empty($t['completed'])));
 
-            // Tareas abiertas (1 llamada)
+            
             $open = $asana->listTasks([
                 'workspace'  => $workspace,
                 'assignee'   => 'me',
@@ -50,13 +50,13 @@ class MetricsController extends Controller
             $openData  = $open['data'] ?? ($open ?? []);
             $openCount = count(array_filter($openData, fn($t) => empty($t['completed'])));
 
-            // Tareas vencidas (usa la data de 'open')
+            
             $today        = Carbon::now()->toDateString();
             $overdueCount = count(array_filter($openData, fn($t) =>
                 !empty($t['due_on']) && !$t['completed'] && $t['due_on'] < $today
             ));
 
-            // Proyectos activos (1 llamada)
+            
             $projects      = $asana->getUserActiveProjects($workspace);
             $projectsCount = count($projects);
 
@@ -158,10 +158,7 @@ class MetricsController extends Controller
         }
     }
 
-    /**
-     * MODIFICADO: Lógica Híbrida.
-     * Pide solo los proyectos activos del usuario y cicla sobre esos.
-     */
+    
     public function apiTopAssignees(Request $request)
     {
         try {
@@ -171,12 +168,12 @@ class MetricsController extends Controller
             $limit     = (int) ($request->get('top') ?? 10);
             $since     = Carbon::now()->subDays($days)->toIso8601String();
 
-            // 1. Pedir solo los proyectos activos del usuario (1 llamada)
+            
             $projects = $asana->getUserActiveProjects($workspace);
 
             $map = [];
 
-            // 2. Ciclar solo sobre esos proyectos (N llamadas, pero N es chico)
+            
             foreach ($projects as $project) {
                 $projectGid = $project['gid'] ?? null;
                 if (!$projectGid) continue;

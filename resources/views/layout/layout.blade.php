@@ -88,7 +88,6 @@
         @csrf
     </form>
     
-    {{-- Stack para scripts específicos de página (como teammates.js) --}}
     @stack('scripts')
 </body>
 </html>

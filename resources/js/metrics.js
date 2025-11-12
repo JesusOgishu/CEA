@@ -1,12 +1,8 @@
-/* ==========================================================================
-   Metrics Dashboard - Asana Integration
-   ========================================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
+cument.addEventListener("DOMContentLoaded", () => {
     const workspaceSelect = document.querySelector("#workspaceSelect");
     const baseUrl = '/metrics/api';
 
-    // CAMBIO: tasksCompleted ahora pide 30 días
+    
     const endpoints = (workspace) => ({
         overview: `${baseUrl}/overview?workspace=${workspace}`,
         tasksCompleted: `${baseUrl}/tasks-completed?workspace=${workspace}&days=30`,
@@ -15,9 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         overdue: `${baseUrl}/overdue?workspace=${workspace}`,
     });
 
-    /**
-     * Maneja el estado de carga (con spinners)
-     */
+   
     function setLoadingState(selector, loading = true) {
         const el = document.querySelector(selector);
         if (!el) return;
@@ -26,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
             el.classList.add('loading-metrics');
             
             if (el.classList.contains('metrics-card-value-metrics')) {
-                el.textContent = '...'; // Texto para tarjetas
+                el.textContent = '...'; 
             }
             
             const spinner = el.querySelector('.metrics-spinner'); 
@@ -90,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         new ApexCharts(container, {
             chart: { type: 'line', height: 300, toolbar: { show: false } },
             series: [{ name: 'Completed Tasks', data: values }],
-            xaxis: { categories: labels, title: { text: 'Days' } }, // Eje X por Días
+            xaxis: { categories: labels, title: { text: 'Days' } }, 
             yaxis: { title: { text: 'Tasks' } },
             stroke: { curve: 'smooth', width: 3 },
             colors: ['#00b894'],

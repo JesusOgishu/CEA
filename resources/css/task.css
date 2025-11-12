@@ -27,19 +27,18 @@ gap: 10px;
 flex-shrink: 0; 
 }
 
-/* Nuevo estilo para el wrapper de los filtros */
 .filters-wrapper {
  display: flex;
- flex-wrap: wrap; /* Para que se acomoden en móvil */
- gap: 1.5rem; /* El gap que tenían antes */
- flex-grow: 1; /* <-- Esto hace que ocupe el espacio */
+ flex-wrap: wrap; 
+ gap: 1.5rem; 
+ flex-grow: 1; 
 }
 
 
 .task-page-wrapper {
 display: flex;
 flex-direction: column;
-height: calc(100vh - 150px); /* <-- Altura para ESCRITORIO */
+height: calc(100vh - 150px); 
 }
 
 .prj-cards-container {
@@ -52,7 +51,7 @@ border-radius: 12px;
 box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 width: 100%;
 flex-grow: 1; 
-overflow-y: auto; /* <-- ESTO CREA EL SCROLL INTERNO */
+overflow-y: auto; 
 min-height: 300px; 
 align-content: start; 
 }
@@ -183,14 +182,8 @@ min-height: 300px;
 align-content: start; 
 }
 
-/* ================================== */
-/* 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 */
-/* ================================== */
+
 .task-page-wrapper {
-  /* Ajustado a 120px. Si aún ves scroll en la pantalla completa,
-     puedes aumentar este valor (ej. 130px, 140px) hasta que el
-     scroll sea solo dentro del cuadro blanco.
-  */
  height: calc(100vh - 120px); 
 }
 
@@ -214,14 +207,14 @@ gap: 0.5rem;
 padding-top: 0.5rem;
 }
 
- /* En móvil, los filtros ocupan todo el ancho */
+
  .filter-item {
   width: 100%;
  }
  .filter-item select {
   width: 100%;
  }
- /* Y los botones se van a la derecha */
+
  .tk-create-container {
   width: 100%;
   justify-content: flex-end;
@@ -229,16 +222,12 @@ padding-top: 0.5rem;
  }
 }
 
-/* ================================== */
-/* 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 */
-/* ================================== */
 
-/* Botón Primario (Morado) - CON PADDING DE TEXTO */
 .tk-btn-primary {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px; 
 font-weight: 600;
 color: #ffffff;
 background-color: #4f35a1; 
@@ -261,7 +250,7 @@ background-color: #9799ab;
 cursor: not-allowed;
 }
 
-/* Modal */
+
 .tk-modal-overlay {
 position: fixed;
 top: 0;
@@ -399,12 +388,12 @@ transform: rotate(360deg);
 }
 }
 
-/* Botón Secundario (Azul "Editar") - CON PADDING DE TEXTO */
+
 .tk-btn-secondary {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px; 
 font-weight: 600;
 color: #ffffff;
 background-color: #246dec; 
@@ -434,7 +423,7 @@ box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
 transform: translateY(0);
 }
 
-/* Toast (Letrero) */
+
 .tk-toast-notification {
 position: fixed;
 bottom: 30px;
@@ -458,7 +447,7 @@ opacity: 1;
 transform: translateX(-50%) translateY(0); 
 }
 
-/* Modo Edición (Tarjetas) */
+
 .task-page-wrapper.edit-mode-active .prj-card {
 cursor: pointer;
 box-shadow: 0 8px 20px rgba(79, 53, 161, 0.15); 
@@ -484,12 +473,12 @@ box-shadow: 0 8px 20px rgba(79, 53, 161, 0.15);
 }
 }
 
-/* Botón Peligro (Rojo) - CON PADDING DE TEXTO */
+
 .tk-btn-danger {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px;
 font-weight: 600;
 color: #ffffff;
 background-color: #dc3545; 
@@ -521,7 +510,6 @@ transform: translateY(0);
 }
 
 
-/* Barra de Borrado */
 .tk-delete-bar {
 position: fixed;
 bottom: 0;
@@ -560,7 +548,7 @@ gap: 15px;
 }
 
 
-/* Modo Borrado (Tarjetas) */
+
 .task-page-wrapper.delete-mode-active .prj-card {
 cursor: pointer;
 border: 2px dashed #9799ab; 
@@ -582,12 +570,12 @@ box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
 transform: translateY(-5px) scale(1.02);
 }
 
-/* Botones de Icono y Tooltips */
+
 .tk-btn-icon {
   width: 36px;
   height: 36px;
-  padding: 0; /* <-- SOBREESCRIBE el padding de texto */
-  justify-content: center; /* <-- CENTRA el ícono */
+  padding: 0; 
+  justify-content: center; 
   flex-shrink: 0;
   font-size: 1.15rem;
 }

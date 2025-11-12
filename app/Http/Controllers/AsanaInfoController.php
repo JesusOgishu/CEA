@@ -76,7 +76,7 @@ class AsanaInfoController extends Controller
             'assignee.name'
         ];
 
-        // 🔹 Obtener tareas
+        // Obtener tareas
         $resp = $asana->listTasks($filters, $fields);
         $tasks = collect($resp['data'] ?? [])
             ->filter(fn($t) => empty($t['completed']))

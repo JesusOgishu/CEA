@@ -42,14 +42,14 @@ class TeammatesController extends Controller
     }
     public function showTasks(Request $request, AsanaService $asana, string $userGid)
     {
-        // 1. Necesitamos saber en qué workspace buscar
+        
         $workspaceId = $request->query('workspace');
         if (!$workspaceId) {
             return response()->json(['error' => 'Workspace GID required'], 400);
         }
 
         try {
-            // 2. Pedimos las tareas de ESE usuario en ESE workspace
+            
             $filters = [
                 'workspace' => $workspaceId,
                 'assignee'  => $userGid,
@@ -64,7 +64,7 @@ class TeammatesController extends Controller
             $response = $asana->listTasks($filters, $fields);
             $tasks = $response['data'] ?? [];
             
-            // 3. Formateamos los datos (opcional pero limpio)
+            // Formateamos los datos 
             $formattedTasks = collect($tasks)->map(function($task) {
                 return [
                     'gid' => $task['gid'],

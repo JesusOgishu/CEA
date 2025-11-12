@@ -26,9 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
    
 
-    /**
-     * Abre el modal y busca las tareas del usuario
-     */
+    
     async function openTeammateModal(userGid, userName) {
         
         modalTitle.textContent = `Loading ${userName}'s tasks...`;
@@ -60,9 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Pinta la lista de tareas dentro del modal
-     */
+    
     function renderTasks(tasks) {
         if (tasks.length === 0) {
             modalBody.innerHTML = '<p style="text-align: center; color: #777; padding: 2rem 0;">This teammate has no open tasks.</p>';
@@ -93,9 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalBody.innerHTML = html;
     }
 
-    /**
-     * Cierra el modal
-     */
+    
     function closeTeammateModal() {
         modal.classList.remove('open');
         setTimeout(() => modal.style.display = 'none', 300);

@@ -1,9 +1,7 @@
 import { animate as anime } from 'animejs';
 import interact from 'interactjs';
 
-/**
- * Anima un elemento a su posición inicial 
- */
+
 function animateToStartPosition(target) {
   if (!target) return;
 
@@ -22,10 +20,7 @@ function animateToStartPosition(target) {
   });
 }
 
-/**
- * GIDs de secciones por cuadrante.
- */
-// Dejamos esto aquí, pero solo se llenará si el Blade lo imprime
+
 const QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
 
 
@@ -33,7 +28,7 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   const url = `/asana/tasks/${taskId}/move`;
   const finalSectionGid = sectionGid || null;
 
-  // Prevenimos la llamada si es 'undefined' (estamos en "All tasks")
+  
   if (sectionGid === undefined) {
       console.warn('Movimiento cancelado: No estás en una vista de proyecto.');
       return;
@@ -74,13 +69,11 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     })
     .catch(error => {
       console.error('Error al actualizar la tarea en Asana:', error.message);
-      // (Tu código de manejo de errores...)
+      
     });
 }
 
-/**
- * Inicializa arrastrar y soltar.
- */
+
 function initDragAndDrop() {
   const draggableSelector = '.task-card';
   const dropzoneSelector = '.tasks-overview, .matrix-quadrant';
@@ -115,7 +108,7 @@ function initDragAndDrop() {
     overlap: 0.5,
     listeners: {
       dragenter(event) {
-        // Solo activa si NO es el placeholder
+        
         if (!event.target.classList.contains('eisenhower-placeholder')) {
             event.target.classList.add('drop-active');
         }
@@ -127,7 +120,7 @@ function initDragAndDrop() {
         const draggableElement = event.relatedTarget;
         const dropzoneElement = event.target;
         
-        // Si es el placeholder, regresa la tarjeta
+        
         if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
             animateToStartPosition(draggableElement);
             dropzoneElement.classList.remove('drop-active');
@@ -208,32 +201,25 @@ function initProjectSelector() {
   });
 }
 
-
-/* ================================== */
-/* 👇 ¡AQUÍ ESTÁ EL CAMBIO RESPONSIVE! 👇 */
-/* ================================== */
-/**
- * Inicializa el toggle del menú lateral (ahora para móvil y escritorio).
- */
 function initSidebarToggle() {
   const gridContainer = document.querySelector('.grid-container');
-  const menuIcon = document.querySelector('.menu-icon'); // Hamburguesa
-  const closeBtn = document.getElementById('sidebar-close-btn'); // Botón "X"
-  const overlay = document.querySelector('.sidebar-overlay'); // Fondo oscuro
+  const menuIcon = document.querySelector('.menu-icon'); 
+  const closeBtn = document.getElementById('sidebar-close-btn'); 
+  const overlay = document.querySelector('.sidebar-overlay'); 
 
   if (gridContainer && menuIcon && closeBtn && overlay) {
     
-    // Función para abrir
+    // abrir
     const openSidebar = () => {
       gridContainer.classList.add('sidebar-open');
     };
     
-    // Función para cerrar
+    // cerrar
     const closeSidebar = () => {
       gridContainer.classList.remove('sidebar-open');
     };
 
-    // Asignar eventos
+    // eventos
     menuIcon.addEventListener('click', openSidebar);
     closeBtn.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
@@ -241,11 +227,9 @@ function initSidebarToggle() {
 }
 
 
-/**
- * Inicializa todo.
- */
+
 document.addEventListener('DOMContentLoaded', () => {
-  initSidebarToggle(); // <-- Esta es la función que acabamos de cambiar
+  initSidebarToggle(); 
   initDragAndDrop();
   initWorkspaceSelector(); 
   initProjectSelector();

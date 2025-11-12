@@ -28,8 +28,6 @@
         <div class="teammates-grid-container">
             @foreach ($teammates as $user)
                 @if(empty($user['name'])) @continue @endif
-
-                {{-- CAMBIO: Esto ya no es un <a>, es un <div> con data-attributes --}}
                 <div class="teammate-card" 
                      data-user-gid="{{ $user['gid'] }}" 
                      data-user-name="{{ $user['name'] }}">
