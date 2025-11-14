@@ -34,8 +34,16 @@ function initProjectSelector() {
 
 function initTaskModal() {
     
-    const modal = document.getElementById('createTaskModal');
+    // --- ELEMENTO "GUARD" ---
+    // Si no estamos en la página de "Tareas", este botón no existe.
     const openBtn = document.getElementById('createTaskBtn'); 
+    if (!openBtn) {
+        // console.log('No estoy en la página de Tareas, no inicializo el modal.');
+        return; // No hacer nada
+    }
+
+    // --- Si SÍ estamos en la página, corremos todo lo demás ---
+    const modal = document.getElementById('createTaskModal');
     const closeBtn = document.getElementById('closeModalBtn');
     const form = document.getElementById('createTaskForm');
     const submitBtn = document.getElementById('submitTaskBtn');
@@ -68,11 +76,7 @@ function initTaskModal() {
     let tasksToDelete = [];
     let toastTimer = null;
 
-    if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect || !editToggleBtn || !editToast || !taskCardsContainer || !pageWrapper || !deleteToggleBtn || !deleteBar || !confirmDeleteBtn || !cancelDeleteBtn) {
-        console.warn('Faltan elementos del DOM para inicializar todas las funciones.');
-        return;
-    }
-
+    // (El resto de tus funciones: loadAssignees, openModal, closeModal, etc. van aquí)
     async function loadAssignees(workspaceGid) {
         if (!workspaceGid) return;
         assigneeWheeler.style.display = 'block';
@@ -266,9 +270,7 @@ function initTaskModal() {
     function handleBulkDelete() {
         confirmDeleteBtn.disabled = true;
         confirmDeleteBtn.textContent = 'Deleting...';
-
         const csrfToken = document.querySelector('input[name="_token"]').value;
-
         fetch('/tasks/bulk-delete', {
             method: 'POST',
             headers: {
@@ -315,24 +317,26 @@ function initTaskModal() {
         }
     }
 
+    // --- ASIGNACIÓN DE EVENTOS ---
     openBtn.addEventListener('click', () => openModal(null));
     closeBtn.addEventListener('click', closeModal);
     form.addEventListener('submit', handleFormSubmit);
     modal.addEventListener('click', e => {
         if (e.target === modal) closeModal();
     });
-
     editToggleBtn.addEventListener('click', toggleEditMode);
     deleteToggleBtn.addEventListener('click', toggleDeleteMode); 
-    
     taskCardsContainer.addEventListener('click', handleCardClick);
-
     cancelDeleteBtn.addEventListener('click', resetDeleteMode); 
     confirmDeleteBtn.addEventListener('click', handleBulkDelete); 
 }
 
+// --- INICIALIZADORES GLOBALES ---
 document.addEventListener('DOMContentLoaded', () => {
-    initWorkspaceSelector();
+    // Estos son filtros globales, está bien que corran siempre
+    initWorkspaceSelector(); 
     initProjectSelector();
+    
+    // Esta es la función protegida
     initTaskModal(); 
 });

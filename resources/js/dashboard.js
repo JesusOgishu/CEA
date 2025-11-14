@@ -73,10 +73,6 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     });
 }
 
-// ==================================================
-// 👇 ESTA ES LA ÚNICA FUNCIÓN MODIFICADA 👇
-// ==================================================
-
 function initDragAndDrop() {
   const draggableSelector = '.task-card';
   const dropzoneSelector = '.tasks-overview, .matrix-quadrant';
@@ -89,20 +85,14 @@ function initDragAndDrop() {
         const target = event.target;
         if (!target) return;
 
-        // 1. Guardamos su posición original
         const rect = target.getBoundingClientRect();
-        
-        // 2. Guardamos su padre original para poder volver
         target.originalParent = target.parentElement;
-        
-        // 3. La movemos al <body> para "liberarla" del overflow
         document.body.appendChild(target);
 
-        // 4. La posicionamos absolutamente donde estaba
         target.style.position = 'absolute';
         target.style.left = `${rect.left}px`;
         target.style.top = `${rect.top}px`;
-        target.style.width = `${rect.width}px`; // Fijamos el ancho
+        target.style.width = `${rect.width}px`; 
         
         target.classList.add('is-dragging');
       },
@@ -110,7 +100,6 @@ function initDragAndDrop() {
         const target = event.target;
         if (!target) return;
 
-        // Ahora movemos el 'left' y 'top' en lugar del transform
         const x = (parseFloat(target.style.left) || 0) + event.dx;
         const y = (parseFloat(target.style.top) || 0) + event.dy;
 
@@ -121,17 +110,15 @@ function initDragAndDrop() {
         const target = event.target;
         if (!target) return;
 
-        // Si no se soltó en un dropzone válido (relatedTarget)
         if (!event.relatedTarget) {
-          // Limpiamos estilos y la devolvemos a su padre original
           target.style.position = '';
           target.style.left = '';
           target.style.top = '';
           target.style.width = '';
-          target.style.transform = ''; // Limpiamos transform
+          target.style.transform = '';
           target.setAttribute('data-x', '0');
           target.setAttribute('data-y', '0');
-          target.originalParent?.appendChild(target); // Devolvemos
+          target.originalParent?.appendChild(target); 
         }
         
         target.classList.remove('is-dragging');
@@ -156,7 +143,6 @@ function initDragAndDrop() {
         const dropzoneElement = event.target;
         
         if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
-          // Si es placeholder, no hacemos nada (la lógica de 'end' la devolverá)
           dropzoneElement.classList.remove('drop-active');
           return;
         }
@@ -164,7 +150,6 @@ function initDragAndDrop() {
         const list = dropzoneElement.querySelector('.task-list, .task-cards-container');
 
         if (list && draggableElement) {
-          // Limpiamos los estilos absolutos antes de añadirla a la lista
           draggableElement.style.position = '';
           draggableElement.style.left = '';
           draggableElement.style.top = '';
@@ -173,7 +158,7 @@ function initDragAndDrop() {
           draggableElement.setAttribute('data-x', '0');
           draggableElement.setAttribute('data-y', '0');
 
-          list.appendChild(draggableElement); // La añadimos a su nuevo padre
+          list.appendChild(draggableElement); 
 
           const listId = list.id;
           const newSectionGid = QUADRANT_SECTION_GIDS[listId];
@@ -186,26 +171,20 @@ function initDragAndDrop() {
               } else {
                 console.warn(
                   'Faltan datos (taskId o projectGid) para mover la tarea.',
-                  { listId, newSectionGid, taskId, projectGid }
+
                 );
               }
           } else if (Object.keys(QUADRANT_SECTION_GIDS).length > 0) {
               console.warn('Zona de drop no reconocida:', listId);
-              // (La lógica de 'end' la devolverá a su sitio)
-  	     } else {
+          } else {
               console.log('Movimiento dentro de "Pending" (sin API call).');
-          }
+       }
         }
         dropzoneElement.classList.remove('drop-active');
       }
     }
   });
 }
-
-// ==================================================
-// 👆 FIN DE LA FUNCIÓN MODIFICADA 👆
-// ==================================================
-
 
 function initWorkspaceSelector() {
   const select = document.getElementById('workspaceSelector');
@@ -253,17 +232,14 @@ function initSidebarToggle() {
 
   if (gridContainer && menuIcon && closeBtn && overlay) {
     
-    // abrir
     const openSidebar = () => {
       gridContainer.classList.add('sidebar-open');
     };
     
-    // cerrar
     const closeSidebar = () => {
       gridContainer.classList.remove('sidebar-open');
-  	 };
+     };
 
-    // eventos
     menuIcon.addEventListener('click', openSidebar);
     closeBtn.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
@@ -271,10 +247,17 @@ function initSidebarToggle() {
 }
 
 
-
 document.addEventListener('DOMContentLoaded', () => {
-  initSidebarToggle(); 
-  initDragAndDrop();
+  initSidebarToggle();
   initWorkspaceSelector(); 
   initProjectSelector();
+
+  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
+  // Buscamos un ID que SÓLO exista en la página del Dashboard
+  const dashboardGrid = document.querySelector('.dashboard-grid');
+
+  if (dashboardGrid) {
+    // Si SÍ existe, corremos el drag-and-drop.
+    initDragAndDrop();
+  }
 });

@@ -6,14 +6,17 @@
 <div class="task-page-wrapper">
 
     <div class="filters-container mb-4">
+        
+        {{-- 👇 ¡CAMBIO! Añadimos un campo oculto con el ID del workspace actual --}}
+        <input type="hidden" id="currentWorkspaceGid" value="{{ $workspaceId }}">
 
         <div class="filters-wrapper"> 
-            @if(isset($workspaces) && count($workspaces) > 1)
+            @if(isset($workspaces) && count($workspaces) >= 1) {{-- Dejamos tu @if --}}
             <div class="workspace-filter filter-item">
                 <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
                 <select id="workspaceSelector" class="form-control">
                     @foreach ($workspaces as $ws)
-                        <option value="{{ $ws['gid'] }}" {{ request('workspace') == $ws['gid'] ? 'selected' : '' }}>
+                        <option value="{{ $ws['gid'] }}" {{ $workspaceId == $ws['gid'] ? 'selected' : '' }}>
                             {{ $ws['name'] }}
                         </option>
                     @endforeach
@@ -33,22 +36,23 @@
                     @endforeach
                 </select>
             </div>
-        </div> 
+        </div>
         
         <div class="tk-create-container"> 
-            <button id="createTaskBtn" class="tk-btn-primary tk-btn-icon" >
+            <button id="createTaskBtn" class="tk-btn-primary tk-btn-icon" data-tooltip="Create Task">
                 <i class="material-icons-outlined">add</i>
             </button>
-            <button id="editTaskToggleBtn" class="tk-btn-secondary tk-btn-icon" >
+            <button id="editTaskToggleBtn" class="tk-btn-secondary tk-btn-icon" data-tooltip="Edit Task">
                 <i class="material-icons-outlined">edit</i>
             </button>
-            <button id="deleteTaskToggleBtn" class="tk-btn-danger tk-btn-icon" >
+            <button id="deleteTaskToggleBtn" class="tk-btn-danger tk-btn-icon" data-tooltip="Delete Tasks">
                 <i class="material-icons-outlined">delete_outline</i>
             </button>
         </div>
 
     </div>
 
+    {{-- ... (El resto de tu HTML: prj-cards-container, etc. se queda igual) ... --}}
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
@@ -112,6 +116,7 @@
     @endif
 </div> 
 
+{{-- ... (El HTML de tus 3 Modales/Toasts se queda igual) ... --}}
 <div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> 
     <div class="tk-modal-content"> 
         <div class="tk-modal-header"> 
@@ -133,17 +138,14 @@
                     <div id="assigneeWheeler" class="tk-modal-wheeler" style="display: none;"></div>
                 </div>
             </div>
-
             <div class="tk-form-group"> 
                 <label for="task_due_on">Due Date</label>
                 <input type="date" id="task_due_on" name="due_on" class="form-control">
             </div>
-            
             <div class="tk-form-group"> 
                 <label for="task_description">Description</label>
                 <textarea id="task_description" name="notes" class="form-control" rows="4"></textarea>
             </div>
-            
             <input type="hidden" id="modal_workspace_gid" name="workspace_gid">
             <input type="hidden" id="modal_project_gid" name="project_gid">
             <input type="hidden" id="modal_task_gid" name="task_gid">

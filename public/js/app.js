@@ -15627,11 +15627,6 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     console.error('Error al actualizar la tarea en Asana:', error.message);
   });
 }
-
-// ==================================================
-// 👇 ESTA ES LA ÚNICA FUNCIÓN MODIFICADA 👇
-// ==================================================
-
 function initDragAndDrop() {
   var draggableSelector = '.task-card';
   var dropzoneSelector = '.tasks-overview, .matrix-quadrant';
@@ -15642,29 +15637,18 @@ function initDragAndDrop() {
       start: function start(event) {
         var target = event.target;
         if (!target) return;
-
-        // 1. Guardamos su posición original
         var rect = target.getBoundingClientRect();
-
-        // 2. Guardamos su padre original para poder volver
         target.originalParent = target.parentElement;
-
-        // 3. La movemos al <body> para "liberarla" del overflow
         document.body.appendChild(target);
-
-        // 4. La posicionamos absolutamente donde estaba
         target.style.position = 'absolute';
         target.style.left = "".concat(rect.left, "px");
         target.style.top = "".concat(rect.top, "px");
-        target.style.width = "".concat(rect.width, "px"); // Fijamos el ancho
-
+        target.style.width = "".concat(rect.width, "px");
         target.classList.add('is-dragging');
       },
       move: function move(event) {
         var target = event.target;
         if (!target) return;
-
-        // Ahora movemos el 'left' y 'top' en lugar del transform
         var x = (parseFloat(target.style.left) || 0) + event.dx;
         var y = (parseFloat(target.style.top) || 0) + event.dy;
         target.style.left = "".concat(x, "px");
@@ -15673,19 +15657,16 @@ function initDragAndDrop() {
       end: function end(event) {
         var target = event.target;
         if (!target) return;
-
-        // Si no se soltó en un dropzone válido (relatedTarget)
         if (!event.relatedTarget) {
           var _target$originalParen;
-          // Limpiamos estilos y la devolvemos a su padre original
           target.style.position = '';
           target.style.left = '';
           target.style.top = '';
           target.style.width = '';
-          target.style.transform = ''; // Limpiamos transform
+          target.style.transform = '';
           target.setAttribute('data-x', '0');
           target.setAttribute('data-y', '0');
-          (_target$originalParen = target.originalParent) === null || _target$originalParen === void 0 || _target$originalParen.appendChild(target); // Devolvemos
+          (_target$originalParen = target.originalParent) === null || _target$originalParen === void 0 || _target$originalParen.appendChild(target);
         }
         target.classList.remove('is-dragging');
       }
@@ -15707,13 +15688,11 @@ function initDragAndDrop() {
         var draggableElement = event.relatedTarget;
         var dropzoneElement = event.target;
         if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
-          // Si es placeholder, no hacemos nada (la lógica de 'end' la devolverá)
           dropzoneElement.classList.remove('drop-active');
           return;
         }
         var list = dropzoneElement.querySelector('.task-list, .task-cards-container');
         if (list && draggableElement) {
-          // Limpiamos los estilos absolutos antes de añadirla a la lista
           draggableElement.style.position = '';
           draggableElement.style.left = '';
           draggableElement.style.top = '';
@@ -15721,8 +15700,7 @@ function initDragAndDrop() {
           draggableElement.style.transform = '';
           draggableElement.setAttribute('data-x', '0');
           draggableElement.setAttribute('data-y', '0');
-          list.appendChild(draggableElement); // La añadimos a su nuevo padre
-
+          list.appendChild(draggableElement);
           var listId = list.id;
           var newSectionGid = QUADRANT_SECTION_GIDS[listId];
           var taskId = draggableElement.getAttribute('data-task-id');
@@ -15731,16 +15709,10 @@ function initDragAndDrop() {
             if (taskId && projectGid) {
               updateAsanaTaskSection(taskId, projectGid, newSectionGid);
             } else {
-              console.warn('Faltan datos (taskId o projectGid) para mover la tarea.', {
-                listId: listId,
-                newSectionGid: newSectionGid,
-                taskId: taskId,
-                projectGid: projectGid
-              });
+              console.warn('Faltan datos (taskId o projectGid) para mover la tarea.');
             }
           } else if (Object.keys(QUADRANT_SECTION_GIDS).length > 0) {
             console.warn('Zona de drop no reconocida:', listId);
-            // (La lógica de 'end' la devolverá a su sitio)
           } else {
             console.log('Movimiento dentro de "Pending" (sin API call).');
           }
@@ -15750,11 +15722,6 @@ function initDragAndDrop() {
     }
   });
 }
-
-// ==================================================
-// 👆 FIN DE LA FUNCIÓN MODIFICADA 👆
-// ==================================================
-
 function initWorkspaceSelector() {
   var select = document.getElementById('workspaceSelector');
   if (!select) return;
@@ -15790,17 +15757,12 @@ function initSidebarToggle() {
   var closeBtn = document.getElementById('sidebar-close-btn');
   var overlay = document.querySelector('.sidebar-overlay');
   if (gridContainer && menuIcon && closeBtn && overlay) {
-    // abrir
     var openSidebar = function openSidebar() {
       gridContainer.classList.add('sidebar-open');
     };
-
-    // cerrar
     var closeSidebar = function closeSidebar() {
       gridContainer.classList.remove('sidebar-open');
     };
-
-    // eventos
     menuIcon.addEventListener('click', openSidebar);
     closeBtn.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
@@ -15808,9 +15770,16 @@ function initSidebarToggle() {
 }
 document.addEventListener('DOMContentLoaded', function () {
   initSidebarToggle();
-  initDragAndDrop();
   initWorkspaceSelector();
   initProjectSelector();
+
+  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
+  // Buscamos un ID que SÓLO exista en la página del Dashboard
+  var dashboardGrid = document.querySelector('.dashboard-grid');
+  if (dashboardGrid) {
+    // Si SÍ existe, corremos el drag-and-drop.
+    initDragAndDrop();
+  }
 });
 
 /***/ }),
@@ -15902,380 +15871,413 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 document.addEventListener("DOMContentLoaded", function () {
+  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
+  // Buscamos un ID que SÓLO exista en la página de Métricas.
   var workspaceSelect = document.querySelector("#workspaceSelect");
-  var baseUrl = '/metrics/api';
-  var endpoints = function endpoints(workspace) {
-    return {
-      overview: "".concat(baseUrl, "/overview?workspace=").concat(workspace),
-      tasksCompleted: "".concat(baseUrl, "/tasks-completed?workspace=").concat(workspace, "&days=30"),
-      tasksByProject: "".concat(baseUrl, "/tasks-by-project?workspace=").concat(workspace),
-      topAssignees: "".concat(baseUrl, "/top-assignees?workspace=").concat(workspace),
-      overdue: "".concat(baseUrl, "/overdue?workspace=").concat(workspace)
-    };
-  };
-  function setLoadingState(selector) {
-    var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-    var el = document.querySelector(selector);
-    if (!el) return;
-    if (loading) {
-      el.classList.add('loading-metrics');
-      if (el.classList.contains('metrics-card-value-metrics')) {
-        el.textContent = '...';
-      }
-      var spinner = el.querySelector('.metrics-spinner');
-      if (spinner) spinner.style.display = 'block';
-    } else {
-      el.classList.remove('loading-metrics');
-      var _spinner = el.querySelector('.metrics-spinner');
-      if (_spinner) _spinner.style.display = 'none';
-    }
-  }
-  function fetchData(_x) {
-    return _fetchData.apply(this, arguments);
-  }
-  function _fetchData() {
-    _fetchData = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(url) {
-      var response, data, _t;
-      return _regenerator().w(function (_context) {
-        while (1) switch (_context.n) {
-          case 0:
-            _context.p = 0;
-            _context.n = 1;
-            return fetch(url);
-          case 1:
-            response = _context.v;
-            if (response.ok) {
-              _context.n = 2;
-              break;
-            }
-            throw new Error("HTTP ".concat(response.status));
-          case 2:
-            _context.n = 3;
-            return response.json();
-          case 3:
-            data = _context.v;
-            return _context.a(2, (data === null || data === void 0 ? void 0 : data.data) || {});
-          case 4:
-            _context.p = 4;
-            _t = _context.v;
-            console.error("[Metrics API Error] ".concat(url, ":"), _t);
-            return _context.a(2, {});
-        }
-      }, _callee, null, [[0, 4]]);
-    }));
-    return _fetchData.apply(this, arguments);
-  }
-  function loadOverview(_x2) {
-    return _loadOverview.apply(this, arguments);
-  }
-  function _loadOverview() {
-    _loadOverview = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(ep) {
-      var _data$open_tasks, _data$completed_last_, _data$completed_last_2, _data$overdue_tasks, _data$active_projects;
-      var selectors, data;
-      return _regenerator().w(function (_context2) {
-        while (1) switch (_context2.n) {
-          case 0:
-            selectors = ['#metric-total-tasks', '#metric-completed-tasks', '#metric-overdue-tasks', '#metric-active-projects'];
-            selectors.forEach(function (sel) {
-              return setLoadingState(sel, true);
-            });
-            _context2.n = 1;
-            return fetchData(ep.overview);
-          case 1:
-            data = _context2.v;
-            selectors.forEach(function (sel) {
-              return setLoadingState(sel, false);
-            });
-            document.querySelector('#metric-total-tasks').textContent = ((_data$open_tasks = data.open_tasks) !== null && _data$open_tasks !== void 0 ? _data$open_tasks : 0) + ((_data$completed_last_ = data.completed_last_days) !== null && _data$completed_last_ !== void 0 ? _data$completed_last_ : 0);
-            document.querySelector('#metric-completed-tasks').textContent = (_data$completed_last_2 = data.completed_last_days) !== null && _data$completed_last_2 !== void 0 ? _data$completed_last_2 : 0;
-            document.querySelector('#metric-overdue-tasks').textContent = (_data$overdue_tasks = data.overdue_tasks) !== null && _data$overdue_tasks !== void 0 ? _data$overdue_tasks : 0;
-            document.querySelector('#metric-active-projects').textContent = (_data$active_projects = data.active_projects) !== null && _data$active_projects !== void 0 ? _data$active_projects : 0;
-          case 2:
-            return _context2.a(2);
-        }
-      }, _callee2);
-    }));
-    return _loadOverview.apply(this, arguments);
-  }
-  function renderTasksCompletedChart(_x3) {
-    return _renderTasksCompletedChart.apply(this, arguments);
-  }
-  function _renderTasksCompletedChart() {
-    _renderTasksCompletedChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(ep) {
-      var _data$labels, _data$series;
-      var container, data, labels, values;
-      return _regenerator().w(function (_context3) {
-        while (1) switch (_context3.n) {
-          case 0:
-            container = document.querySelector("#chart-tasks-completed");
-            setLoadingState("#chart-tasks-completed", true);
-            _context3.n = 1;
-            return fetchData(ep.tasksCompleted);
-          case 1:
-            data = _context3.v;
-            setLoadingState("#chart-tasks-completed", false);
-            labels = (_data$labels = data.labels) !== null && _data$labels !== void 0 ? _data$labels : [];
-            values = (_data$series = data.series) !== null && _data$series !== void 0 ? _data$series : [];
-            if (!(!labels.length || !values.length)) {
-              _context3.n = 2;
-              break;
-            }
-            container.textContent = 'No data available';
-            return _context3.a(2);
-          case 2:
-            new ApexCharts(container, {
-              chart: {
-                type: 'line',
-                height: 300,
-                toolbar: {
-                  show: false
-                }
-              },
-              series: [{
-                name: 'Completed Tasks',
-                data: values
-              }],
-              xaxis: {
-                categories: labels,
-                title: {
-                  text: 'Days'
-                }
-              },
-              yaxis: {
-                title: {
-                  text: 'Tasks'
-                }
-              },
-              stroke: {
-                curve: 'smooth',
-                width: 3
-              },
-              colors: ['#00b894']
-            }).render();
-          case 3:
-            return _context3.a(2);
-        }
-      }, _callee3);
-    }));
-    return _renderTasksCompletedChart.apply(this, arguments);
-  }
-  function renderTasksByProjectChart(_x4) {
-    return _renderTasksByProjectChart.apply(this, arguments);
-  }
-  function _renderTasksByProjectChart() {
-    _renderTasksByProjectChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(ep) {
-      var container, data, labels, values;
-      return _regenerator().w(function (_context4) {
-        while (1) switch (_context4.n) {
-          case 0:
-            container = document.querySelector("#chart-tasks-by-project");
-            setLoadingState("#chart-tasks-by-project", true);
-            _context4.n = 1;
-            return fetchData(ep.tasksByProject);
-          case 1:
-            data = _context4.v;
-            setLoadingState("#chart-tasks-by-project", false);
-            labels = data.map(function (d) {
-              return d.project_name;
-            });
-            values = data.map(function (d) {
-              return d.total_tasks;
-            });
-            if (!(!labels.length || !values.length)) {
-              _context4.n = 2;
-              break;
-            }
-            container.textContent = 'No data available';
-            return _context4.a(2);
-          case 2:
-            new ApexCharts(container, {
-              chart: {
-                type: 'bar',
-                height: 300,
-                toolbar: {
-                  show: false
-                }
-              },
-              series: [{
-                name: 'Tasks',
-                data: values
-              }],
-              xaxis: {
-                categories: labels,
-                title: {
-                  text: 'Projects'
-                }
-              },
-              plotOptions: {
-                bar: {
-                  borderRadius: 4,
-                  horizontal: false
-                }
-              },
-              colors: ['#0984e3']
-            }).render();
-          case 3:
-            return _context4.a(2);
-        }
-      }, _callee4);
-    }));
-    return _renderTasksByProjectChart.apply(this, arguments);
-  }
-  function renderTopAssigneesChart(_x5) {
-    return _renderTopAssigneesChart.apply(this, arguments);
-  }
-  function _renderTopAssigneesChart() {
-    _renderTopAssigneesChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(ep) {
-      var container, data, labels, values;
-      return _regenerator().w(function (_context5) {
-        while (1) switch (_context5.n) {
-          case 0:
-            container = document.querySelector("#chart-top-assignees");
-            setLoadingState("#chart-top-assignees", true);
-            _context5.n = 1;
-            return fetchData(ep.topAssignees);
-          case 1:
-            data = _context5.v;
-            setLoadingState("#chart-top-assignees", false);
-            labels = data.map(function (d) {
-              return d.name;
-            });
-            values = data.map(function (d) {
-              return d.count;
-            });
-            if (!(!labels.length || !values.length)) {
-              _context5.n = 2;
-              break;
-            }
-            container.textContent = 'No data available';
-            return _context5.a(2);
-          case 2:
-            new ApexCharts(container, {
-              chart: {
-                type: 'bar',
-                height: 300,
-                toolbar: {
-                  show: false
-                }
-              },
-              series: [{
-                name: 'Completed Tasks',
-                data: values
-              }],
-              xaxis: {
-                categories: labels,
-                title: {
-                  text: 'Users'
-                }
-              },
-              plotOptions: {
-                bar: {
-                  horizontal: true,
-                  borderRadius: 4
-                }
-              },
-              colors: ['#6c5ce7']
-            }).render();
-          case 3:
-            return _context5.a(2);
-        }
-      }, _callee5);
-    }));
-    return _renderTopAssigneesChart.apply(this, arguments);
-  }
-  function renderOverdueChart(_x6) {
-    return _renderOverdueChart.apply(this, arguments);
-  }
-  function _renderOverdueChart() {
-    _renderOverdueChart = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(ep) {
-      var container, data, labels, values;
-      return _regenerator().w(function (_context6) {
-        while (1) switch (_context6.n) {
-          case 0:
-            container = document.querySelector("#chart-overdue");
-            setLoadingState("#chart-overdue", true);
-            _context6.n = 1;
-            return fetchData(ep.overdue);
-          case 1:
-            data = _context6.v;
-            setLoadingState("#chart-overdue", false);
-            labels = data.map(function (d) {
-              var _d$name;
-              return (_d$name = d.name) !== null && _d$name !== void 0 ? _d$name : 'Unnamed Task';
-            });
-            values = data.map(function () {
-              return 1;
-            });
-            if (labels.length) {
-              _context6.n = 2;
-              break;
-            }
-            container.textContent = 'No data available';
-            return _context6.a(2);
-          case 2:
-            new ApexCharts(container, {
-              chart: {
-                type: 'donut',
-                height: 300
-              },
-              series: values,
-              labels: labels,
-              colors: ['#d63031', '#fdcb6e', '#e17055', '#fab1a0', '#ff7675'],
-              legend: {
-                position: 'bottom'
-              }
-            }).render();
-          case 3:
-            return _context6.a(2);
-        }
-      }, _callee6);
-    }));
-    return _renderOverdueChart.apply(this, arguments);
-  }
-  function initDashboard(_x7) {
-    return _initDashboard.apply(this, arguments);
-  }
-  function _initDashboard() {
-    _initDashboard = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(workspace) {
-      var ep;
-      return _regenerator().w(function (_context7) {
-        while (1) switch (_context7.n) {
-          case 0:
-            document.querySelectorAll(".apexcharts-canvas").forEach(function (e) {
-              return e.remove();
-            });
-            ep = endpoints(workspace);
-            _context7.n = 1;
-            return loadOverview(ep);
-          case 1:
-            _context7.n = 2;
-            return renderTasksCompletedChart(ep);
-          case 2:
-            _context7.n = 3;
-            return renderTasksByProjectChart(ep);
-          case 3:
-            _context7.n = 4;
-            return renderTopAssigneesChart(ep);
-          case 4:
-            _context7.n = 5;
-            return renderOverdueChart(ep);
-          case 5:
-            return _context7.a(2);
-        }
-      }, _callee7);
-    }));
-    return _initDashboard.apply(this, arguments);
-  }
-  var urlParams = new URLSearchParams(window.location.search);
-  var currentWorkspace = urlParams.get("workspace") || (workspaceSelect === null || workspaceSelect === void 0 ? void 0 : workspaceSelect.value) || '';
-  if (workspaceSelect) workspaceSelect.value = currentWorkspace;
-  initDashboard(currentWorkspace);
+
+  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
   if (workspaceSelect) {
-    workspaceSelect.addEventListener("change", function (e) {
-      var workspace = e.target.value;
-      window.location.href = "/metrics?workspace=".concat(workspace);
-    });
-  }
+    var setLoadingState = function setLoadingState(selector) {
+      var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var el = document.querySelector(selector);
+      if (!el) return;
+      if (loading) {
+        el.classList.add('loading-metrics');
+        if (el.classList.contains('metrics-card-value-metrics')) {
+          el.textContent = '...';
+        }
+        var spinner = el.querySelector('.metrics-spinner');
+        if (spinner) spinner.style.display = 'block';
+      } else {
+        el.classList.remove('loading-metrics');
+        var _spinner = el.querySelector('.metrics-spinner');
+        if (_spinner) _spinner.style.display = 'none';
+      }
+    };
+    var fetchData = /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(url) {
+        var response, data, _t;
+        return _regenerator().w(function (_context) {
+          while (1) switch (_context.n) {
+            case 0:
+              _context.p = 0;
+              _context.n = 1;
+              return fetch(url);
+            case 1:
+              response = _context.v;
+              if (response.ok) {
+                _context.n = 2;
+                break;
+              }
+              throw new Error("HTTP ".concat(response.status));
+            case 2:
+              _context.n = 3;
+              return response.json();
+            case 3:
+              data = _context.v;
+              return _context.a(2, (data === null || data === void 0 ? void 0 : data.data) || {});
+            case 4:
+              _context.p = 4;
+              _t = _context.v;
+              console.error("[Metrics API Error] ".concat(url, ":"), _t);
+              return _context.a(2, {});
+          }
+        }, _callee, null, [[0, 4]]);
+      }));
+      return function fetchData(_x) {
+        return _ref.apply(this, arguments);
+      };
+    }();
+    var loadOverview = /*#__PURE__*/function () {
+      var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(ep) {
+        var _data$open_tasks, _data$completed_last_, _data$completed_last_2, _data$overdue_tasks, _data$active_projects;
+        var selectors, data, totalTasksEl, completedTasksEl, overdueTasksEl, activeProjectsEl;
+        return _regenerator().w(function (_context2) {
+          while (1) switch (_context2.n) {
+            case 0:
+              selectors = ['#metric-total-tasks', '#metric-completed-tasks', '#metric-overdue-tasks', '#metric-active-projects'];
+              selectors.forEach(function (sel) {
+                return setLoadingState(sel, true);
+              });
+              _context2.n = 1;
+              return fetchData(ep.overview);
+            case 1:
+              data = _context2.v;
+              selectors.forEach(function (sel) {
+                return setLoadingState(sel, false);
+              });
+
+              // Asegurarse de que los elementos existan antes de setearlos
+              totalTasksEl = document.querySelector('#metric-total-tasks');
+              completedTasksEl = document.querySelector('#metric-completed-tasks');
+              overdueTasksEl = document.querySelector('#metric-overdue-tasks');
+              activeProjectsEl = document.querySelector('#metric-active-projects');
+              if (totalTasksEl) totalTasksEl.textContent = ((_data$open_tasks = data.open_tasks) !== null && _data$open_tasks !== void 0 ? _data$open_tasks : 0) + ((_data$completed_last_ = data.completed_last_days) !== null && _data$completed_last_ !== void 0 ? _data$completed_last_ : 0);
+              if (completedTasksEl) completedTasksEl.textContent = (_data$completed_last_2 = data.completed_last_days) !== null && _data$completed_last_2 !== void 0 ? _data$completed_last_2 : 0;
+              if (overdueTasksEl) overdueTasksEl.textContent = (_data$overdue_tasks = data.overdue_tasks) !== null && _data$overdue_tasks !== void 0 ? _data$overdue_tasks : 0;
+              if (activeProjectsEl) activeProjectsEl.textContent = (_data$active_projects = data.active_projects) !== null && _data$active_projects !== void 0 ? _data$active_projects : 0;
+            case 2:
+              return _context2.a(2);
+          }
+        }, _callee2);
+      }));
+      return function loadOverview(_x2) {
+        return _ref2.apply(this, arguments);
+      };
+    }();
+    var renderTasksCompletedChart = /*#__PURE__*/function () {
+      var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(ep) {
+        var _data$labels, _data$series;
+        var container, data, labels, values;
+        return _regenerator().w(function (_context3) {
+          while (1) switch (_context3.n) {
+            case 0:
+              container = document.querySelector("#chart-tasks-completed");
+              if (container) {
+                _context3.n = 1;
+                break;
+              }
+              return _context3.a(2);
+            case 1:
+              // Chequeo extra
+              setLoadingState("#chart-tasks-completed", true);
+              _context3.n = 2;
+              return fetchData(ep.tasksCompleted);
+            case 2:
+              data = _context3.v;
+              setLoadingState("#chart-tasks-completed", false);
+              labels = (_data$labels = data.labels) !== null && _data$labels !== void 0 ? _data$labels : [];
+              values = (_data$series = data.series) !== null && _data$series !== void 0 ? _data$series : [];
+              if (!(!labels.length || !values.length)) {
+                _context3.n = 3;
+                break;
+              }
+              container.textContent = 'No data available';
+              return _context3.a(2);
+            case 3:
+              new ApexCharts(container, {
+                chart: {
+                  type: 'line',
+                  height: 300,
+                  toolbar: {
+                    show: false
+                  }
+                },
+                series: [{
+                  name: 'Completed Tasks',
+                  data: values
+                }],
+                xaxis: {
+                  categories: labels,
+                  title: {
+                    text: 'Days'
+                  }
+                },
+                yaxis: {
+                  title: {
+                    text: 'Tasks'
+                  }
+                },
+                stroke: {
+                  curve: 'smooth',
+                  width: 3
+                },
+                colors: ['#00b894']
+              }).render();
+            case 4:
+              return _context3.a(2);
+          }
+        }, _callee3);
+      }));
+      return function renderTasksCompletedChart(_x3) {
+        return _ref3.apply(this, arguments);
+      };
+    }();
+    var renderTasksByProjectChart = /*#__PURE__*/function () {
+      var _ref4 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(ep) {
+        var container, data, labels, values;
+        return _regenerator().w(function (_context4) {
+          while (1) switch (_context4.n) {
+            case 0:
+              container = document.querySelector("#chart-tasks-by-project");
+              if (container) {
+                _context4.n = 1;
+                break;
+              }
+              return _context4.a(2);
+            case 1:
+              // Chequeo extra
+              setLoadingState("#chart-tasks-by-project", true);
+              _context4.n = 2;
+              return fetchData(ep.tasksByProject);
+            case 2:
+              data = _context4.v;
+              setLoadingState("#chart-tasks-by-project", false);
+              labels = data.map(function (d) {
+                return d.project_name;
+              });
+              values = data.map(function (d) {
+                return d.total_tasks;
+              });
+              if (!(!labels.length || !values.length)) {
+                _context4.n = 3;
+                break;
+              }
+              container.textContent = 'No data available';
+              return _context4.a(2);
+            case 3:
+              new ApexCharts(container, {
+                chart: {
+                  type: 'bar',
+                  height: 300,
+                  toolbar: {
+                    show: false
+                  }
+                },
+                series: [{
+                  name: 'Tasks',
+                  data: values
+                }],
+                xaxis: {
+                  categories: labels,
+                  title: {
+                    text: 'Projects'
+                  }
+                },
+                plotOptions: {
+                  bar: {
+                    borderRadius: 4,
+                    horizontal: false
+                  }
+                },
+                colors: ['#0984e3']
+              }).render();
+            case 4:
+              return _context4.a(2);
+          }
+        }, _callee4);
+      }));
+      return function renderTasksByProjectChart(_x4) {
+        return _ref4.apply(this, arguments);
+      };
+    }();
+    var renderTopAssigneesChart = /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(ep) {
+        var container, data, labels, values;
+        return _regenerator().w(function (_context5) {
+          while (1) switch (_context5.n) {
+            case 0:
+              container = document.querySelector("#chart-top-assignees");
+              if (container) {
+                _context5.n = 1;
+                break;
+              }
+              return _context5.a(2);
+            case 1:
+              // Chequeo extra
+              setLoadingState("#chart-top-assignees", true);
+              _context5.n = 2;
+              return fetchData(ep.topAssignees);
+            case 2:
+              data = _context5.v;
+              setLoadingState("#chart-top-assignees", false);
+              labels = data.map(function (d) {
+                return d.name;
+              });
+              values = data.map(function (d) {
+                return d.count;
+              });
+              if (!(!labels.length || !values.length)) {
+                _context5.n = 3;
+                break;
+              }
+              container.textContent = 'No data available';
+              return _context5.a(2);
+            case 3:
+              new ApexCharts(container, {
+                chart: {
+                  type: 'bar',
+                  height: 300,
+                  toolbar: {
+                    show: false
+                  }
+                },
+                series: [{
+                  name: 'Completed Tasks',
+                  data: values
+                }],
+                xaxis: {
+                  categories: labels,
+                  title: {
+                    text: 'Users'
+                  }
+                },
+                plotOptions: {
+                  bar: {
+                    horizontal: true,
+                    borderRadius: 4
+                  }
+                },
+                colors: ['#6c5ce7']
+              }).render();
+            case 4:
+              return _context5.a(2);
+          }
+        }, _callee5);
+      }));
+      return function renderTopAssigneesChart(_x5) {
+        return _ref5.apply(this, arguments);
+      };
+    }();
+    var renderOverdueChart = /*#__PURE__*/function () {
+      var _ref6 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(ep) {
+        var container, data, labels, values;
+        return _regenerator().w(function (_context6) {
+          while (1) switch (_context6.n) {
+            case 0:
+              container = document.querySelector("#chart-overdue");
+              if (container) {
+                _context6.n = 1;
+                break;
+              }
+              return _context6.a(2);
+            case 1:
+              // Chequeo extra
+              setLoadingState("#chart-overdue", true);
+              _context6.n = 2;
+              return fetchData(ep.overdue);
+            case 2:
+              data = _context6.v;
+              setLoadingState("#chart-overdue", false);
+              labels = data.map(function (d) {
+                var _d$name;
+                return (_d$name = d.name) !== null && _d$name !== void 0 ? _d$name : 'Unnamed Task';
+              });
+              values = data.map(function () {
+                return 1;
+              });
+              if (labels.length) {
+                _context6.n = 3;
+                break;
+              }
+              container.textContent = 'No data available';
+              return _context6.a(2);
+            case 3:
+              new ApexCharts(container, {
+                chart: {
+                  type: 'donut',
+                  height: 300
+                },
+                series: values,
+                labels: labels,
+                colors: ['#d63031', '#fdcb6e', '#e17055', '#fab1a0', '#ff7675'],
+                legend: {
+                  position: 'bottom'
+                }
+              }).render();
+            case 4:
+              return _context6.a(2);
+          }
+        }, _callee6);
+      }));
+      return function renderOverdueChart(_x6) {
+        return _ref6.apply(this, arguments);
+      };
+    }();
+    var initDashboard = /*#__PURE__*/function () {
+      var _ref7 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(workspace) {
+        var ep;
+        return _regenerator().w(function (_context7) {
+          while (1) switch (_context7.n) {
+            case 0:
+              document.querySelectorAll(".apexcharts-canvas").forEach(function (e) {
+                return e.remove();
+              });
+              ep = endpoints(workspace);
+              _context7.n = 1;
+              return loadOverview(ep);
+            case 1:
+              _context7.n = 2;
+              return renderTasksCompletedChart(ep);
+            case 2:
+              _context7.n = 3;
+              return renderTasksByProjectChart(ep);
+            case 3:
+              _context7.n = 4;
+              return renderTopAssigneesChart(ep);
+            case 4:
+              _context7.n = 5;
+              return renderOverdueChart(ep);
+            case 5:
+              return _context7.a(2);
+          }
+        }, _callee7);
+      }));
+      return function initDashboard(_x7) {
+        return _ref7.apply(this, arguments);
+      };
+    }();
+    var baseUrl = '/metrics/api';
+    var endpoints = function endpoints(workspace) {
+      return {
+        overview: "".concat(baseUrl, "/overview?workspace=").concat(workspace),
+        tasksCompleted: "".concat(baseUrl, "/tasks-completed?workspace=").concat(workspace, "&days=30"),
+        tasksByProject: "".concat(baseUrl, "/tasks-by-project?workspace=").concat(workspace),
+        topAssignees: "".concat(baseUrl, "/top-assignees?workspace=").concat(workspace),
+        overdue: "".concat(baseUrl, "/overdue?workspace=").concat(workspace)
+      };
+    };
+    var urlParams = new URLSearchParams(window.location.search);
+    var currentWorkspace = urlParams.get("workspace") || (workspaceSelect === null || workspaceSelect === void 0 ? void 0 : workspaceSelect.value) || '';
+    if (workspaceSelect) workspaceSelect.value = currentWorkspace;
+    initDashboard(currentWorkspace);
+    if (workspaceSelect) {
+      workspaceSelect.addEventListener("change", function (e) {
+        var workspace = e.target.value;
+        window.location.href = "/metrics?workspace=".concat(workspace);
+      });
+    }
+  } // <-- Cierre del "if (workspaceSelect)"
 });
 
 /***/ }),
@@ -16320,8 +16322,16 @@ function initProjectSelector() {
   });
 }
 function initTaskModal() {
-  var modal = document.getElementById('createTaskModal');
+  // --- ELEMENTO "GUARD" ---
+  // Si no estamos en la página de "Tareas", este botón no existe.
   var openBtn = document.getElementById('createTaskBtn');
+  if (!openBtn) {
+    // console.log('No estoy en la página de Tareas, no inicializo el modal.');
+    return; // No hacer nada
+  }
+
+  // --- Si SÍ estamos en la página, corremos todo lo demás ---
+  var modal = document.getElementById('createTaskModal');
   var closeBtn = document.getElementById('closeModalBtn');
   var form = document.getElementById('createTaskForm');
   var submitBtn = document.getElementById('submitTaskBtn');
@@ -16347,10 +16357,8 @@ function initTaskModal() {
   var isDeleteMode = false;
   var tasksToDelete = [];
   var toastTimer = null;
-  if (!modal || !openBtn || !closeBtn || !form || !submitBtn || !workspaceSelector || !projectSelector || !assigneeSelect || !editToggleBtn || !editToast || !taskCardsContainer || !pageWrapper || !deleteToggleBtn || !deleteBar || !confirmDeleteBtn || !cancelDeleteBtn) {
-    console.warn('Faltan elementos del DOM para inicializar todas las funciones.');
-    return;
-  }
+
+  // (El resto de tus funciones: loadAssignees, openModal, closeModal, etc. van aquí)
   function loadAssignees(_x) {
     return _loadAssignees.apply(this, arguments);
   }
@@ -16625,6 +16633,8 @@ function initTaskModal() {
       handleDeleteCardClick(card, taskData);
     }
   }
+
+  // --- ASIGNACIÓN DE EVENTOS ---
   openBtn.addEventListener('click', function () {
     return openModal(null);
   });
@@ -16639,9 +16649,14 @@ function initTaskModal() {
   cancelDeleteBtn.addEventListener('click', resetDeleteMode);
   confirmDeleteBtn.addEventListener('click', handleBulkDelete);
 }
+
+// --- INICIALIZADORES GLOBALES ---
 document.addEventListener('DOMContentLoaded', function () {
+  // Estos son filtros globales, está bien que corran siempre
   initWorkspaceSelector();
   initProjectSelector();
+
+  // Esta es la función protegida
   initTaskModal();
 });
 
@@ -16658,114 +16673,119 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 document.addEventListener('DOMContentLoaded', function () {
-  var modal = document.getElementById('teammateTasksModal');
-  var modalTitle = document.getElementById('teammateModalTitle');
-  var modalBody = document.getElementById('teammateModalBody');
-  var closeBtn = document.getElementById('closeTeammateModalBtn');
+  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
+  // Buscamos un ID que SÓLO exista en la página de Teammates.
   var grid = document.querySelector('.teammates-grid-container');
-  var workspaceSelector = document.getElementById('workspaceSelector');
-  var spinnerHTML = '<div class="tk-modal-spinner-container"><div class="tk-modal-wheeler"></div></div>';
-  if (!modal || !closeBtn || !grid || !workspaceSelector) {
-    console.warn('Faltan elementos del DOM para el modal de teammates.');
-    return;
-  }
-  workspaceSelector.addEventListener('change', function (e) {
-    var workspaceGid = e.target.value;
-    window.location.href = "/teammates?workspace=".concat(workspaceGid);
-  });
-  function openTeammateModal(_x, _x2) {
-    return _openTeammateModal.apply(this, arguments);
-  }
-  function _openTeammateModal() {
-    _openTeammateModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(userGid, userName) {
-      var workspaceGid, response, result, tasks, _t;
-      return _regenerator().w(function (_context) {
-        while (1) switch (_context.n) {
-          case 0:
-            modalTitle.textContent = "Loading ".concat(userName, "'s tasks...");
-            modalBody.innerHTML = spinnerHTML;
-            modal.style.display = 'flex';
-            setTimeout(function () {
-              return modal.classList.add('open');
-            }, 10);
-            workspaceGid = workspaceSelector.value;
-            _context.p = 1;
-            _context.n = 2;
-            return fetch("/api/teammate-tasks/".concat(userGid, "?workspace=").concat(workspaceGid), {
-              headers: {
-                'Accept': 'application/json'
+
+  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
+  if (grid) {
+    // --- 3. LÓGICA DEL MODAL ---
+    var openTeammateModal = /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(userGid, userName) {
+        var workspaceGid, response, result, tasks, _t;
+        return _regenerator().w(function (_context) {
+          while (1) switch (_context.n) {
+            case 0:
+              modalTitle.textContent = "Loading ".concat(userName, "'s tasks...");
+              modalBody.innerHTML = spinnerHTML;
+              modal.style.display = 'flex';
+              setTimeout(function () {
+                return modal.classList.add('open');
+              }, 10);
+              workspaceGid = workspaceSelector.value;
+              _context.p = 1;
+              _context.n = 2;
+              return fetch("/api/teammate-tasks/".concat(userGid, "?workspace=").concat(workspaceGid), {
+                headers: {
+                  'Accept': 'application/json'
+                }
+              });
+            case 2:
+              response = _context.v;
+              if (response.ok) {
+                _context.n = 3;
+                break;
               }
-            });
-          case 2:
-            response = _context.v;
-            if (response.ok) {
-              _context.n = 3;
+              throw new Error('Failed to fetch tasks.');
+            case 3:
+              _context.n = 4;
+              return response.json();
+            case 4:
+              result = _context.v;
+              tasks = result.data || [];
+              modalTitle.textContent = "".concat(userName, "'s Open Tasks (").concat(tasks.length, ")");
+              renderTasks(tasks);
+              _context.n = 6;
               break;
-            }
-            throw new Error('Failed to fetch tasks.');
-          case 3:
-            _context.n = 4;
-            return response.json();
-          case 4:
-            result = _context.v;
-            tasks = result.data || [];
-            modalTitle.textContent = "".concat(userName, "'s Open Tasks (").concat(tasks.length, ")");
-            renderTasks(tasks);
-            _context.n = 6;
-            break;
-          case 5:
-            _context.p = 5;
-            _t = _context.v;
-            console.error('Error fetching teammate tasks:', _t);
-            modalTitle.textContent = 'Error';
-            modalBody.innerHTML = '<p style="color: red; text-align: center;">Could not load tasks.</p>';
-          case 6:
-            return _context.a(2);
-        }
-      }, _callee, null, [[1, 5]]);
-    }));
-    return _openTeammateModal.apply(this, arguments);
-  }
-  function renderTasks(tasks) {
-    if (tasks.length === 0) {
-      modalBody.innerHTML = '<p style="text-align: center; color: #777; padding: 2rem 0;">This teammate has no open tasks.</p>';
+            case 5:
+              _context.p = 5;
+              _t = _context.v;
+              console.error('Error fetching teammate tasks:', _t);
+              modalTitle.textContent = 'Error';
+              modalBody.innerHTML = '<p style="color: red; text-align: center;">Could not load tasks.</p>';
+            case 6:
+              return _context.a(2);
+          }
+        }, _callee, null, [[1, 5]]);
+      }));
+      return function openTeammateModal(_x, _x2) {
+        return _ref.apply(this, arguments);
+      };
+    }();
+    var renderTasks = function renderTasks(tasks) {
+      if (tasks.length === 0) {
+        modalBody.innerHTML = '<p style="text-align: center; color: #777; padding: 2rem 0;">This teammate has no open tasks.</p>';
+        return;
+      }
+      var html = '<div class="teammate-task-list">';
+      tasks.forEach(function (task) {
+        html += "\n                    <div class=\"teammate-task-item\">\n                        <div class=\"teammate-task-item__info\">\n                            <span class=\"teammate-task-item__name\">".concat(task.name, "</span>\n                            <span class=\"teammate-task-item__meta\">\n                                <strong>Project:</strong> ").concat(task.project, " | \n                                <strong>Section:</strong> ").concat(task.section, " | \n                                <strong>Due:</strong> ").concat(task.due_on, "\n                            </span>\n                        </div>\n                        <div class=\"teammate-task-item__link\">\n                            <a href=\"").concat(task.url, "\" target=\"_blank\" rel=\"noopener\">Open</a>\n                        </div>\n                    </div>\n                ");
+      });
+      html += '</div>';
+      modalBody.innerHTML = html;
+    };
+    var closeTeammateModal = function closeTeammateModal() {
+      modal.classList.remove('open');
+      setTimeout(function () {
+        return modal.style.display = 'none';
+      }, 300);
+    }; // --- 4. ASIGNAR EVENTOS ---
+    // --- 1. ELEMENTOS DEL DOM ---
+    var modal = document.getElementById('teammateTasksModal');
+    var modalTitle = document.getElementById('teammateModalTitle');
+    var modalBody = document.getElementById('teammateModalBody');
+    var closeBtn = document.getElementById('closeTeammateModalBtn');
+    var workspaceSelector = document.getElementById('workspaceSelector');
+    var spinnerHTML = '<div class="tk-modal-spinner-container"><div class="tk-modal-wheeler"></div></div>';
+
+    // Chequeo por si algo falta (aunque 'grid' y 'workspaceSelector' ya están)
+    if (!modal || !closeBtn || !modalTitle || !modalBody) {
+      console.warn('Faltan elementos del DOM para el modal de teammates.');
       return;
     }
 
-    // lista
-    var html = '<div class="teammate-task-list">';
-    tasks.forEach(function (task) {
-      html += "\n                <div class=\"teammate-task-item\">\n                    <div class=\"teammate-task-item__info\">\n                        <span class=\"teammate-task-item__name\">".concat(task.name, "</span>\n                        <span class=\"teammate-task-item__meta\">\n                            <strong>Project:</strong> ").concat(task.project, " | \n                            <strong>Section:</strong> ").concat(task.section, " | \n                            <strong>Due:</strong> ").concat(task.due_on, "\n                        </span>\n                    </div>\n                    <div class=\"teammate-task-item__link\">\n                        <a href=\"").concat(task.url, "\" target=\"_blank\" rel=\"noopener\">Open</a>\n                    </div>\n                </div>\n            ");
+    // --- 2. FILTRO DE WORKSPACE ---
+    workspaceSelector.addEventListener('change', function (e) {
+      var workspaceGid = e.target.value;
+      window.location.href = "/teammates?workspace=".concat(workspaceGid);
     });
-    html += '</div>';
-    modalBody.innerHTML = html;
-  }
-  function closeTeammateModal() {
-    modal.classList.remove('open');
-    setTimeout(function () {
-      return modal.style.display = 'none';
-    }, 300);
-  }
-
-  // grid
-  grid.addEventListener('click', function (e) {
-    var card = e.target.closest('.teammate-card');
-    if (card) {
-      var userGid = card.dataset.userGid;
-      var userName = card.dataset.userName;
-      if (userGid) {
-        openTeammateModal(userGid, userName);
+    grid.addEventListener('click', function (e) {
+      var card = e.target.closest('.teammate-card');
+      if (card) {
+        var userGid = card.dataset.userGid;
+        var userName = card.dataset.userName;
+        if (userGid) {
+          openTeammateModal(userGid, userName);
+        }
       }
-    }
-  });
-
-  // close modal
-  closeBtn.addEventListener('click', closeTeammateModal);
-  modal.addEventListener('click', function (e) {
-    if (e.target === modal) {
-      closeTeammateModal();
-    }
-  });
+    });
+    closeBtn.addEventListener('click', closeTeammateModal);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        closeTeammateModal();
+      }
+    });
+  } // <-- Cierre del "if (grid)"
 });
 
 /***/ }),
@@ -16781,16 +16801,23 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /**
- * users.js
- * Manejo del perfil Asana: 
- */
+ * users.js
+ * Manejo del perfil Asana: 
+ */
 document.addEventListener('DOMContentLoaded', function () {
-  loadUserInfo();
+  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
+  // Buscamos un ID que SÓLO exista en la página de perfil.
+  var profilePageGuard = document.getElementById('user-info-card');
+
+  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
+  if (profilePageGuard) {
+    loadUserInfo();
+  }
 });
 
 /**
- * Llamada AJAX 
- */
+ * Llamada AJAX 
+ */
 function loadUserInfo() {
   return _loadUserInfo.apply(this, arguments);
 }
