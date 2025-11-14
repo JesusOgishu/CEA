@@ -1,4 +1,4 @@
-cument.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const workspaceSelect = document.querySelector("#workspaceSelect");
     const baseUrl = '/metrics/api';
 
