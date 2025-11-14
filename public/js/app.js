@@ -15772,12 +15772,8 @@ document.addEventListener('DOMContentLoaded', function () {
   initSidebarToggle();
   initWorkspaceSelector();
   initProjectSelector();
-
-  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-  // Buscamos un ID que SÓLO exista en la página del Dashboard
   var dashboardGrid = document.querySelector('.dashboard-grid');
   if (dashboardGrid) {
-    // Si SÍ existe, corremos el drag-and-drop.
     initDragAndDrop();
   }
 });
@@ -15871,11 +15867,7 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 document.addEventListener("DOMContentLoaded", function () {
-  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-  // Buscamos un ID que SÓLO exista en la página de Métricas.
   var workspaceSelect = document.querySelector("#workspaceSelect");
-
-  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
   if (workspaceSelect) {
     var setLoadingState = function setLoadingState(selector) {
       var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -15946,8 +15938,6 @@ document.addEventListener("DOMContentLoaded", function () {
               selectors.forEach(function (sel) {
                 return setLoadingState(sel, false);
               });
-
-              // Asegurarse de que los elementos existan antes de setearlos
               totalTasksEl = document.querySelector('#metric-total-tasks');
               completedTasksEl = document.querySelector('#metric-completed-tasks');
               overdueTasksEl = document.querySelector('#metric-overdue-tasks');
@@ -15979,7 +15969,6 @@ document.addEventListener("DOMContentLoaded", function () {
               }
               return _context3.a(2);
             case 1:
-              // Chequeo extra
               setLoadingState("#chart-tasks-completed", true);
               _context3.n = 2;
               return fetchData(ep.tasksCompleted);
@@ -16046,7 +16035,6 @@ document.addEventListener("DOMContentLoaded", function () {
               }
               return _context4.a(2);
             case 1:
-              // Chequeo extra
               setLoadingState("#chart-tasks-by-project", true);
               _context4.n = 2;
               return fetchData(ep.tasksByProject);
@@ -16114,7 +16102,6 @@ document.addEventListener("DOMContentLoaded", function () {
               }
               return _context5.a(2);
             case 1:
-              // Chequeo extra
               setLoadingState("#chart-top-assignees", true);
               _context5.n = 2;
               return fetchData(ep.topAssignees);
@@ -16182,7 +16169,6 @@ document.addEventListener("DOMContentLoaded", function () {
               }
               return _context6.a(2);
             case 1:
-              // Chequeo extra
               setLoadingState("#chart-overdue", true);
               _context6.n = 2;
               return fetchData(ep.overdue);
@@ -16277,7 +16263,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "/metrics?workspace=".concat(workspace);
       });
     }
-  } // <-- Cierre del "if (workspaceSelect)"
+  }
 });
 
 /***/ }),
@@ -16322,15 +16308,10 @@ function initProjectSelector() {
   });
 }
 function initTaskModal() {
-  // --- ELEMENTO "GUARD" ---
-  // Si no estamos en la página de "Tareas", este botón no existe.
   var openBtn = document.getElementById('createTaskBtn');
   if (!openBtn) {
-    // console.log('No estoy en la página de Tareas, no inicializo el modal.');
-    return; // No hacer nada
+    return;
   }
-
-  // --- Si SÍ estamos en la página, corremos todo lo demás ---
   var modal = document.getElementById('createTaskModal');
   var closeBtn = document.getElementById('closeModalBtn');
   var form = document.getElementById('createTaskForm');
@@ -16357,8 +16338,6 @@ function initTaskModal() {
   var isDeleteMode = false;
   var tasksToDelete = [];
   var toastTimer = null;
-
-  // (El resto de tus funciones: loadAssignees, openModal, closeModal, etc. van aquí)
   function loadAssignees(_x) {
     return _loadAssignees.apply(this, arguments);
   }
@@ -16633,8 +16612,6 @@ function initTaskModal() {
       handleDeleteCardClick(card, taskData);
     }
   }
-
-  // --- ASIGNACIÓN DE EVENTOS ---
   openBtn.addEventListener('click', function () {
     return openModal(null);
   });
@@ -16649,14 +16626,9 @@ function initTaskModal() {
   cancelDeleteBtn.addEventListener('click', resetDeleteMode);
   confirmDeleteBtn.addEventListener('click', handleBulkDelete);
 }
-
-// --- INICIALIZADORES GLOBALES ---
 document.addEventListener('DOMContentLoaded', function () {
-  // Estos son filtros globales, está bien que corran siempre
   initWorkspaceSelector();
   initProjectSelector();
-
-  // Esta es la función protegida
   initTaskModal();
 });
 
@@ -16673,13 +16645,8 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 document.addEventListener('DOMContentLoaded', function () {
-  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-  // Buscamos un ID que SÓLO exista en la página de Teammates.
   var grid = document.querySelector('.teammates-grid-container');
-
-  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
   if (grid) {
-    // --- 3. LÓGICA DEL MODAL ---
     var openTeammateModal = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(userGid, userName) {
         var workspaceGid, response, result, tasks, _t;
@@ -16749,22 +16716,17 @@ document.addEventListener('DOMContentLoaded', function () {
       setTimeout(function () {
         return modal.style.display = 'none';
       }, 300);
-    }; // --- 4. ASIGNAR EVENTOS ---
-    // --- 1. ELEMENTOS DEL DOM ---
+    };
     var modal = document.getElementById('teammateTasksModal');
     var modalTitle = document.getElementById('teammateModalTitle');
     var modalBody = document.getElementById('teammateModalBody');
     var closeBtn = document.getElementById('closeTeammateModalBtn');
     var workspaceSelector = document.getElementById('workspaceSelector');
     var spinnerHTML = '<div class="tk-modal-spinner-container"><div class="tk-modal-wheeler"></div></div>';
-
-    // Chequeo por si algo falta (aunque 'grid' y 'workspaceSelector' ya están)
     if (!modal || !closeBtn || !modalTitle || !modalBody) {
       console.warn('Faltan elementos del DOM para el modal de teammates.');
       return;
     }
-
-    // --- 2. FILTRO DE WORKSPACE ---
     workspaceSelector.addEventListener('change', function (e) {
       var workspaceGid = e.target.value;
       window.location.href = "/teammates?workspace=".concat(workspaceGid);
@@ -16785,7 +16747,7 @@ document.addEventListener('DOMContentLoaded', function () {
         closeTeammateModal();
       }
     });
-  } // <-- Cierre del "if (grid)"
+  }
 });
 
 /***/ }),
@@ -16800,16 +16762,8 @@ function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present,
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-/**
- * users.js
- * Manejo del perfil Asana: 
- */
 document.addEventListener('DOMContentLoaded', function () {
-  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-  // Buscamos un ID que SÓLO exista en la página de perfil.
   var profilePageGuard = document.getElementById('user-info-card');
-
-  // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
   if (profilePageGuard) {
     loadUserInfo();
   }
