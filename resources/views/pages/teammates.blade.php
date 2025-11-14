@@ -7,7 +7,7 @@
 
     <div class="filters-container mb-4" style="padding-bottom: 10px">
         <div class="filters-wrapper"> 
-            @if(isset($workspaces) && count($workspaces) > 1)
+            @if(isset($workspaces) && count($workspaces) >= 1)
             <div class="workspace-filter filter-item">
                 <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
                 <select id="workspaceSelector" class="form-control">
