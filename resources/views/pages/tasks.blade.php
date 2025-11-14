@@ -7,11 +7,11 @@
 
     <div class="filters-container mb-4">
         
-        {{-- 👇 ¡CAMBIO! Añadimos un campo oculto con el ID del workspace actual --}}
+        
         <input type="hidden" id="currentWorkspaceGid" value="{{ $workspaceId }}">
 
         <div class="filters-wrapper"> 
-            @if(isset($workspaces) && count($workspaces) >= 1) {{-- Dejamos tu @if --}}
+            @if(isset($workspaces) && count($workspaces) >= 1)
             <div class="workspace-filter filter-item">
                 <label for="workspaceSelector" class="font-weight-bold">Workspace:</label>
                 <select id="workspaceSelector" class="form-control">
@@ -52,7 +52,6 @@
 
     </div>
 
-    {{-- ... (El resto de tu HTML: prj-cards-container, etc. se queda igual) ... --}}
     @if(empty($tasks))
         <p class="text-muted text-center mt-5">No available tasks found.</p>
     @else
@@ -116,7 +115,6 @@
     @endif
 </div> 
 
-{{-- ... (El HTML de tus 3 Modales/Toasts se queda igual) ... --}}
 <div id="createTaskModal" class="tk-modal-overlay" style="display: none;"> 
     <div class="tk-modal-content"> 
         <div class="tk-modal-header"> 

@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-    // Buscamos un ID que SÓLO exista en la página de Teammates.
     const grid = document.querySelector('.teammates-grid-container');
 
-    // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
+    
     if (grid) {
         
-        // --- 1. ELEMENTOS DEL DOM ---
+        
         const modal = document.getElementById('teammateTasksModal');
         const modalTitle = document.getElementById('teammateModalTitle');
         const modalBody = document.getElementById('teammateModalBody');
@@ -16,19 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const spinnerHTML = '<div class="tk-modal-spinner-container"><div class="tk-modal-wheeler"></div></div>';
 
-        // Chequeo por si algo falta (aunque 'grid' y 'workspaceSelector' ya están)
+        
         if (!modal || !closeBtn || !modalTitle || !modalBody) {
             console.warn('Faltan elementos del DOM para el modal de teammates.');
             return;
         }
 
-        // --- 2. FILTRO DE WORKSPACE ---
+       
         workspaceSelector.addEventListener('change', e => {
             const workspaceGid = e.target.value;
             window.location.href = `/teammates?workspace=${workspaceGid}`;
         });
 
-        // --- 3. LÓGICA DEL MODAL ---
+        
         
         async function openTeammateModal(userGid, userName) {
             modalTitle.textContent = `Loading ${userName}'s tasks...`;
@@ -93,8 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // --- 4. ASIGNAR EVENTOS ---
-
+        
         grid.addEventListener('click', (e) => {
             const card = e.target.closest('.teammate-card');
             if (card) {
@@ -113,5 +110,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-    } // <-- Cierre del "if (grid)"
+    } 
 });

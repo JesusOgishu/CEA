@@ -1,9 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-    // Buscamos un ID que SÓLO exista en la página de Métricas.
+  
     const workspaceSelect = document.querySelector("#workspaceSelect");
 
-    // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
+    
     if (workspaceSelect) {
         
         const baseUrl = '/metrics/api';
@@ -63,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             selectors.forEach(sel => setLoadingState(sel, false));
 
-            // Asegurarse de que los elementos existan antes de setearlos
+            
             const totalTasksEl = document.querySelector('#metric-total-tasks');
             const completedTasksEl = document.querySelector('#metric-completed-tasks');
             const overdueTasksEl = document.querySelector('#metric-overdue-tasks');
@@ -77,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function renderTasksCompletedChart(ep) {
             const container = document.querySelector("#chart-tasks-completed");
-            if (!container) return; // Chequeo extra
+            if (!container) return; 
             setLoadingState("#chart-tasks-completed", true);
 
             const data = await fetchData(ep.tasksCompleted);
@@ -103,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function renderTasksByProjectChart(ep) {
             const container = document.querySelector("#chart-tasks-by-project");
-            if (!container) return; // Chequeo extra
+            if (!container) return; 
             setLoadingState("#chart-tasks-by-project", true);
 
             const data = await fetchData(ep.tasksByProject);
@@ -128,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function renderTopAssigneesChart(ep) {
             const container = document.querySelector("#chart-top-assignees");
-            if (!container) return; // Chequeo extra
+            if (!container) return; 
             setLoadingState("#chart-top-assignees", true);
 
             const data = await fetchData(ep.topAssignees);
@@ -153,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function renderOverdueChart(ep) {
             const container = document.querySelector("#chart-overdue");
-            if (!container) return; // Chequeo extra
+            if (!container) return; 
             setLoadingState("#chart-overdue", true);
 
             const data = await fetchData(ep.overdue);
@@ -198,5 +197,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.location.href = `/metrics?workspace=${workspace}`;
             });
         }
-    } // <-- Cierre del "if (workspaceSelect)"
+    } 
 });

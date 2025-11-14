@@ -1,13 +1,9 @@
-/**
- * users.js
- * Manejo del perfil Asana: 
- */
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-    // Buscamos un ID que SÓLO exista en la página de perfil.
+    
     const profilePageGuard = document.getElementById('user-info-card');
 
-    // Si SÍ lo encuentra, corre el script. Si NO, no hace nada.
+    
     if (profilePageGuard) {
         loadUserInfo();
     }

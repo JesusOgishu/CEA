@@ -252,12 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initWorkspaceSelector(); 
   initProjectSelector();
 
-  // 👇 ¡AQUÍ ESTÁ EL "GUARDIA"! 👇
-  // Buscamos un ID que SÓLO exista en la página del Dashboard
+  
   const dashboardGrid = document.querySelector('.dashboard-grid');
 
   if (dashboardGrid) {
-    // Si SÍ existe, corremos el drag-and-drop.
+   
     initDragAndDrop();
   }
 });

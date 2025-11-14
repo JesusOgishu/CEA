@@ -34,15 +34,14 @@ function initProjectSelector() {
 
 function initTaskModal() {
     
-    // --- ELEMENTO "GUARD" ---
-    // Si no estamos en la página de "Tareas", este botón no existe.
+  
     const openBtn = document.getElementById('createTaskBtn'); 
     if (!openBtn) {
-        // console.log('No estoy en la página de Tareas, no inicializo el modal.');
-        return; // No hacer nada
+        
+        return; 
     }
 
-    // --- Si SÍ estamos en la página, corremos todo lo demás ---
+    
     const modal = document.getElementById('createTaskModal');
     const closeBtn = document.getElementById('closeModalBtn');
     const form = document.getElementById('createTaskForm');
@@ -76,7 +75,7 @@ function initTaskModal() {
     let tasksToDelete = [];
     let toastTimer = null;
 
-    // (El resto de tus funciones: loadAssignees, openModal, closeModal, etc. van aquí)
+  
     async function loadAssignees(workspaceGid) {
         if (!workspaceGid) return;
         assigneeWheeler.style.display = 'block';
@@ -317,7 +316,7 @@ function initTaskModal() {
         }
     }
 
-    // --- ASIGNACIÓN DE EVENTOS ---
+  
     openBtn.addEventListener('click', () => openModal(null));
     closeBtn.addEventListener('click', closeModal);
     form.addEventListener('submit', handleFormSubmit);
@@ -331,12 +330,12 @@ function initTaskModal() {
     confirmDeleteBtn.addEventListener('click', handleBulkDelete); 
 }
 
-// --- INICIALIZADORES GLOBALES ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Estos son filtros globales, está bien que corran siempre
+    
     initWorkspaceSelector(); 
     initProjectSelector();
     
-    // Esta es la función protegida
+    
     initTaskModal(); 
 });
