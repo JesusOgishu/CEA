@@ -89,7 +89,7 @@ main {
   flex: 1;
 }
 
-/* Footer fijo al final */
+
 footer {
   color: #fff;
   text-align: center;
@@ -527,19 +527,18 @@ gap: 10px;
 flex-shrink: 0; 
 }
 
-/* Nuevo estilo para el wrapper de los filtros */
 .filters-wrapper {
  display: flex;
- flex-wrap: wrap; /* Para que se acomoden en móvil */
- gap: 1.5rem; /* El gap que tenían antes */
- flex-grow: 1; /* <-- Esto hace que ocupe el espacio */
+ flex-wrap: wrap; 
+ gap: 1.5rem; 
+ flex-grow: 1; 
 }
 
 
 .task-page-wrapper {
 display: flex;
 flex-direction: column;
-height: calc(100vh - 150px); /* <-- Altura para ESCRITORIO */
+height: calc(100vh - 150px); 
 }
 
 .prj-cards-container {
@@ -552,7 +551,7 @@ border-radius: 12px;
 box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 width: 100%;
 flex-grow: 1; 
-overflow-y: auto; /* <-- ESTO CREA EL SCROLL INTERNO */
+overflow-y: auto; 
 min-height: 300px; 
 align-content: start; 
 }
@@ -683,14 +682,8 @@ min-height: 300px;
 align-content: start; 
 }
 
-/* ================================== */
-/* 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 */
-/* ================================== */
+
 .task-page-wrapper {
-  /* Ajustado a 120px. Si aún ves scroll en la pantalla completa,
-     puedes aumentar este valor (ej. 130px, 140px) hasta que el
-     scroll sea solo dentro del cuadro blanco.
-  */
  height: calc(100vh - 120px); 
 }
 
@@ -714,14 +707,14 @@ gap: 0.5rem;
 padding-top: 0.5rem;
 }
 
- /* En móvil, los filtros ocupan todo el ancho */
+
  .filter-item {
   width: 100%;
  }
  .filter-item select {
   width: 100%;
  }
- /* Y los botones se van a la derecha */
+
  .tk-create-container {
   width: 100%;
   justify-content: flex-end;
@@ -729,16 +722,12 @@ padding-top: 0.5rem;
  }
 }
 
-/* ================================== */
-/* 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 */
-/* ================================== */
 
-/* Botón Primario (Morado) - CON PADDING DE TEXTO */
 .tk-btn-primary {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px; 
 font-weight: 600;
 color: #ffffff;
 background-color: #4f35a1; 
@@ -761,7 +750,7 @@ background-color: #9799ab;
 cursor: not-allowed;
 }
 
-/* Modal */
+
 .tk-modal-overlay {
 position: fixed;
 top: 0;
@@ -899,12 +888,12 @@ transform: rotate(360deg);
 }
 }
 
-/* Botón Secundario (Azul "Editar") - CON PADDING DE TEXTO */
+
 .tk-btn-secondary {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px; 
 font-weight: 600;
 color: #ffffff;
 background-color: #246dec; 
@@ -934,7 +923,7 @@ box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
 transform: translateY(0);
 }
 
-/* Toast (Letrero) */
+
 .tk-toast-notification {
 position: fixed;
 bottom: 30px;
@@ -958,7 +947,7 @@ opacity: 1;
 transform: translateX(-50%) translateY(0); 
 }
 
-/* Modo Edición (Tarjetas) */
+
 .task-page-wrapper.edit-mode-active .prj-card {
 cursor: pointer;
 box-shadow: 0 8px 20px rgba(79, 53, 161, 0.15); 
@@ -984,12 +973,12 @@ box-shadow: 0 8px 20px rgba(79, 53, 161, 0.15);
 }
 }
 
-/* Botón Peligro (Rojo) - CON PADDING DE TEXTO */
+
 .tk-btn-danger {
 display: inline-flex;
 align-items: center;
 gap: 8px;
-padding: 10px 20px; /* <-- ARREGLADO */
+padding: 10px 20px;
 font-weight: 600;
 color: #ffffff;
 background-color: #dc3545; 
@@ -1021,7 +1010,6 @@ transform: translateY(0);
 }
 
 
-/* Barra de Borrado */
 .tk-delete-bar {
 position: fixed;
 bottom: 0;
@@ -1060,7 +1048,7 @@ gap: 15px;
 }
 
 
-/* Modo Borrado (Tarjetas) */
+
 .task-page-wrapper.delete-mode-active .prj-card {
 cursor: pointer;
 border: 2px dashed #9799ab; 
@@ -1082,12 +1070,12 @@ box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
 transform: translateY(-5px) scale(1.02);
 }
 
-/* Botones de Icono y Tooltips */
+
 .tk-btn-icon {
   width: 36px;
   height: 36px;
-  padding: 0; /* <-- SOBREESCRIBE el padding de texto */
-  justify-content: center; /* <-- CENTRA el ícono */
+  padding: 0; 
+  justify-content: center; 
   flex-shrink: 0;
   font-size: 1.15rem;
 }
@@ -1158,12 +1146,10 @@ body {
 .text-orange { color: #f5b74f; }
 .font-weight-bold { font-weight: 600; }
 
-/* ================================== */
-/* CSS DEL LAYOUT RESPONSIVE */
-/* ================================== */
+
 .grid-container {
  display: grid;
- grid-template-columns: 1fr; /* Default para móvil */
+ grid-template-columns: 1fr; 
  grid-template-rows: 70px 1fr;
  grid-template-areas:
   "header"
@@ -1173,7 +1159,6 @@ body {
  transition: grid-template-columns 0.3s ease-in-out;
 }
 
-/* ---------- HEADER ---------- */
 .header {
  grid-area: header;
  background-color: var(--card-bg-color);
@@ -1187,7 +1172,7 @@ body {
 
 .menu-icon {
  cursor: pointer;
- display: inline; /* Mostrar en móvil */
+ display: inline; 
 }
 
 .header-left {
@@ -1207,7 +1192,7 @@ align-items: center;
 gap: 20px;
 }
 
-/* ---------- SIDEBAR ---------- */
+
 #sidebar {
  grid-area: sidebar;
  background-color: var(--sidebar-bg-color);
@@ -1273,7 +1258,7 @@ gap: 20px;
  margin-right: 15px;
 }
 
-/* Overlay (fondo oscuro) */
+
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -1294,14 +1279,14 @@ gap: 20px;
     transform: translateX(0); 
 }
 
-/* ---------- MAIN ---------- */
+
 .main-container {
  grid-area: main;
  overflow-y: auto;
  padding: 20px;
 }
 
-/* CSS DE FILTROS (CON ARREGLO RESPONSIVE) */
+
 .header-filters-container {
     display: flex;
     flex-wrap: wrap;
@@ -1334,7 +1319,6 @@ gap: 20px;
     width: 100%; 
 }
 
-/* ---------- DASHBOARD ---------- */
 .dashboard-grid {
 display: grid;
 grid-template-columns: 1fr 2fr;
@@ -1368,7 +1352,7 @@ align-items: start;
  padding: 20px;
  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1);
  height: 100%;
- overflow: hidden; /* Vuelve a hidden */
+ overflow: hidden; 
  border: 2px dashed transparent;
  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -1406,7 +1390,7 @@ color: #333;
  display: flex;
  flex-direction: column;
  height: 100%;
- overflow: hidden; /* ARREGLO SCROLL */
+ overflow: hidden; 
  overflow-x: hidden;
  scrollbar-width: thin;
 }
@@ -1423,7 +1407,7 @@ grid-template-rows: 1fr 1fr;
 gap: 15px;
 flex-grow: 1;
 overflow: hidden; 
-  min-height: 0; /* ARREGLO SCROLL */
+  min-height: 0; 
 }
 
 .matrix-quadrant {
@@ -1437,7 +1421,7 @@ overflow: hidden;
  border-top: 5px solid;
  position: relative;
  transition: background-color 0.3s ease, border-color 0.3s ease;
- overflow: hidden; /* Vuelve a hidden */
+ overflow: hidden; 
 }
 
 .matrix-quadrant h4 {
@@ -1475,15 +1459,14 @@ min-height: 0;
 .matrix-quadrant.delete .task-card { border-left-color: #dc3545; }
 
 
-/* ---------- SCROLLBARS ---------- */
+
 ::-webkit-scrollbar { width: 5px; height: 6px; }
 ::-webkit-scrollbar-track { box-shadow: inset 0 0 5px #a5aaad; border-radius: 10px; }
 ::-webkit-scrollbar-thumb { background-color: #4f35a1; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background-color: #a5aaad; }
 
-/* ---------- RESPONSIVE STYLES ---------- */
 
-/* Estilos de Escritorio (Sidebar empuja) */
+
 @media screen and (min-width: 993px) {
  .grid-container {
   grid-template-columns: var(--sidebar-width) 1fr;
@@ -1511,7 +1494,7 @@ min-height: 0;
   }
 }
 
-/* Estilos de Móvil (Sidebar es un overlay) */
+
 @media screen and (max-width: 992px) {
  .menu-icon {
   display: inline;
@@ -1549,7 +1532,7 @@ min-height: 0;
   display: none;
  }
 
-  /* Filtros del Dashboard en móvil */
+
  .header-filters-container {
    flex-direction: column;
    gap: 15px;
@@ -1571,20 +1554,19 @@ min-height: 0;
    width: 100%;
  }
 
-  /* 👇 ¡AQUÍ ESTÁ EL ARREGLO DE LOS CUADRANTES! 👇 */
+ 
   .matrix-grid {
-      grid-template-columns: 1fr; /* Apila los 4 cuadrantes */
+      grid-template-columns: 1fr; 
       height: auto; 
   }
   .matrix-quadrant {
-      height: 350px; /* <-- CAMBIO: 'height' fijo, no 'min-height' */
+      height: 350px; 
   }
   .eisenhower-matrix {
-      height: auto; /* El contenedor de la matriz también es automático */
+      height: auto; 
   }
 }
 
-/* Reducción de padding en el header para pantallas muy chicas */
 @media screen and (max-width: 420px) {
     .header {
         padding: 0 15px;
@@ -1595,7 +1577,7 @@ min-height: 0;
 }
 
 
-/* ---------- DRAG & DROP STYLES ---------- */
+
 .task-card {
  cursor: grab;
  user-select: none;
@@ -1627,7 +1609,7 @@ min-height: 0;
  border-style: dashed !important;
 }
 
-/* (Tu CSS de .projects-container y .project-card) */
+
 .projects-container {
  display: flex;
  gap: 15px;
@@ -1688,8 +1670,8 @@ min-height: 0;
  padding: 30px;
  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
  animation: userFadeIn 0.4s ease-in-out;
- max-height: 90vh; /* Ajustado para que quepa en la vista */
- overflow-y: auto; /* Scroll dentro de la tarjeta */
+ max-height: 90vh; 
+ overflow-y: auto; 
   scrollbar-width: thin;
 }
 
@@ -1720,9 +1702,9 @@ min-height: 0;
  box-shadow: 0 0 10px rgba(0,0,0,0.05);
  overflow: hidden;
  padding: 0;
-  display: flex; /* Añadido para layout flexible */
- flex-direction: column; /* Añadido */
-  flex: 1; /* Añadido */
+  display: flex; 
+ flex-direction: column; 
+  flex: 1; 
 }
 
 .section-header {
@@ -1738,13 +1720,13 @@ min-height: 0;
  display: flex;
  align-items: center;
  gap: 8px;
-  margin: 0; /* Reseteo */
+  margin: 0; 
 }
 
 .section-content {
  padding: 16px;
  background: #fff;
-  flex: 1; /* Añadido */
+  flex: 1; 
 }
 
 .user-profile-main-info-grid {
@@ -1752,7 +1734,7 @@ min-height: 0;
  grid-template-columns: 1fr 1fr;
  gap: 30px;
   align-items: start;
-  margin-bottom: 20px; /* Separación de la lista de proyectos */
+  margin-bottom: 20px; 
 }
 
 .user-profile-header-container,
@@ -1767,7 +1749,7 @@ min-height: 0;
  display: flex;
  align-items: flex-start;
  gap: 20px;
- margin-bottom: 0; /* Movido a .user-profile-header-container */
+ margin-bottom: 0; 
  padding-bottom: 20px;
  border-bottom: 1px solid #f2f2f2;
 }
@@ -1834,7 +1816,7 @@ min-height: 0;
  display: flex;
  justify-content: space-between;
  align-items: center;
- padding: 12px 0; /* Ajustado */
+ padding: 12px 0;
  border-bottom: 1px dashed #f2f2f2;
  transition: background-color 0.2s;
 }
@@ -2121,14 +2103,10 @@ min-height: 0;
 .loading-metrics .metrics-spinner {
     display: block;
 }
-/* ================================================= */
-/* ESTILOS DE PÁGINA "TEAMMATES"                 */
-/* ================================================= */
-
-.teammates-page-wrapper {
+teammates-page-wrapper {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 150px); /* Desktop */
+  height: calc(100vh - 150px); 
 }
 
 .teammates-grid-container {
@@ -2141,11 +2119,11 @@ min-height: 0;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   width: 100%;
   
-  /* --- Scroll Interno --- */
+
   flex-grow: 1;
   overflow-y: auto;
   min-height: 300px;
-  align-content: start; /* Clave para que el grid no se estire */
+  align-content: start; 
 }
 
 .teammate-card {
@@ -2162,9 +2140,7 @@ min-height: 0;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-
-  /* --- 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 --- */
-  min-height: 260px; /* Evita que la tarjeta colapse */
+  min-height: 260px; 
 }
 
 .teammate-card:hover {
@@ -2173,7 +2149,7 @@ min-height: 0;
   border-color: #4f35a1;
 }
 
-/* --- Foto o Iniciales --- */
+
 .teammate-card__photo {
   width: 100px;
   height: 100px;
@@ -2181,7 +2157,7 @@ min-height: 0;
   margin-bottom: 1rem;
   overflow: hidden;
   background-color: #f0f1f1;
-  flex-shrink: 0; /* Evita que la foto se encoja */
+  flex-shrink: 0; 
 }
 
 .teammate-card__photo img {
@@ -2202,7 +2178,7 @@ min-height: 0;
   background-color: #e6e8ed;
 }
 
-/* --- Info --- */
+
 .teammate-card__info {
   text-align: center;
 }
@@ -2228,7 +2204,7 @@ min-height: 0;
   word-break: break-all;
 }
 
-/* --- Botón "View Tasks" --- */
+
 .teammate-card__action {
   position: absolute;
   bottom: 0;
@@ -2247,10 +2223,6 @@ min-height: 0;
 .teammate-card:hover .teammate-card__action {
   transform: translateY(0);
 }
-
-/* ================================================= */
-/* ESTILOS PARA MODAL "TEAMMATE TASKS"         */
-/* ================================================= */
 
 .tk-modal-content--large {
   max-width: 800px;
@@ -2330,10 +2302,9 @@ min-height: 0;
   background-color: #3a277a;
 }
 
-/* --- Mobile --- */
+
 @media (max-width: 600px) {
   .teammates-page-wrapper {
-    /* Ajusta '120px' a la altura de tu header móvil */
     height: calc(100vh - 120px);
   }
 }

@@ -15545,10 +15545,6 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 
-
-/**
- * Anima un elemento a su posición inicial 
- */
 function animateToStartPosition(target) {
   if (!target) return;
   (0,animejs__WEBPACK_IMPORTED_MODULE_0__.animate)({
@@ -15565,17 +15561,10 @@ function animateToStartPosition(target) {
     }
   });
 }
-
-/**
- * GIDs de secciones por cuadrante.
- */
-// Dejamos esto aquí, pero solo se llenará si el Blade lo imprime
 var QUADRANT_SECTION_GIDS = window.QUADRANT_SECTION_GIDS || {};
 function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
   var url = "/asana/tasks/".concat(taskId, "/move");
   var finalSectionGid = sectionGid || null;
-
-  // Prevenimos la llamada si es 'undefined' (estamos en "All tasks")
   if (sectionGid === undefined) {
     console.warn('Movimiento cancelado: No estás en una vista de proyecto.');
     return;
@@ -15636,13 +15625,13 @@ function updateAsanaTaskSection(taskId, projectGid, sectionGid) {
     };
   }())["catch"](function (error) {
     console.error('Error al actualizar la tarea en Asana:', error.message);
-    // (Tu código de manejo de errores...)
   });
 }
 
-/**
- * Inicializa arrastrar y soltar.
- */
+// ==================================================
+// 👇 ESTA ES LA ÚNICA FUNCIÓN MODIFICADA 👇
+// ==================================================
+
 function initDragAndDrop() {
   var draggableSelector = '.task-card';
   var dropzoneSelector = '.tasks-overview, .matrix-quadrant';
@@ -15651,24 +15640,54 @@ function initDragAndDrop() {
     autoScroll: true,
     listeners: {
       start: function start(event) {
-        var _event$target;
-        (_event$target = event.target) === null || _event$target === void 0 || _event$target.classList.add('is-dragging');
+        var target = event.target;
+        if (!target) return;
+
+        // 1. Guardamos su posición original
+        var rect = target.getBoundingClientRect();
+
+        // 2. Guardamos su padre original para poder volver
+        target.originalParent = target.parentElement;
+
+        // 3. La movemos al <body> para "liberarla" del overflow
+        document.body.appendChild(target);
+
+        // 4. La posicionamos absolutamente donde estaba
+        target.style.position = 'absolute';
+        target.style.left = "".concat(rect.left, "px");
+        target.style.top = "".concat(rect.top, "px");
+        target.style.width = "".concat(rect.width, "px"); // Fijamos el ancho
+
+        target.classList.add('is-dragging');
       },
       move: function move(event) {
         var target = event.target;
         if (!target) return;
-        var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-        var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-        target.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
+
+        // Ahora movemos el 'left' y 'top' en lugar del transform
+        var x = (parseFloat(target.style.left) || 0) + event.dx;
+        var y = (parseFloat(target.style.top) || 0) + event.dy;
+        target.style.left = "".concat(x, "px");
+        target.style.top = "".concat(y, "px");
       },
       end: function end(event) {
-        var _event$target2;
-        if (!event.relatedTarget && event.target) {
-          animateToStartPosition(event.target);
+        var target = event.target;
+        if (!target) return;
+
+        // Si no se soltó en un dropzone válido (relatedTarget)
+        if (!event.relatedTarget) {
+          var _target$originalParen;
+          // Limpiamos estilos y la devolvemos a su padre original
+          target.style.position = '';
+          target.style.left = '';
+          target.style.top = '';
+          target.style.width = '';
+          target.style.transform = ''; // Limpiamos transform
+          target.setAttribute('data-x', '0');
+          target.setAttribute('data-y', '0');
+          (_target$originalParen = target.originalParent) === null || _target$originalParen === void 0 || _target$originalParen.appendChild(target); // Devolvemos
         }
-        (_event$target2 = event.target) === null || _event$target2 === void 0 || _event$target2.classList.remove('is-dragging');
+        target.classList.remove('is-dragging');
       }
     }
   });
@@ -15677,7 +15696,6 @@ function initDragAndDrop() {
     overlap: 0.5,
     listeners: {
       dragenter: function dragenter(event) {
-        // Solo activa si NO es el placeholder
         if (!event.target.classList.contains('eisenhower-placeholder')) {
           event.target.classList.add('drop-active');
         }
@@ -15688,25 +15706,27 @@ function initDragAndDrop() {
       drop: function drop(event) {
         var draggableElement = event.relatedTarget;
         var dropzoneElement = event.target;
-
-        // Si es el placeholder, regresa la tarjeta
         if (dropzoneElement.classList.contains('eisenhower-placeholder')) {
-          animateToStartPosition(draggableElement);
+          // Si es placeholder, no hacemos nada (la lógica de 'end' la devolverá)
           dropzoneElement.classList.remove('drop-active');
           return;
         }
         var list = dropzoneElement.querySelector('.task-list, .task-cards-container');
         if (list && draggableElement) {
+          // Limpiamos los estilos absolutos antes de añadirla a la lista
+          draggableElement.style.position = '';
+          draggableElement.style.left = '';
+          draggableElement.style.top = '';
+          draggableElement.style.width = '';
           draggableElement.style.transform = '';
           draggableElement.setAttribute('data-x', '0');
           draggableElement.setAttribute('data-y', '0');
-          list.appendChild(draggableElement);
+          list.appendChild(draggableElement); // La añadimos a su nuevo padre
+
           var listId = list.id;
           var newSectionGid = QUADRANT_SECTION_GIDS[listId];
           var taskId = draggableElement.getAttribute('data-task-id');
           var projectGid = draggableElement.getAttribute('data-project-gid');
-
-          // Solo actualiza si la sección existe (evita errores en "All tasks")
           if (newSectionGid !== undefined) {
             if (taskId && projectGid) {
               updateAsanaTaskSection(taskId, projectGid, newSectionGid);
@@ -15720,7 +15740,7 @@ function initDragAndDrop() {
             }
           } else if (Object.keys(QUADRANT_SECTION_GIDS).length > 0) {
             console.warn('Zona de drop no reconocida:', listId);
-            animateToStartPosition(draggableElement);
+            // (La lógica de 'end' la devolverá a su sitio)
           } else {
             console.log('Movimiento dentro de "Pending" (sin API call).');
           }
@@ -15730,6 +15750,11 @@ function initDragAndDrop() {
     }
   });
 }
+
+// ==================================================
+// 👆 FIN DE LA FUNCIÓN MODIFICADA 👆
+// ==================================================
+
 function initWorkspaceSelector() {
   var select = document.getElementById('workspaceSelector');
   if (!select) return;
@@ -15759,42 +15784,30 @@ function initProjectSelector() {
     window.location.href = currentUrl.toString();
   });
 }
-
-/* ================================== */
-/* 👇 ¡AQUÍ ESTÁ EL CAMBIO RESPONSIVE! 👇 */
-/* ================================== */
-/**
- * Inicializa el toggle del menú lateral (ahora para móvil y escritorio).
- */
 function initSidebarToggle() {
   var gridContainer = document.querySelector('.grid-container');
-  var menuIcon = document.querySelector('.menu-icon'); // Hamburguesa
-  var closeBtn = document.getElementById('sidebar-close-btn'); // Botón "X"
-  var overlay = document.querySelector('.sidebar-overlay'); // Fondo oscuro
-
+  var menuIcon = document.querySelector('.menu-icon');
+  var closeBtn = document.getElementById('sidebar-close-btn');
+  var overlay = document.querySelector('.sidebar-overlay');
   if (gridContainer && menuIcon && closeBtn && overlay) {
-    // Función para abrir
+    // abrir
     var openSidebar = function openSidebar() {
       gridContainer.classList.add('sidebar-open');
     };
 
-    // Función para cerrar
+    // cerrar
     var closeSidebar = function closeSidebar() {
       gridContainer.classList.remove('sidebar-open');
     };
 
-    // Asignar eventos
+    // eventos
     menuIcon.addEventListener('click', openSidebar);
     closeBtn.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
   }
 }
-
-/**
- * Inicializa todo.
- */
 document.addEventListener('DOMContentLoaded', function () {
-  initSidebarToggle(); // <-- Esta es la función que acabamos de cambiar
+  initSidebarToggle();
   initDragAndDrop();
   initWorkspaceSelector();
   initProjectSelector();
@@ -15888,15 +15901,9 @@ function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present,
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-/* ==========================================================================
-   Metrics Dashboard - Asana Integration
-   ========================================================================== */
-
-document.addEventListener("DOMContentLoaded", function () {
+cument.addEventListener("DOMContentLoaded", function () {
   var workspaceSelect = document.querySelector("#workspaceSelect");
   var baseUrl = '/metrics/api';
-
-  // CAMBIO: tasksCompleted ahora pide 30 días
   var endpoints = function endpoints(workspace) {
     return {
       overview: "".concat(baseUrl, "/overview?workspace=").concat(workspace),
@@ -15906,10 +15913,6 @@ document.addEventListener("DOMContentLoaded", function () {
       overdue: "".concat(baseUrl, "/overdue?workspace=").concat(workspace)
     };
   };
-
-  /**
-   * Maneja el estado de carga (con spinners)
-   */
   function setLoadingState(selector) {
     var loading = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     var el = document.querySelector(selector);
@@ -15917,7 +15920,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (loading) {
       el.classList.add('loading-metrics');
       if (el.classList.contains('metrics-card-value-metrics')) {
-        el.textContent = '...'; // Texto para tarjetas
+        el.textContent = '...';
       }
       var spinner = el.querySelector('.metrics-spinner');
       if (spinner) spinner.style.display = 'block';
@@ -16038,7 +16041,6 @@ document.addEventListener("DOMContentLoaded", function () {
                   text: 'Days'
                 }
               },
-              // Eje X por Días
               yaxis: {
                 title: {
                   text: 'Tasks'
@@ -16671,16 +16673,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var workspaceGid = e.target.value;
     window.location.href = "/teammates?workspace=".concat(workspaceGid);
   });
-
-  /**
-   * Abre el modal y busca las tareas del usuario
-   */
   function openTeammateModal(_x, _x2) {
     return _openTeammateModal.apply(this, arguments);
   }
-  /**
-   * Pinta la lista de tareas dentro del modal
-   */
   function _openTeammateModal() {
     _openTeammateModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(userGid, userName) {
       var workspaceGid, response, result, tasks, _t;
@@ -16745,10 +16740,6 @@ document.addEventListener('DOMContentLoaded', function () {
     html += '</div>';
     modalBody.innerHTML = html;
   }
-
-  /**
-   * Cierra el modal
-   */
   function closeTeammateModal() {
     modal.classList.remove('open');
     setTimeout(function () {
@@ -16803,9 +16794,6 @@ document.addEventListener('DOMContentLoaded', function () {
 function loadUserInfo() {
   return _loadUserInfo.apply(this, arguments);
 }
-/**
- * Renderiza los datos en la vista
- */
 function _loadUserInfo() {
   _loadUserInfo = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
     var detailsElement, errorElement, errorDetailElement, loadingSection, response, errorText, errorData, data, _t, _t2;
@@ -16883,8 +16871,6 @@ function renderUserInfo(data) {
   var userRoleElement = document.getElementById('user-role');
   var aboutMeElement = document.getElementById('user-about-me');
   var activeProjectsList = document.getElementById('active-projects-list');
-
-  // Información Básica 
   document.getElementById('user-name').textContent = data.name || 'Usuario desconocido';
   document.getElementById('user-email').textContent = data.email || '';
   var initials = data.name ? data.name.split(' ').map(function (n) {
